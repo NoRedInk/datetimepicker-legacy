@@ -39,6 +39,7 @@ type CssClasses
     | SelectedHour
     | SelectedMinute
     | SelectedAmPm
+    | DisabledDate
     | Today
     | DigitalTime
     | AnalogTime

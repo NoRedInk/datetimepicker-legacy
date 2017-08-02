@@ -217,6 +217,14 @@ datePickerDialogCss =
                 [ highlightMixin
                 , hover [ highlightMixin ]
                 ]
+            , class DisabledDate
+                [ backgroundColor inherit
+                , cursor default
+                , color darkGray
+                , hover
+                    [ backgroundColor inherit
+                    ]
+                ]
             , class Today
                 [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
                 , highlightBorderMixin

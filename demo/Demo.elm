@@ -12,6 +12,7 @@ import DemoCss exposing (CssClasses(..))
 import Dict exposing (Dict)
 import Html exposing (Html, div, form, h3, label, li, p, text, ul)
 import Html.CssHelpers
+import Task
 
 
 main : Program Never Model Msg
@@ -31,11 +32,13 @@ type DemoPicker
     | CustomI18n
     | TimePicker
     | NoPicker
+    | LimitedRangePicker
 
 
 type alias Model =
     { dates : Dict String Date -- The key is actually a DemoPicker
     , datePickerState : Dict String DateTimePicker.State -- The key is actually a DemoPicker
+    , now : Date
     }
 
 
@@ -43,6 +46,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { dates = Dict.empty
       , datePickerState = Dict.empty
+      , now = Date.fromTime 0
       }
     , Cmd.batch
         [ DateTimePicker.initialCmd (DatePickerChanged DatePicker) DateTimePicker.initialState
@@ -51,6 +55,8 @@ init =
         , DateTimePicker.initialCmd (DatePickerChanged CustomI18n) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged TimePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged NoPicker) DateTimePicker.initialState
+        , DateTimePicker.initialCmd (DatePickerChanged LimitedRangePicker) DateTimePicker.initialState
+        , Date.now |> Task.perform InitialDate
         ]
     )
 
@@ -146,8 +152,20 @@ digitalTimePickerConfig =
     }
 
 
-viewPicker : DemoPicker -> Maybe Date -> DateTimePicker.State -> Html Msg
-viewPicker which date state =
+limitedPickerConfig : Date -> Config (DatePickerConfig TimePickerConfig) Msg
+limitedPickerConfig now =
+    let
+        defaultDateTimeConfig =
+            defaultDateTimePickerConfig (DatePickerChanged LimitedRangePicker)
+    in
+    { defaultDateTimeConfig
+        | timePickerType = DateTimePicker.Config.Digital
+        , earliestDate = Just now
+    }
+
+
+viewPicker : DemoPicker -> Date -> Maybe Date -> DateTimePicker.State -> Html Msg
+viewPicker which now date state =
     p []
         [ label []
             [ text (toString which)
@@ -170,6 +188,9 @@ viewPicker which date state =
 
                 NoPicker ->
                     DateTimePicker.datePickerWithConfig noPickerConfig [] state date
+
+                LimitedRangePicker ->
+                    DateTimePicker.dateTimePickerWithConfig (limitedPickerConfig now) [] state date
             ]
         ]
 
@@ -187,6 +208,7 @@ view model =
             , CustomI18n
             , TimePicker
             , NoPicker
+            , LimitedRangePicker
             ]
     in
     form []
@@ -195,6 +217,7 @@ view model =
             |> List.map
                 (\which ->
                     viewPicker which
+                        model.now
                         (Dict.get (toString which) model.dates)
                         (Dict.get (toString which) model.datePickerState |> Maybe.withDefault DateTimePicker.initialState)
                 )
@@ -212,12 +235,18 @@ view model =
 
 
 type Msg
-    = DatePickerChanged DemoPicker DateTimePicker.State (Maybe Date)
+    = InitialDate Date
+    | DatePickerChanged DemoPicker DateTimePicker.State (Maybe Date)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        InitialDate now ->
+            ( { model | now = now }
+            , Cmd.none
+            )
+
         DatePickerChanged which state value ->
             ( { model
                 | dates =
