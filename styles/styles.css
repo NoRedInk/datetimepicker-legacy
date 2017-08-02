@@ -133,6 +133,16 @@
     border-radius: 0px;
 }
 
+.elm-input-datepickerDialog > .elm-input-datepickerDatePickerDialog > .elm-input-datepickerCalendar  .elm-input-datepickerDisabledDate {
+    background-color: inherit;
+    cursor: default;
+    color: #ccc;
+}
+
+.elm-input-datepickerDialog > .elm-input-datepickerDatePickerDialog > .elm-input-datepickerCalendar  .elm-input-datepickerDisabledDate:hover {
+    background-color: inherit;
+}
+
 .elm-input-datepickerDialog > .elm-input-datepickerDatePickerDialog > .elm-input-datepickerCalendar  .elm-input-datepickerToday {
     box-shadow: inset 0 0 7px 0 #76abd9;
     border-radius: 0px;

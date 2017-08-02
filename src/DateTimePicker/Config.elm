@@ -92,6 +92,7 @@ type alias I18n =
   - `titleFormatter` is the Date to String formatter for the dialog's title.
   - `footerFormatter` is the Date to String formatter for the dialog's footer.
   - `allowYearNavigation` show/hide year navigation button.
+  - `earliestDate` if given, dates before this cannot be selected
 
 -}
 type alias DatePickerConfig otherConfig =
@@ -99,6 +100,7 @@ type alias DatePickerConfig otherConfig =
         | nameOfDays : NameOfDays
         , firstDayOfWeek : Date.Day
         , allowYearNavigation : Bool
+        , earliestDate : Maybe Date
     }
 
 
@@ -229,6 +231,7 @@ type TimePickerType
   - `nameOfDays` see `NameOfDays` for the default values.
   - `firstDayOfWeek` Default: Sunday.
   - `allowYearNavigation` Default : True
+  - `earliestDate` Default : Nothing
 
 -}
 defaultDatePickerConfig : (State -> Maybe Date -> msg) -> Config (DatePickerConfig {}) msg
@@ -241,6 +244,7 @@ defaultDatePickerConfig onChange =
     , i18n = defaultDateI18n
     , usePicker = True
     , attributes = []
+    , earliestDate = Nothing
     }
 
 
@@ -278,6 +282,7 @@ defaultTimePickerConfig onChange =
   - `timeFormatter` Default: `"%I:%M %p"`
   - `timePickerType` Default: Analog
   - `allowYearNavigation` Default : True
+  - `earliestDate` Default : Nothing
 
 -}
 defaultDateTimePickerConfig : (State -> Maybe Date -> msg) -> Config (DatePickerConfig TimePickerConfig) msg
@@ -291,6 +296,7 @@ defaultDateTimePickerConfig onChange =
     , i18n = defaultDateTimeI18n
     , usePicker = True
     , attributes = []
+    , earliestDate = Nothing
     }
 
 

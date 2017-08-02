@@ -16,6 +16,7 @@ module DateTimePicker.DateUtils
 import Date
 import Date.Extra.Core
 import Date.Extra.Create
+import Date.Extra.Duration
 import String
 
 
@@ -77,7 +78,9 @@ calculateNumberOfDaysForPreviousMonth firstDayInInt =
 
 
 type alias Day =
-    { monthType : MonthType, day : Int }
+    { monthType : MonthType
+    , day : Int
+    }
 
 
 type MonthType
