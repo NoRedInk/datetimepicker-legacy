@@ -1,12 +1,11 @@
 module AccessibilityTests exposing (..)
 
 import Date exposing (Date)
-import DateTimePicker
 import Html.Attributes
 import Test exposing (..)
-import Test.Html.Event as Event
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (..)
+import TestHelper exposing (init, open, render)
 
 
 now : Date
@@ -15,43 +14,12 @@ now =
     Date.fromTime 1502490656000
 
 
-open : DateTimePicker.State -> DateTimePicker.State
-open oldState =
-    DateTimePicker.datePicker
-        (,)
-        []
-        oldState
-        Nothing
-        |> Query.fromHtml
-        |> Query.find [ tag "input" ]
-        |> Event.simulate Event.focus
-        |> Event.toResult
-        |> (\result ->
-                case result of
-                    Err message ->
-                        Debug.crash ("Can't open datetimepicker:" ++ message)
-
-                    Ok ( state, date ) ->
-                        state
-           )
-
-
-render : DateTimePicker.State -> Query.Single ()
-render state =
-    DateTimePicker.datePicker
-        (\_ _ -> ())
-        []
-        state
-        Nothing
-        |> Query.fromHtml
-
-
 datePickerTests : Test
 datePickerTests =
     describe "date picker accessibility"
         [ test "date cells should have role=button" <|
             \() ->
-                DateTimePicker.initialStateWithToday now
+                init now
                     |> open
                     |> render
                     |> Query.findAll [ tag "td" ]
@@ -59,10 +27,13 @@ datePickerTests =
                         (Query.has [ attribute "role" "button" ])
         , test "date cells should have labels" <|
             \() ->
-                DateTimePicker.initialStateWithToday now
+                init now
                     |> open
                     |> render
-                    |> Query.has [ tag "td", attribute "aria-label" "15, Tuesday August 2017" ]
+                    |> Query.has
+                        [ tag "td"
+                        , attribute "aria-label" "15, Tuesday August 2017"
+                        ]
         ]
 
 

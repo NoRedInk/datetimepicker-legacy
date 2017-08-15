@@ -32,15 +32,14 @@ module DateTimePicker
 -}
 
 import Date exposing (Date)
-import Date.Extra.Config.Config_en_us
 import Date.Extra.Core
 import Date.Extra.Duration
-import Date.Extra.Format
 import DateTimePicker.AnalogClock
 import DateTimePicker.ClockUtils
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onBlurWithChange, onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
+import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, Time, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
@@ -51,6 +50,7 @@ import Html.Events exposing (onBlur, onClick, onFocus)
 import List.Extra
 import String
 import Task
+import Time
 
 
 -- MODEL
@@ -827,7 +827,8 @@ calendar pickerType state currentDate =
                                     True
 
                                 Just earliestDate ->
-                                    Date.toTime date >= Date.toTime earliestDate
+                                    -- we allow the date containing the earliestDate to be selected
+                                    Date.toTime date >= (Date.toTime earliestDate - 24 * Time.hour)
 
                         toCell day =
                             let
@@ -872,7 +873,7 @@ calendar pickerType state currentDate =
                                 (List.concat
                                     [ [ class classes
                                       , Html.Attributes.attribute "role" "button"
-                                      , Html.Attributes.attribute "aria-label" (Date.Extra.Format.format Date.Extra.Config.Config_en_us.config "%e, %A %B %Y" selectedDate)
+                                      , Html.Attributes.attribute "aria-label" (accessibilityDateFormatter selectedDate)
                                       ]
                                     , handlers
                                     ]
