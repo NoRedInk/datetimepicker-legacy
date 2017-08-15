@@ -1,6 +1,8 @@
 module DateTimePicker.Formatter
     exposing
-        ( dateFormatter
+        ( accessibilityDateFormatter
+        , accessibilityDatePattern
+        , dateFormatter
         , datePattern
         , dateTimeFormatter
         , dateTimePattern
@@ -25,6 +27,16 @@ titleFormatter =
 titlePattern : String
 titlePattern =
     "%B %Y"
+
+
+accessibilityDateFormatter : Date -> String
+accessibilityDateFormatter =
+    Date.Extra.Format.format config accessibilityDatePattern
+
+
+accessibilityDatePattern : String
+accessibilityDatePattern =
+    "%e, %A %B %Y"
 
 
 dateFormatter : Date -> String
