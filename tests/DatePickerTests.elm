@@ -48,11 +48,16 @@ all =
                             |> Expect.equal Nothing
           in
           describe "allowable date range"
-            [ allowed Nothing ( 2017, 8, 10 )
-            , allowed Nothing ( 2017, 8, 11 )
-            , allowed Nothing ( 2017, 8, 12 )
-            , notAllowed (Just now) ( 2017, 8, 10 )
-            , allowed (Just now) ( 2017, 8, 12 )
+            [ describe "with no restriction, all dates are allowed"
+                [ allowed Nothing ( 2017, 8, 10 )
+                , allowed Nothing ( 2017, 8, 11 )
+                , allowed Nothing ( 2017, 8, 12 )
+                ]
+            , describe "with earliestDate, dates including and after are allowed"
+                [ notAllowed (Just now) ( 2017, 8, 10 )
+                , allowed (Just now) ( 2017, 8, 11 )
+                , allowed (Just now) ( 2017, 8, 12 )
+                ]
             ]
         ]
 

@@ -50,6 +50,7 @@ import Html.Events exposing (onBlur, onClick, onFocus)
 import List.Extra
 import String
 import Task
+import Time
 
 
 -- MODEL
@@ -826,7 +827,8 @@ calendar pickerType state currentDate =
                                     True
 
                                 Just earliestDate ->
-                                    Date.toTime date >= Date.toTime earliestDate
+                                    -- we allow the date containing the earliestDate to be selected
+                                    Date.toTime date >= (Date.toTime earliestDate - 24 * Time.hour)
 
                         toCell day =
                             let
