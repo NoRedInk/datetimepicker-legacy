@@ -28,7 +28,7 @@ css =
         , class Dialog
             [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
             , fontSize (px 14)
-            , borderBoxMixin
+            , borderBoxStyle
             , position absolute
             , border3 (px 1) solid darkGray
             , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
@@ -53,17 +53,17 @@ dialogCss =
         -- , height calendarHeight
         , textAlign center
         , borderLeft3 (px 1) solid darkGray
-        , withClass DigitalTime digitalTimePickerDialogMixin
-        , withClass AnalogTime analogTimePickerDialogMixin
+        , withClass DigitalTime digitalTimePickerDialogStyle
+        , withClass AnalogTime analogTimePickerDialogStyle
         ]
     ]
 
 
-analogTimePickerDialogMixin : List Css.Mixin
-analogTimePickerDialogMixin =
+analogTimePickerDialogStyle : List Css.Style
+analogTimePickerDialogStyle =
     let
-        timeHeaderMixin =
-            mixin
+        timeHeaderStyle =
+            Css.batch
                 [ padding2 (px 3) (px 10)
                 , marginTop (px 3)
                 , marginBottom (px 3)
@@ -71,8 +71,8 @@ analogTimePickerDialogMixin =
                 , cursor pointer
                 ]
 
-        amPmMixin =
-            mixin
+        amPmStyle =
+            Css.batch
                 [ fontSize (Css.em 1.2)
                 , padding2 (Css.em 1) (Css.em 0)
                 , cursor pointer
@@ -84,41 +84,41 @@ analogTimePickerDialogMixin =
     [ width (px 230)
     , descendants
         [ class Header
-            [ headerMixin
+            [ headerStyle
             , fontSize (Css.em 1.2)
             , descendants
-                [ class Hour [ timeHeaderMixin ]
-                , class Minute [ timeHeaderMixin ]
-                , class AMPM [ timeHeaderMixin ]
+                [ class Hour [ timeHeaderStyle ]
+                , class Minute [ timeHeaderStyle ]
+                , class AMPM [ timeHeaderStyle ]
                 , class Active
-                    [ activeMixin ]
+                    [ activeStyle ]
                 ]
             ]
         , class Body [ backgroundColor (hex "#fff"), padding2 (px 12) (px 15), height (px 202) ]
         , class AMPMPicker [ padding2 (px 40) (px 0) ]
         , class AM
-            [ amPmMixin
-            , withClass SelectedAmPm [ highlightMixin, hover [ highlightMixin ] ]
+            [ amPmStyle
+            , withClass SelectedAmPm [ highlightStyle, hover [ highlightStyle ] ]
             ]
         , class PM
-            [ amPmMixin
-            , withClass SelectedAmPm [ highlightMixin, hover [ highlightMixin ] ]
+            [ amPmStyle
+            , withClass SelectedAmPm [ highlightStyle, hover [ highlightStyle ] ]
             ]
         ]
     ]
 
 
-digitalTimePickerDialogMixin : List Css.Mixin
-digitalTimePickerDialogMixin =
+digitalTimePickerDialogStyle : List Css.Style
+digitalTimePickerDialogStyle =
     [ children
         [ class Header
-            [ headerMixin
+            [ headerStyle
             ]
         , class Body
             [ backgroundColor (hex "#fff")
             , descendants
                 [ Css.Elements.table
-                    [ tableMixin
+                    [ tableStyle
                     , width (px 120)
                     , descendants
                         [ tr
@@ -136,16 +136,16 @@ digitalTimePickerDialogMixin =
                             ]
                         , td
                             [ width (pct 33)
-                            , cellMixin
+                            , cellStyle
                             , hover
                                 [ backgroundColor highlightedDay
-                                , highlightBorderMixin
+                                , highlightBorderStyle
                                 ]
-                            , withClass EmptyCell [ emptyCellMixin ]
+                            , withClass EmptyCell [ emptyCellStyle ]
                             ]
-                        , class SelectedHour [ highlightMixin, hover [ highlightMixin ] ]
-                        , class SelectedMinute [ highlightMixin, hover [ highlightMixin ] ]
-                        , class SelectedAmPm [ highlightMixin, hover [ highlightMixin ] ]
+                        , class SelectedHour [ highlightStyle, hover [ highlightStyle ] ]
+                        , class SelectedMinute [ highlightStyle, hover [ highlightStyle ] ]
+                        , class SelectedAmPm [ highlightStyle, hover [ highlightStyle ] ]
                         ]
                     ]
                 ]
@@ -157,30 +157,30 @@ digitalTimePickerDialogMixin =
 datePickerDialogCss : List Css.Snippet
 datePickerDialogCss =
     [ class Header
-        [ borderBoxMixin
-        , headerMixin
+        [ borderBoxStyle
+        , headerStyle
         , position relative
         , children
             [ class ArrowLeft
-                [ arrowMixin
+                [ arrowStyle
                 , left (px 22)
                 , withClass NoYearNavigation [ left (px 0) ]
                 ]
             , class DoubleArrowLeft
-                [ arrowMixin
+                [ arrowStyle
                 , left (px 0)
                 ]
             , class ArrowRight
-                [ arrowMixin
+                [ arrowStyle
                 , right (px 22)
                 , withClass NoYearNavigation [ right (px 0) ]
                 ]
             , class DoubleArrowRight
-                [ arrowMixin
+                [ arrowStyle
                 , right (px 0)
                 ]
             , class Title
-                [ borderBoxMixin
+                [ borderBoxStyle
                 , display inlineBlock
                 , width (pct 100)
                 , textAlign center
@@ -189,21 +189,21 @@ datePickerDialogCss =
         ]
     , class Calendar
         [ backgroundColor (hex "#ffffff")
-        , tableMixin
+        , tableStyle
         , width auto
         , margin (px 0)
         , descendants
             [ thead
                 []
             , td
-                [ dayMixin
+                [ dayStyle
                 , hover
                     [ backgroundColor highlightedDay
-                    , highlightBorderMixin
+                    , highlightBorderStyle
                     ]
                 ]
             , th
-                [ dayMixin
+                [ dayStyle
                 , backgroundColor lightGray
                 , fontWeight normal
                 , borderBottom3 (px 1) solid darkGray
@@ -214,8 +214,8 @@ datePickerDialogCss =
                 [ color fadeText
                 ]
             , class SelectedDate
-                [ highlightMixin
-                , hover [ highlightMixin ]
+                [ highlightStyle
+                , hover [ highlightStyle ]
                 ]
             , class DisabledDate
                 [ backgroundColor inherit
@@ -227,7 +227,7 @@ datePickerDialogCss =
                 ]
             , class Today
                 [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
-                , highlightBorderMixin
+                , highlightBorderStyle
                 , hover
                     [ backgroundColor highlightSelectedDay ]
                 ]
@@ -243,13 +243,13 @@ datePickerDialogCss =
     ]
 
 
-highlightMixin : Css.Mixin
-highlightMixin =
-    mixin
+highlightStyle : Css.Style
+highlightStyle =
+    Css.batch
         [ property "box-shadow" "inset 0 0 10px 3px #3276b1"
         , backgroundColor selectedDate
         , color (hex "#fff")
-        , highlightBorderMixin
+        , highlightBorderStyle
         ]
 
 
@@ -283,27 +283,27 @@ highlightedDay =
     hex "#ebebeb"
 
 
-dayMixin : Css.Mixin
-dayMixin =
-    mixin
-        [ cellMixin
+dayStyle : Css.Style
+dayStyle =
+    Css.batch
+        [ cellStyle
         , textAlign right
         ]
 
 
-cellMixin : Css.Mixin
-cellMixin =
-    mixin
+cellStyle : Css.Style
+cellStyle =
+    Css.batch
         [ padding4 (px 7) (px 7) (px 7) (px 9)
         , border (px 0)
         , cursor pointer
         ]
 
 
-arrowMixin : Css.Mixin
-arrowMixin =
-    mixin
-        [ borderBoxMixin
+arrowStyle : Css.Style
+arrowStyle =
+    Css.batch
+        [ borderBoxStyle
         , textAlign center
         , transform (scale 0.8)
         , position absolute
@@ -312,19 +312,19 @@ arrowMixin =
         ]
 
 
-borderBoxMixin : Css.Mixin
-borderBoxMixin =
-    mixin [ boxSizing borderBox ]
+borderBoxStyle : Css.Style
+borderBoxStyle =
+    Css.batch [ boxSizing borderBox ]
 
 
-highlightBorderMixin : Css.Mixin
-highlightBorderMixin =
-    mixin [ borderRadius (px 0) ]
+highlightBorderStyle : Css.Style
+highlightBorderStyle =
+    Css.batch [ borderRadius (px 0) ]
 
 
-headerMixin : Css.Mixin
-headerMixin =
-    mixin
+headerStyle : Css.Style
+headerStyle =
+    Css.batch
         [ padding2 (px 10) (px 7)
         , backgroundColor lightGray
         ]
@@ -335,9 +335,9 @@ calendarHeight =
     px 277
 
 
-tableMixin : Css.Mixin
-tableMixin =
-    mixin
+tableStyle : Css.Style
+tableStyle =
+    Css.batch
         [ property "border-spacing" "0"
         , property "border-width" "0"
         , property "table-layout" "fixed"
@@ -345,14 +345,14 @@ tableMixin =
         ]
 
 
-activeMixin : Css.Mixin
-activeMixin =
-    mixin
+activeStyle : Css.Style
+activeStyle =
+    Css.batch
         [ backgroundColor (hex "#e0e0e0")
-        , highlightBorderMixin
+        , highlightBorderStyle
         ]
 
 
-emptyCellMixin : Css.Mixin
-emptyCellMixin =
-    mixin [ hover [ backgroundColor unset ], cursor unset ]
+emptyCellStyle : Css.Style
+emptyCellStyle =
+    Css.batch [ hover [ backgroundColor unset ], cursor unset ]
