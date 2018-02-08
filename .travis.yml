@@ -30,7 +30,6 @@ script:
   - TZ=Atlantic/Cape_Verde $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 npm test
   - TZ=America/Chicago $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 npm test
   - TZ=Pacific/Samoa $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 npm test
-  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 npm run css
   - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 npm run make-demos
 
 cache:
