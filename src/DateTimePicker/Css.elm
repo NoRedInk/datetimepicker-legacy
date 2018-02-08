@@ -13,16 +13,15 @@ Include this in your elm-css port module to be included in your project's css fi
 -}
 
 import Css exposing (..)
-import Css.Elements exposing (..)
-import Css.Namespace exposing (namespace)
-import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
+import Css.Foreign exposing (Snippet, children, class, descendants, td, tr, withClass)
+import DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 
 {-| DatePicker's Css Stylesheet
 -}
 css : Css.Stylesheet
 css =
-    (Css.stylesheet << namespace datepickerNamespace.name)
+    Css.stylesheet
         [ class DatePicker
             [ position relative ]
         , class Dialog

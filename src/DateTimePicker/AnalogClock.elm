@@ -7,17 +7,13 @@ import DateTimePicker.Events exposing (MoveData, onMouseDownPreventDefault, onMo
 import DateTimePicker.Geometry exposing (Point)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue)
-import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
+import DateTimePicker.SharedStyles exposing (CssClasses(..))
 import Dict
 import Html.Styled as Html exposing (Html, div)
 import Json.Decode
 import String
 import Svg.Styled as Svg exposing (Svg, circle, g, line, svg, text, text_)
 import Svg.Styled.Attributes exposing (cx, cy, dominantBaseline, fill, height, r, stroke, strokeWidth, textAnchor, viewBox, width, x, x1, x2, y, y1, y2)
-
-
-{ id, class, classList } =
-    datepickerNamespace
 
 
 hourArrowLength : Int

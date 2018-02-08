@@ -42,7 +42,7 @@ import DateTimePicker.Events exposing (onBlurWithChange, onMouseDownPreventDefau
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, Time, getStateValue, initialStateValue, initialStateValueWithToday)
-import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
+import DateTimePicker.SharedStyles exposing (CssClasses(..))
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (attribute, css, value)
@@ -160,10 +160,6 @@ gotoPreviousYear config state =
 
 
 -- VIEWS
-
-
-{ id, class, classList } =
-    datepickerNamespace
 
 
 {-| Date Picker view function with default configuration.
