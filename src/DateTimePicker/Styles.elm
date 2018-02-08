@@ -58,10 +58,6 @@ analogTimePickerDialogStyle =
         [ class Header
             [ headerStyle
             , fontSize (Css.em 1.2)
-            , descendants
-                [ class Active
-                    [ activeStyle ]
-                ]
             ]
         , class Body [ backgroundColor (hex "#fff"), padding2 (px 12) (px 15), height (px 202) ]
         ]

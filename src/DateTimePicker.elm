@@ -741,7 +741,7 @@ analogTimePickerDialog pickerType state currentDate =
 
         isActive timeIndicator =
             if stateValue.activeTimeIndicator == Just timeIndicator then
-                [ Active ]
+                [ Styles.activeStyle ]
             else
                 []
 
