@@ -376,9 +376,9 @@ dialog pickerType state currentDate =
             , css
                 [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
                 , fontSize (px 14)
-                , borderBoxStyle
+                , Styles.borderBoxStyle
                 , position absolute
-                , border3 (px 1) solid darkGray
+                , border3 (px 1) solid Styles.darkGray
                 , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
                 , children timePickerDialog
                 , property "z-index" "1"
@@ -715,16 +715,16 @@ digitalTimePickerDialog pickerType state currentDate =
                         [ [ backgroundColor (hex "#fff")
                           , descendants
                                 [ Css.Foreign.table
-                                    [ tableStyle
+                                    [ Styles.tableStyle
                                     , width (px 120)
                                     , descendants
                                         [ tr [ verticalAlign top ]
                                         , td
                                             [ width (pct 33)
-                                            , cellStyle
+                                            , Styles.cellStyle
                                             , hover
-                                                [ backgroundColor highlightedDay
-                                                , highlightBorderStyle
+                                                [ backgroundColor Styles.highlightedDay
+                                                , Styles.highlightBorderStyle
                                                 ]
                                             ]
                                         ]
@@ -768,7 +768,7 @@ analogTimePickerDialog pickerType state currentDate =
 
         html config =
             div [ css [ Styles.timePickerDialog, width (px 230) ] ]
-                [ div [ css [ headerStyle, fontSize (Css.em 1.2) ] ]
+                [ div [ css [ Styles.headerStyle, fontSize (Css.em 1.2) ] ]
                     [ span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
@@ -809,7 +809,7 @@ analogTimePickerDialog pickerType state currentDate =
                 ]
 
         highlighted =
-            [ highlightStyle, hover [ highlightStyle ] ]
+            [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
 
         amPmPicker config =
             div [ css [ padding2 (px 40) (px 0) ] ]
