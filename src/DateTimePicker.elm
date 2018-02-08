@@ -340,9 +340,9 @@ view pickerType attributes state currentDate =
         shouldForceClose config =
             config.autoClose && stateValue.forceClose
 
-        html config cssClasses =
+        html config =
             div
-                (cssClasses :: config.attributes)
+                (css [ position relative ] :: config.attributes)
                 [ input (inputAttributes config) []
                 , if config.usePicker && stateValue.inputFocused && not (shouldForceClose config) then
                     dialog pickerType state currentDate
@@ -352,13 +352,13 @@ view pickerType attributes state currentDate =
     in
     case pickerType of
         DateType config ->
-            html config (css [ position relative ])
+            html config
 
         DateTimeType config ->
-            html config (css [ position relative ])
+            html config
 
         TimeType config ->
-            html config (css [])
+            html config
 
 
 
