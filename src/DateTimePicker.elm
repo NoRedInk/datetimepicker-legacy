@@ -616,33 +616,31 @@ digitalTimePickerDialog pickerType state currentDate =
 
         amPmCell ampm =
             let
-                defaultClasses =
-                    class <|
-                        if ampm == "" then
-                            [ EmptyCell ]
-                        else
-                            []
+                defaultStyles =
+                    if String.isEmpty ampm then
+                        css [ EmptyCell ]
+                    else
+                        css []
             in
             td
-                ([ stateValue.time.amPm
-                    |> Maybe.map ((==) ampm)
-                    |> Maybe.map
-                        (\selected ->
-                            if selected then
-                                class [ SelectedAmPm ]
-                            else
-                                defaultClasses
-                        )
-                    |> Maybe.withDefault defaultClasses
-                 ]
-                    ++ (if ampm == "" then
+                [ (case stateValue.time.amPm of
+                    Just stateAmPm ->
+                        if stateAmPm == ampm then
+                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                        else
+                            defaultStyles
+
+                    Nothing ->
+                        defaultStyles
+                  )
+                    :: (if String.isEmpty ampm then
                             []
                         else
                             [ onMouseDownPreventDefault <| amPmClickHandler pickerType stateValue ampm
                             , onTouchStartPreventDefault <| amPmClickHandler pickerType stateValue ampm
                             ]
                        )
-                )
+                ]
                 [ text ampm ]
 
         upArrows config =
@@ -746,7 +744,8 @@ analogTimePickerDialog pickerType state currentDate =
                     , span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
-                        , class (AMPM :: isActive DateTimePicker.Internal.AMPMIndicator)
+                        , css [ Styles.timeHeaderStyle ]
+                        , class (isActive DateTimePicker.Internal.AMPMIndicator)
                         ]
                         [ text (stateValue.time.amPm |> Maybe.withDefault "--") ]
                     ]
@@ -760,28 +759,33 @@ analogTimePickerDialog pickerType state currentDate =
                     ]
                 ]
 
+        highlighted =
+            [ highlightStyle, hover [ highlightStyle ] ]
+
         amPmPicker config =
-            div [ class [ AMPMPicker ] ]
+            div [ css [ padding2 (px 40) (px 0) ] ]
                 [ div
                     [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
                     , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
+                    , css [ Styles.amPmStyle ]
                     , case stateValue.time.amPm of
                         Just "AM" ->
-                            class [ AM, SelectedAmPm ]
+                            css [ highlighted ]
 
                         _ ->
-                            class [ AM ]
+                            css []
                     ]
                     [ text "AM" ]
                 , div
                     [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
                     , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
+                    , css [ Styles.amPmStyle ]
                     , case stateValue.time.amPm of
                         Just "PM" ->
-                            class [ PM, SelectedAmPm ]
+                            css [ highlighted ]
 
                         _ ->
-                            class [ PM ]
+                            css []
                     ]
                     [ text "PM" ]
                 ]

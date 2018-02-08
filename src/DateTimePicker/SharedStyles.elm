@@ -18,7 +18,6 @@ type CssClasses
     | SelectedDate
     | SelectedHour
     | SelectedMinute
-    | SelectedAmPm
     | DisabledDate
     | Today
     | DigitalTime
@@ -26,8 +25,4 @@ type CssClasses
     | Active
     | Hour
     | Minute
-    | AMPM
-    | AMPMPicker
-    | AM
-    | PM
     | EmptyCell

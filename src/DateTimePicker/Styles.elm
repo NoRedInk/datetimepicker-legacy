@@ -80,21 +80,11 @@ analogTimePickerDialogStyle =
             , descendants
                 [ class Hour [ timeHeaderStyle ]
                 , class Minute [ timeHeaderStyle ]
-                , class AMPM [ timeHeaderStyle ]
                 , class Active
                     [ activeStyle ]
                 ]
             ]
         , class Body [ backgroundColor (hex "#fff"), padding2 (px 12) (px 15), height (px 202) ]
-        , class AMPMPicker [ padding2 (px 40) (px 0) ]
-        , class AM
-            [ amPmStyle
-            , withClass SelectedAmPm [ highlightStyle, hover [ highlightStyle ] ]
-            ]
-        , class PM
-            [ amPmStyle
-            , withClass SelectedAmPm [ highlightStyle, hover [ highlightStyle ] ]
-            ]
         ]
     ]
 
@@ -124,7 +114,6 @@ digitalTimePickerDialogStyle =
                             ]
                         , class SelectedHour [ highlightStyle, hover [ highlightStyle ] ]
                         , class SelectedMinute [ highlightStyle, hover [ highlightStyle ] ]
-                        , class SelectedAmPm [ highlightStyle, hover [ highlightStyle ] ]
                         ]
                     ]
                 ]
