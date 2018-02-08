@@ -1,14 +1,11 @@
 module Demo exposing (main)
 
-import Css
 import Date exposing (Date)
 import Date.Extra.Config.Config_en_us exposing (config)
 import Date.Extra.Format
 import DateParser
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimeI18n, defaultDateTimePickerConfig, defaultTimePickerConfig)
-import DateTimePicker.Css
-import DemoCss exposing (CssClasses(..))
 import Dict exposing (Dict)
 import Html.Styled as Html exposing (Html, div, form, h3, label, li, p, text, ul)
 import Task
@@ -65,10 +62,6 @@ subscriptions model =
     Sub.none
 
 
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace ""
-
-
 analogDateTimePickerConfig : Config (DatePickerConfig TimePickerConfig) Msg
 analogDateTimePickerConfig =
     let
@@ -100,7 +93,7 @@ noPickerConfig =
     in
     { defaultDateConfig
         | usePicker = False
-        , attributes = [ class [ "Test" ] ]
+        , attributes = []
     }
 
 
@@ -197,9 +190,6 @@ viewPicker which now date state =
 view : Model -> Html Msg
 view model =
     let
-        { css } =
-            Css.compile [ DateTimePicker.Css.css, DemoCss.css ]
-
         allPickers =
             [ DatePicker
             , DigitalDateTimePicker
@@ -211,8 +201,7 @@ view model =
             ]
     in
     form []
-        [ Html.node "style" [] [ Html.text css ]
-        , allPickers
+        [ allPickers
             |> List.map
                 (\which ->
                     viewPicker which
@@ -220,7 +209,7 @@ view model =
                         (Dict.get (toString which) model.dates)
                         (Dict.get (toString which) model.datePickerState |> Maybe.withDefault DateTimePicker.initialState)
                 )
-            |> div [ class [ Container ] ]
+            |> div []
         , h3 [] [ text "Selected values" ]
         , p []
             [ allPickers

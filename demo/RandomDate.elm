@@ -1,14 +1,11 @@
 module RandomDate exposing (main)
 
-import Css
 import Date exposing (Date)
 import DateTimePicker
 import DateTimePicker.Config exposing (defaultDatePickerConfig, defaultDateTimePickerConfig)
-import DemoCss exposing (CssClasses(..))
-import Html.Styled exposing (Html, button, div, form, label, li, p, text, ul)
+import Html.Styled as Html exposing (Html, button, div, form, label, li, p, text, ul)
 import Html.Styled.Attributes exposing (type_)
 import Html.Styled.Events exposing (onClick)
-import Json.Decode
 import Random
 
 
@@ -44,16 +41,9 @@ subscriptions model =
     Sub.none
 
 
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace ""
-
-
 view : Model -> Html Msg
 view model =
     let
-        { css } =
-            Css.compile [ DateTimePicker.Css.css, DemoCss.css ]
-
         analogDateTimePickerConfig =
             let
                 defaultDateTimeConfig =
@@ -62,8 +52,7 @@ view model =
             { defaultDateTimeConfig | timePickerType = DateTimePicker.Config.Digital, allowYearNavigation = False }
     in
     form []
-        [ Html.node "style" [] [ Html.text css ]
-        , div [ class [ Container ] ]
+        [ div []
             [ p
                 []
                 [ label []
