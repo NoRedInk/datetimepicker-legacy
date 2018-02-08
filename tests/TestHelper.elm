@@ -6,7 +6,8 @@ module TestHelper exposing (TestResult, init, open, render, selection, simulate,
 import Date exposing (Date)
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig)
-import Html.Styled.Attributes
+import Html.Styled as Html
+import Html.Styled.Attributes as Attr
 import Json.Encode as Json
 import Test.Html.Event as Event
 import Test.Html.Query as Query
@@ -84,7 +85,7 @@ render (TestResult t) =
         config =
             { origConfig
                 | onChange = makeResult
-                , attributes = List.map (Html.Attributes.map (uncurry makeResult)) origConfig.attributes
+                , attributes = List.map (Attr.map (uncurry makeResult)) origConfig.attributes
             }
     in
     DateTimePicker.datePickerWithConfig
@@ -92,6 +93,7 @@ render (TestResult t) =
         []
         t.state
         t.date
+        |> Html.toUnstyled
         |> Query.fromHtml
 
 

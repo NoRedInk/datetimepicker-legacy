@@ -5,7 +5,7 @@ import Date.Extra.Core
 import Date.Extra.Create
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
-import Html.Styled.Attributes
+import Html.Attributes
 import Test exposing (..)
 import Test.Html.Event as Event
 import Test.Html.Selector exposing (..)
@@ -64,4 +64,5 @@ all =
 
 attribute : String -> String -> Selector
 attribute attr value =
-    Test.Html.Selector.attribute <| Html.Attributes.attribute attr value
+    Html.Attributes.attribute attr value
+        |> Test.Html.Selector.attribute
