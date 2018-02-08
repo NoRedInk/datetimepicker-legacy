@@ -50,28 +50,31 @@ dialogCss =
     ]
 
 
+timeHeaderStyle : Style
+timeHeaderStyle =
+    Css.batch
+        [ padding2 (px 3) (px 10)
+        , marginTop (px 3)
+        , marginBottom (px 3)
+        , display inlineBlock
+        , cursor pointer
+        ]
+
+
+amPmStyle : Style
+amPmStyle =
+    Css.batch
+        [ fontSize (Css.em 1.2)
+        , padding2 (Css.em 1) (Css.em 0)
+        , cursor pointer
+        , margin2 (px 0) auto
+        , width (px 85)
+        , hover [ backgroundColor highlightedDay ]
+        ]
+
+
 analogTimePickerDialogStyle : List Css.Style
 analogTimePickerDialogStyle =
-    let
-        timeHeaderStyle =
-            Css.batch
-                [ padding2 (px 3) (px 10)
-                , marginTop (px 3)
-                , marginBottom (px 3)
-                , display inlineBlock
-                , cursor pointer
-                ]
-
-        amPmStyle =
-            Css.batch
-                [ fontSize (Css.em 1.2)
-                , padding2 (Css.em 1) (Css.em 0)
-                , cursor pointer
-                , margin2 (px 0) auto
-                , width (px 85)
-                , hover [ backgroundColor highlightedDay ]
-                ]
-    in
     [ width (px 230)
     , descendants
         [ class Header
