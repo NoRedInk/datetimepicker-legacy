@@ -3,10 +3,8 @@ module DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 type CssClasses
     = Calendar
-    | PreviousMonth
     | Header
     | Body
-    | NextMonth
     | Title
     | NoYearNavigation
     | Dialog
@@ -15,11 +13,8 @@ type CssClasses
     | DatePicker
     | TimePicker
     | Footer
-    | SelectedDate
     | SelectedHour
     | SelectedMinute
-    | DisabledDate
-    | Today
     | DigitalTime
     | AnalogTime
     | Active

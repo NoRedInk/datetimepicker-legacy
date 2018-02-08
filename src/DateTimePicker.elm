@@ -869,25 +869,37 @@ calendar pickerType state currentDate =
                                 selectedDate =
                                     DateTimePicker.DateUtils.toDate year month day
 
-                                classes =
+                                styles =
                                     List.concat
                                         [ case day.monthType of
                                             DateTimePicker.DateUtils.Previous ->
-                                                [ PreviousMonth ]
+                                                [ color Styles.fadeText ]
 
                                             DateTimePicker.DateUtils.Current ->
                                                 []
 
                                             DateTimePicker.DateUtils.Next ->
-                                                [ NextMonth ]
+                                                [ color Styles.fadeText ]
                                         , if isInRange day then
                                             []
                                           else
-                                            [ DisabledDate ]
+                                            [ backgroundColor inherit
+                                            , cursor default
+                                            , color Styles.darkGray
+                                            , hover
+                                                [ backgroundColor inherit
+                                                ]
+                                            ]
                                         , if matchesDay stateValue.date day then
-                                            [ SelectedDate ]
+                                            [ Styles.highlightStyle
+                                            , hover [ Styles.highlightStyle ]
+                                            ]
                                           else if matchesDay stateValue.today day then
-                                            [ Today ]
+                                            [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
+                                            , Styles.highlightBorderStyle
+                                            , hover
+                                                [ backgroundColor Styles.highlightSelectedDay ]
+                                            ]
                                           else
                                             []
                                         ]
@@ -905,7 +917,7 @@ calendar pickerType state currentDate =
                             in
                             td
                                 (List.concat
-                                    [ [ class classes
+                                    [ [ css styles
                                       , attribute "role" "button"
                                       , attribute "aria-label" (accessibilityDateFormatter selectedDate)
                                       ]
@@ -1439,29 +1451,6 @@ datePickerDialogCss =
                 , backgroundColor Styles.lightGray
                 , fontWeight normal
                 , borderBottom3 (px 1) solid Styles.darkGray
-                ]
-            , class PreviousMonth
-                [ color Styles.fadeText ]
-            , class NextMonth
-                [ color Styles.fadeText
-                ]
-            , class SelectedDate
-                [ Styles.highlightStyle
-                , hover [ Styles.highlightStyle ]
-                ]
-            , class DisabledDate
-                [ backgroundColor inherit
-                , cursor default
-                , color Styles.darkGray
-                , hover
-                    [ backgroundColor inherit
-                    ]
-                ]
-            , class Today
-                [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
-                , Styles.highlightBorderStyle
-                , hover
-                    [ backgroundColor Styles.highlightSelectedDay ]
                 ]
             ]
         ]
