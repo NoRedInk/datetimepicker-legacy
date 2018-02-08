@@ -112,19 +112,7 @@ digitalTimePickerDialogStyle =
                     [ tableStyle
                     , width (px 120)
                     , descendants
-                        [ tr
-                            [ verticalAlign top
-                            , withClass ArrowUp
-                                [ backgroundColor lightGray
-                                , children
-                                    [ td [ borderBottom3 (px 1) solid darkGray ]
-                                    ]
-                                ]
-                            , withClass ArrowDown
-                                [ backgroundColor lightGray
-                                , children [ td [ borderTop3 (px 1) solid darkGray ] ]
-                                ]
-                            ]
+                        [ tr [ verticalAlign top ]
                         , td
                             [ width (pct 33)
                             , cellStyle

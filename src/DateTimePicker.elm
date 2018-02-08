@@ -465,7 +465,10 @@ previousYearButton : DatePickerConfig (Config config msg) -> State -> Maybe Date
 previousYearButton config state currentDate =
     if config.allowYearNavigation then
         span
-            [ class [ DoubleArrowLeft ]
+            [ css
+                [ Styles.arrowStyle
+                , left (px 0)
+                ]
             , onMouseDownPreventDefault <| gotoPreviousYear config state currentDate
             , onTouchStartPreventDefault <| gotoPreviousYear config state currentDate
             ]
@@ -485,7 +488,12 @@ noYearNavigationClass config =
 previousButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> Html msg
 previousButton config state currentDate =
     span
-        [ class <| ArrowLeft :: noYearNavigationClass config
+        [ css
+            [ Styles.arrowStyle
+            , left (px 22)
+            , withClass NoYearNavigation [ left (px 0) ]
+            ]
+        , class (noYearNavigationClass config)
         , onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
         , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
         ]
@@ -495,7 +503,11 @@ previousButton config state currentDate =
 nextButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> Html msg
 nextButton config state currentDate =
     span
-        [ class <| ArrowRight :: noYearNavigationClass config
+        [ css
+            [ Styles.arrowStyle
+            , right (px 22)
+            , noYearNavigationStyle config
+            ]
         , onMouseDownPreventDefault <| gotoNextMonth config state currentDate
         , onTouchStartPreventDefault <| gotoNextMonth config state currentDate
         ]
@@ -506,7 +518,10 @@ nextYearButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> 
 nextYearButton config state currentDate =
     if config.allowYearNavigation then
         span
-            [ class [ DoubleArrowRight ]
+            [ css
+                [ Styles.arrowStyle
+                , right (px 0)
+                ]
             , onMouseDownPreventDefault <| gotoNextYear config state currentDate
             , onTouchStartPreventDefault <| gotoNextYear config state currentDate
             ]
@@ -633,9 +648,9 @@ digitalTimePickerDialog pickerType state currentDate =
         upArrows config =
             [ tr
                 [ css
-                    [ backgroundColor lightGray
+                    [ backgroundColor Styles.lightGray
                     , children
-                        [ td [ borderBottom3 (px 1) solid darkGray ]
+                        [ td [ borderBottom3 (px 1) solid Styles.darkGray ]
                         ]
                     ]
                 ]
@@ -654,7 +669,12 @@ digitalTimePickerDialog pickerType state currentDate =
             ]
 
         downArrows config =
-            [ tr [ class [ ArrowDown ] ]
+            [ tr
+                [ css
+                    [ backgroundColor Styles.lightGray
+                    , children [ td [ borderTop3 (px 1) solid Styles.darkGray ] ]
+                    ]
+                ]
                 [ td
                     [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
@@ -1387,25 +1407,7 @@ datePickerDialogCss =
         , Styles.headerStyle
         , position relative
         , children
-            [ class ArrowLeft
-                [ Styles.arrowStyle
-                , left (px 22)
-                , withClass NoYearNavigation [ left (px 0) ]
-                ]
-            , class DoubleArrowLeft
-                [ Styles.arrowStyle
-                , left (px 0)
-                ]
-            , class ArrowRight
-                [ Styles.arrowStyle
-                , right (px 22)
-                , withClass NoYearNavigation [ right (px 0) ]
-                ]
-            , class DoubleArrowRight
-                [ Styles.arrowStyle
-                , right (px 0)
-                ]
-            , class Title
+            [ class Title
                 [ Styles.borderBoxStyle
                 , display inlineBlock
                 , width (pct 100)

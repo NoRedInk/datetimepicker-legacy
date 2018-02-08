@@ -9,12 +9,6 @@ type CssClasses
     | NextMonth
     | Title
     | NoYearNavigation
-    | ArrowLeft
-    | ArrowRight
-    | DoubleArrowLeft
-    | DoubleArrowRight
-    | ArrowUp
-    | ArrowDown
     | Dialog
     | DatePickerDialog
     | TimePickerDialog
