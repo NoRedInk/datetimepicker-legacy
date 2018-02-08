@@ -4,7 +4,6 @@ import Css
 import Date exposing (Date)
 import DateTimePicker
 import DateTimePicker.Config exposing (defaultDatePickerConfig, defaultDateTimePickerConfig)
-import DateTimePicker.Css
 import DemoCss exposing (CssClasses(..))
 import Html.Styled exposing (Html, button, div, form, label, li, p, text, ul)
 import Html.Styled.Attributes exposing (type_)

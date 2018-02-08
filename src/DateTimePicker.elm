@@ -31,6 +31,8 @@ module DateTimePicker
 
 -}
 
+import Css exposing (..)
+import Css.Foreign exposing (Snippet, children, descendants, withClass)
 import Date exposing (Date)
 import Date.Extra.Core
 import Date.Extra.Duration
@@ -43,6 +45,7 @@ import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, Time, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.SharedStyles exposing (CssClasses(..))
+import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (attribute, css, value)
@@ -403,7 +406,12 @@ datePickerDialog pickerType state currentDate =
             getStateValue state
 
         html config =
-            div [ class [ DatePickerDialog ] ]
+            div
+                [ css
+                    [ float left
+                    , children datePickerDialogCss
+                    ]
+                ]
                 [ div [ class [ Header ] ]
                     (navigation config state currentDate)
                 , calendar pickerType state currentDate
@@ -623,7 +631,14 @@ digitalTimePickerDialog pickerType state currentDate =
                 [ text ampm ]
 
         upArrows config =
-            [ tr [ class [ ArrowUp ] ]
+            [ tr
+                [ css
+                    [ backgroundColor lightGray
+                    , children
+                        [ td [ borderBottom3 (px 1) solid darkGray ]
+                        ]
+                    ]
+                ]
                 [ td
                     [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
@@ -659,7 +674,7 @@ digitalTimePickerDialog pickerType state currentDate =
                 [ div [ class [ Header ] ]
                     [ Maybe.map config.i18n.timeTitleFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
                 , div [ class [ Body ] ]
-                    [ table []
+                    [ Html.table []
                         [ tbody []
                             (upArrows config
                                 ++ timeSelector
@@ -867,8 +882,8 @@ calendar pickerType state currentDate =
                             td
                                 (List.concat
                                     [ [ class classes
-                                      , Html.Attributes.attribute "role" "button"
-                                      , Html.Attributes.attribute "aria-label" (accessibilityDateFormatter selectedDate)
+                                      , attribute "role" "button"
+                                      , attribute "aria-label" (accessibilityDateFormatter selectedDate)
                                       ]
                                     , handlers
                                     ]
@@ -881,7 +896,7 @@ calendar pickerType state currentDate =
                         body =
                             tbody [] (List.map toWeekRow days)
                     in
-                    table [ class [ Calendar ] ]
+                    Html.table [ class [ Calendar ] ]
                         [ header
                         , body
                         ]
@@ -1363,3 +1378,92 @@ amPmPickerHandler pickerType config stateValue currentDate amPm =
     config.onChange
         (InternalState updatedState)
         (updateCurrentDate pickerType updatedState)
+
+
+datePickerDialogCss : List Snippet
+datePickerDialogCss =
+    [ class Header
+        [ Styles.borderBoxStyle
+        , Styles.headerStyle
+        , position relative
+        , children
+            [ class ArrowLeft
+                [ Styles.arrowStyle
+                , left (px 22)
+                , withClass NoYearNavigation [ left (px 0) ]
+                ]
+            , class DoubleArrowLeft
+                [ Styles.arrowStyle
+                , left (px 0)
+                ]
+            , class ArrowRight
+                [ Styles.arrowStyle
+                , right (px 22)
+                , withClass NoYearNavigation [ right (px 0) ]
+                ]
+            , class DoubleArrowRight
+                [ Styles.arrowStyle
+                , right (px 0)
+                ]
+            , class Title
+                [ Styles.borderBoxStyle
+                , display inlineBlock
+                , width (pct 100)
+                , textAlign center
+                ]
+            ]
+        ]
+    , class Calendar
+        [ backgroundColor (hex "#ffffff")
+        , Styles.tableStyle
+        , width auto
+        , margin (px 0)
+        , descendants
+            [ thead
+                []
+            , td
+                [ Styles.dayStyle
+                , hover
+                    [ backgroundColor Styles.highlightedDay
+                    , Styles.highlightBorderStyle
+                    ]
+                ]
+            , th
+                [ Styles.dayStyle
+                , backgroundColor Styles.lightGray
+                , fontWeight normal
+                , borderBottom3 (px 1) solid Styles.darkGray
+                ]
+            , class PreviousMonth
+                [ color Styles.fadeText ]
+            , class NextMonth
+                [ color Styles.fadeText
+                ]
+            , class SelectedDate
+                [ Styles.highlightStyle
+                , hover [ Styles.highlightStyle ]
+                ]
+            , class DisabledDate
+                [ backgroundColor inherit
+                , cursor default
+                , color Styles.darkGray
+                , hover
+                    [ backgroundColor inherit
+                    ]
+                ]
+            , class Today
+                [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
+                , Styles.highlightBorderStyle
+                , hover
+                    [ backgroundColor Styles.highlightSelectedDay ]
+                ]
+            ]
+        ]
+    , class Footer
+        [ textAlign center
+        , backgroundColor Styles.lightGray
+        , padding2 (px 7) (px 7)
+        , borderTop3 (px 1) solid Styles.darkGray
+        , height (px 16)
+        ]
+    ]

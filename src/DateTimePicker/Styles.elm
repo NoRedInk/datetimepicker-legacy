@@ -1,4 +1,4 @@
-module DateTimePicker.Css exposing (css)
+module DateTimePicker.Styles exposing (..)
 
 {-| DateTimePicker.Css
 
@@ -19,34 +19,26 @@ import DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 {-| DatePicker's Css Stylesheet
 -}
-css : Css.Stylesheet
 css =
-    Css.stylesheet
-        [ class DatePicker
-            [ position relative ]
-        , class Dialog
-            [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
-            , fontSize (px 14)
-            , borderBoxStyle
-            , position absolute
-            , border3 (px 1) solid darkGray
-            , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
-            , children dialogCss
-            , property "z-index" "1"
-            , displayFlex
-            ]
+    [ class DatePicker
+        [ position relative ]
+    , class Dialog
+        [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
+        , fontSize (px 14)
+        , borderBoxStyle
+        , position absolute
+        , border3 (px 1) solid darkGray
+        , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
+        , children dialogCss
+        , property "z-index" "1"
+        , displayFlex
         ]
+    ]
 
 
-dialogCss : List Css.Snippet
+dialogCss : List Snippet
 dialogCss =
-    [ class DatePickerDialog
-        [ float left
-
-        -- , height calendarHeight
-        , children datePickerDialogCss
-        ]
-    , class TimePickerDialog
+    [ class TimePickerDialog
         [ float left
 
         -- , height calendarHeight
@@ -116,7 +108,7 @@ digitalTimePickerDialogStyle =
         , class Body
             [ backgroundColor (hex "#fff")
             , descendants
-                [ Css.Elements.table
+                [ Css.Foreign.table
                     [ tableStyle
                     , width (px 120)
                     , descendants
@@ -149,95 +141,6 @@ digitalTimePickerDialogStyle =
                     ]
                 ]
             ]
-        ]
-    ]
-
-
-datePickerDialogCss : List Css.Snippet
-datePickerDialogCss =
-    [ class Header
-        [ borderBoxStyle
-        , headerStyle
-        , position relative
-        , children
-            [ class ArrowLeft
-                [ arrowStyle
-                , left (px 22)
-                , withClass NoYearNavigation [ left (px 0) ]
-                ]
-            , class DoubleArrowLeft
-                [ arrowStyle
-                , left (px 0)
-                ]
-            , class ArrowRight
-                [ arrowStyle
-                , right (px 22)
-                , withClass NoYearNavigation [ right (px 0) ]
-                ]
-            , class DoubleArrowRight
-                [ arrowStyle
-                , right (px 0)
-                ]
-            , class Title
-                [ borderBoxStyle
-                , display inlineBlock
-                , width (pct 100)
-                , textAlign center
-                ]
-            ]
-        ]
-    , class Calendar
-        [ backgroundColor (hex "#ffffff")
-        , tableStyle
-        , width auto
-        , margin (px 0)
-        , descendants
-            [ thead
-                []
-            , td
-                [ dayStyle
-                , hover
-                    [ backgroundColor highlightedDay
-                    , highlightBorderStyle
-                    ]
-                ]
-            , th
-                [ dayStyle
-                , backgroundColor lightGray
-                , fontWeight normal
-                , borderBottom3 (px 1) solid darkGray
-                ]
-            , class PreviousMonth
-                [ color fadeText ]
-            , class NextMonth
-                [ color fadeText
-                ]
-            , class SelectedDate
-                [ highlightStyle
-                , hover [ highlightStyle ]
-                ]
-            , class DisabledDate
-                [ backgroundColor inherit
-                , cursor default
-                , color darkGray
-                , hover
-                    [ backgroundColor inherit
-                    ]
-                ]
-            , class Today
-                [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
-                , highlightBorderStyle
-                , hover
-                    [ backgroundColor highlightSelectedDay ]
-                ]
-            ]
-        ]
-    , class Footer
-        [ textAlign center
-        , backgroundColor lightGray
-        , padding2 (px 7) (px 7)
-        , borderTop3 (px 1) solid darkGray
-        , height (px 16)
         ]
     ]
 
