@@ -13,8 +13,6 @@ Include this in your elm-css port module to be included in your project's css fi
 -}
 
 import Css exposing (..)
-import Css.Foreign exposing (Snippet, children, class, descendants, td, tr, withClass)
-import DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 
 timePickerDialog : Style
@@ -49,49 +47,6 @@ amPmStyle =
         , width (px 85)
         , hover [ backgroundColor highlightedDay ]
         ]
-
-
-analogTimePickerDialogStyle : List Css.Style
-analogTimePickerDialogStyle =
-    [ width (px 230)
-    , descendants
-        [ class Header
-            [ headerStyle
-            , fontSize (Css.em 1.2)
-            ]
-        , class Body [ backgroundColor (hex "#fff"), padding2 (px 12) (px 15), height (px 202) ]
-        ]
-    ]
-
-
-digitalTimePickerDialogStyle : List Css.Style
-digitalTimePickerDialogStyle =
-    [ children
-        [ class Header
-            [ headerStyle
-            ]
-        , class Body
-            [ backgroundColor (hex "#fff")
-            , descendants
-                [ Css.Foreign.table
-                    [ tableStyle
-                    , width (px 120)
-                    , descendants
-                        [ tr [ verticalAlign top ]
-                        , td
-                            [ width (pct 33)
-                            , cellStyle
-                            , hover
-                                [ backgroundColor highlightedDay
-                                , highlightBorderStyle
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ]
 
 
 highlightStyle : Css.Style

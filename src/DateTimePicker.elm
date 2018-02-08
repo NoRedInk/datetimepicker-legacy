@@ -422,7 +422,7 @@ datePickerDialog pickerType state currentDate =
                     , children datePickerDialogCss
                     ]
                 ]
-                [ div [ class [ Header ] ]
+                [ div [ css [ Styles.headerStyle ] ]
                     (navigation config state currentDate)
                 , calendar pickerType state currentDate
                 , -- Footer
@@ -709,9 +709,31 @@ digitalTimePickerDialog pickerType state currentDate =
 
         html config =
             div [ css [ Styles.timePickerDialog ] ]
-                [ div [ class [ Header ] ]
+                [ div [ css [ Styles.headerStyle ] ]
                     [ Maybe.map config.i18n.timeTitleFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
-                , div [ class [ Body ] ]
+                , div
+                    [ css
+                        [ [ backgroundColor (hex "#fff")
+                          , descendants
+                                [ Css.Foreign.table
+                                    [ tableStyle
+                                    , width (px 120)
+                                    , descendants
+                                        [ tr [ verticalAlign top ]
+                                        , td
+                                            [ width (pct 33)
+                                            , cellStyle
+                                            , hover
+                                                [ backgroundColor highlightedDay
+                                                , highlightBorderStyle
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                          ]
+                        ]
+                    ]
                     [ Html.table []
                         [ tbody []
                             (upArrows config
@@ -746,8 +768,8 @@ analogTimePickerDialog pickerType state currentDate =
                 []
 
         html config =
-            div [ css [ Styles.timePickerDialog, Styles.analogTimePickerDialogStyle ] ]
-                [ div [ class [ Header ] ]
+            div [ css [ Styles.timePickerDialog, width (px 230) ] ]
+                [ div [ css [ headerStyle, fontSize (Css.em 1.2) ] ]
                     [ span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
@@ -771,7 +793,13 @@ analogTimePickerDialog pickerType state currentDate =
                         ]
                         [ text (stateValue.time.amPm |> Maybe.withDefault "--") ]
                     ]
-                , div [ class [ Body ] ]
+                , div
+                    [ css
+                        [ backgroundColor (hex "#fff")
+                        , padding2 (px 12) (px 15)
+                        , height (px 202)
+                        ]
+                    ]
                     [ case stateValue.activeTimeIndicator of
                         Just DateTimePicker.Internal.AMPMIndicator ->
                             amPmPicker config
@@ -1464,7 +1492,7 @@ amPmPickerHandler pickerType config stateValue currentDate amPm =
 
 datePickerDialogCss : List Snippet
 datePickerDialogCss =
-    [ class Header
+    [ css
         [ Styles.borderBoxStyle
         , Styles.headerStyle
         , position relative
