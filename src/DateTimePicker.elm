@@ -773,7 +773,7 @@ analogTimePickerDialog pickerType state currentDate =
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
                         , css [ Styles.timeHeaderStyle ]
-                        , class (isActive DateTimePicker.Internal.HourIndicator)
+                        , css (isActive DateTimePicker.Internal.HourIndicator)
                         ]
                         [ text (stateValue.time.hour |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
                     , span [] [ text " : " ]
@@ -781,14 +781,14 @@ analogTimePickerDialog pickerType state currentDate =
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
                         , css [ Styles.timeHeaderStyle ]
-                        , class (isActive DateTimePicker.Internal.MinuteIndicator)
+                        , css (isActive DateTimePicker.Internal.MinuteIndicator)
                         ]
                         [ text (stateValue.time.minute |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
                     , span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
                         , css [ Styles.timeHeaderStyle ]
-                        , class (isActive DateTimePicker.Internal.AMPMIndicator)
+                        , css (isActive DateTimePicker.Internal.AMPMIndicator)
                         ]
                         [ text (stateValue.time.amPm |> Maybe.withDefault "--") ]
                     ]
