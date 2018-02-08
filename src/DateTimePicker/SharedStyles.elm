@@ -6,7 +6,6 @@ type CssClasses
     | Header
     | Body
     | Title
-    | NoYearNavigation
     | Dialog
     | DatePickerDialog
     | TimePickerDialog

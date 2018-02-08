@@ -477,12 +477,12 @@ previousYearButton config state currentDate =
         Html.text ""
 
 
-noYearNavigationClass : DatePickerConfig (Config config msg) -> List CssClasses
-noYearNavigationClass config =
+noYearNavigationStyle : DatePickerConfig (Config config msg) -> Css.Style
+noYearNavigationStyle config =
     if config.allowYearNavigation then
-        []
+        Css.batch []
     else
-        [ NoYearNavigation ]
+        left (px 0)
 
 
 previousButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> Html msg
@@ -491,9 +491,8 @@ previousButton config state currentDate =
         [ css
             [ Styles.arrowStyle
             , left (px 22)
-            , withClass NoYearNavigation [ left (px 0) ]
+            , noYearNavigationStyle config
             ]
-        , class (noYearNavigationClass config)
         , onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
         , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
         ]
