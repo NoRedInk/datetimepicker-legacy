@@ -728,14 +728,16 @@ analogTimePickerDialog pickerType state currentDate =
                     [ span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
-                        , class (Hour :: isActive DateTimePicker.Internal.HourIndicator)
+                        , css [ Styles.timeHeaderStyle ]
+                        , class (isActive DateTimePicker.Internal.HourIndicator)
                         ]
                         [ text (stateValue.time.hour |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
                     , span [] [ text " : " ]
                     , span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
-                        , class (Minute :: isActive DateTimePicker.Internal.MinuteIndicator)
+                        , css [ Styles.timeHeaderStyle ]
+                        , class (isActive DateTimePicker.Internal.MinuteIndicator)
                         ]
                         [ text (stateValue.time.minute |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
                     , span

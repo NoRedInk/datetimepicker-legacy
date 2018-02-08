@@ -82,9 +82,7 @@ analogTimePickerDialogStyle =
             [ headerStyle
             , fontSize (Css.em 1.2)
             , descendants
-                [ class Hour [ timeHeaderStyle ]
-                , class Minute [ timeHeaderStyle ]
-                , class Active
+                [ class Active
                     [ activeStyle ]
                 ]
             ]

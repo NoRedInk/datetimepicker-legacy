@@ -15,6 +15,4 @@ type CssClasses
     | DigitalTime
     | AnalogTime
     | Active
-    | Hour
-    | Minute
     | EmptyCell
