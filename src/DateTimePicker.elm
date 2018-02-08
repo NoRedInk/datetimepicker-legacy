@@ -469,7 +469,12 @@ title config state currentDate =
             stateValue.titleDate
     in
     span
-        [ class [ Title ]
+        [ css
+            [ Styles.borderBoxStyle
+            , display inlineBlock
+            , width (pct 100)
+            , textAlign center
+            ]
         , onMouseDownPreventDefault <| switchMode config state currentDate
         ]
         [ date
@@ -1463,13 +1468,5 @@ datePickerDialogCss =
         [ Styles.borderBoxStyle
         , Styles.headerStyle
         , position relative
-        , children
-            [ class Title
-                [ Styles.borderBoxStyle
-                , display inlineBlock
-                , width (pct 100)
-                , textAlign center
-                ]
-            ]
         ]
     ]
