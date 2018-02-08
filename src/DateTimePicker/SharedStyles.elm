@@ -2,8 +2,7 @@ module DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 
 type CssClasses
-    = Calendar
-    | Header
+    = Header
     | Body
     | Title
     | Footer

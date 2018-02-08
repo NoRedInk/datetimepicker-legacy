@@ -941,7 +941,31 @@ calendar pickerType state currentDate =
                         body =
                             tbody [] (List.map toWeekRow days)
                     in
-                    Html.table [ class [ Calendar ] ]
+                    Html.table
+                        [ css
+                            [ backgroundColor (hex "#ffffff")
+                            , Styles.tableStyle
+                            , width auto
+                            , margin (px 0)
+                            , descendants
+                                [ thead
+                                    []
+                                , td
+                                    [ Styles.dayStyle
+                                    , hover
+                                        [ backgroundColor Styles.highlightedDay
+                                        , Styles.highlightBorderStyle
+                                        ]
+                                    ]
+                                , th
+                                    [ Styles.dayStyle
+                                    , backgroundColor Styles.lightGray
+                                    , fontWeight normal
+                                    , borderBottom3 (px 1) solid Styles.darkGray
+                                    ]
+                                ]
+                            ]
+                        ]
                         [ header
                         , body
                         ]
@@ -1437,29 +1461,6 @@ datePickerDialogCss =
                 , display inlineBlock
                 , width (pct 100)
                 , textAlign center
-                ]
-            ]
-        ]
-    , class Calendar
-        [ backgroundColor (hex "#ffffff")
-        , Styles.tableStyle
-        , width auto
-        , margin (px 0)
-        , descendants
-            [ thead
-                []
-            , td
-                [ Styles.dayStyle
-                , hover
-                    [ backgroundColor Styles.highlightedDay
-                    , Styles.highlightBorderStyle
-                    ]
-                ]
-            , th
-                [ Styles.dayStyle
-                , backgroundColor Styles.lightGray
-                , fontWeight normal
-                , borderBottom3 (px 1) solid Styles.darkGray
                 ]
             ]
         ]
