@@ -85,7 +85,6 @@ digitalTimePickerDialogStyle =
                                 [ backgroundColor highlightedDay
                                 , highlightBorderStyle
                                 ]
-                            , withClass EmptyCell [ emptyCellStyle ]
                             ]
                         ]
                     ]

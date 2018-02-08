@@ -638,7 +638,7 @@ digitalTimePickerDialog pickerType state currentDate =
             let
                 defaultStyles =
                     if String.isEmpty ampm then
-                        css [ EmptyCell ]
+                        css [ Styles.emptyCellStyle ]
                     else
                         css []
             in
