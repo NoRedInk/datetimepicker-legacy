@@ -5,7 +5,7 @@ import Date.Extra.Core
 import Date.Extra.Create
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
-import Html.Attributes
+import Html.Styled.Attributes
 import Test exposing (..)
 import Test.Html.Event as Event
 import Test.Html.Selector exposing (..)

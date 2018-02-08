@@ -44,9 +44,9 @@ import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, Time, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
 import DateTimePicker.Svg
-import Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
-import Html.Attributes exposing (value)
-import Html.Events exposing (onBlur, onClick, onFocus)
+import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
+import Html.Styled.Attributes exposing (attribute, css, value)
+import Html.Styled.Events exposing (onBlur, onClick, onFocus)
 import String
 import Task
 import Time

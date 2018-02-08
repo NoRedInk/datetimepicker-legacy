@@ -6,7 +6,7 @@ module TestHelper exposing (TestResult, init, open, render, selection, simulate,
 import Date exposing (Date)
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig)
-import Html.Attributes
+import Html.Styled.Attributes
 import Json.Encode as Json
 import Test.Html.Event as Event
 import Test.Html.Query as Query

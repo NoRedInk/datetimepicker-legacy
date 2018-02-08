@@ -10,7 +10,7 @@ import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfi
 import DateTimePicker.Css
 import DemoCss exposing (CssClasses(..))
 import Dict exposing (Dict)
-import Html exposing (Html, div, form, h3, label, li, p, text, ul)
+import Html.Styled as Html exposing (Html, div, form, h3, label, li, p, text, ul)
 import Html.CssHelpers
 import Task
 

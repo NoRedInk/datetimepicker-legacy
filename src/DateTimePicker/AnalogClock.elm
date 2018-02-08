@@ -9,11 +9,11 @@ import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue)
 import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
 import Dict
-import Html exposing (Html, div)
+import Html.Styled as Html exposing (Html, div)
 import Json.Decode
 import String
-import Svg exposing (Svg, circle, g, line, svg, text, text_)
-import Svg.Attributes exposing (cx, cy, fill, height, r, stroke, strokeWidth, textAnchor, viewBox, width, x, x1, x2, y, y1, y2)
+import Svg.Styled as Svg exposing (Svg, circle, g, line, svg, text, text_)
+import Svg.Styled.Attributes exposing (cx, cy, dominantBaseline, fill, height, r, stroke, strokeWidth, textAnchor, viewBox, width, x, x1, x2, y, y1, y2)
 
 
 { id, class, classList } =
@@ -109,7 +109,7 @@ clockFace pickerType onChange state date ( number, radians ) =
         [ x <| toString point.x
         , y <| toString point.y
         , textAnchor "middle"
-        , Svg.Attributes.dominantBaseline "central"
+        , dominantBaseline "central"
         , onMouseDownPreventDefault (mouseDownHandler pickerType state date onChange)
         , onPointerUp (mouseDownHandler pickerType state date onChange)
         ]

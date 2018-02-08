@@ -1,7 +1,7 @@
 module AccessibilityTests exposing (..)
 
 import Date exposing (Date)
-import Html.Attributes
+import Html.Styled.Attributes
 import Test exposing (..)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (..)

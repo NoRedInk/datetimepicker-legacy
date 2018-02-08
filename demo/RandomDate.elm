@@ -6,10 +6,10 @@ import DateTimePicker
 import DateTimePicker.Config exposing (defaultDatePickerConfig, defaultDateTimePickerConfig)
 import DateTimePicker.Css
 import DemoCss exposing (CssClasses(..))
-import Html exposing (Html, button, div, form, label, li, p, text, ul)
-import Html.Attributes exposing (type_)
 import Html.CssHelpers
-import Html.Events exposing (onClick)
+import Html.Styled exposing (Html, button, div, form, label, li, p, text, ul)
+import Html.Styled.Attributes exposing (type_)
+import Html.Styled.Events exposing (onClick)
 import Json.Decode
 import Random
 

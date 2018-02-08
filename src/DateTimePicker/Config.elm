@@ -37,7 +37,7 @@ import Date.Extra.Config.Config_en_us exposing (config)
 import DateParser
 import DateTimePicker.Formatter
 import DateTimePicker.Internal exposing (InternalState)
-import Html
+import Html.Styled as Html
 
 
 type alias State =
