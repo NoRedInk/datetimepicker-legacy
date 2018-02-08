@@ -425,8 +425,16 @@ datePickerDialog pickerType state currentDate =
                 [ div [ class [ Header ] ]
                     (navigation config state currentDate)
                 , calendar pickerType state currentDate
-                , div
-                    [ class [ Footer ] ]
+                , -- Footer
+                  div
+                    [ css
+                        [ textAlign center
+                        , backgroundColor Styles.lightGray
+                        , padding2 (px 7) (px 7)
+                        , borderTop3 (px 1) solid Styles.darkGray
+                        , height (px 16)
+                        ]
+                    ]
                     [ stateValue.date |> Maybe.map config.i18n.footerFormatter |> Maybe.withDefault "--" |> text ]
                 ]
     in
@@ -1463,12 +1471,5 @@ datePickerDialogCss =
                 , textAlign center
                 ]
             ]
-        ]
-    , class Footer
-        [ textAlign center
-        , backgroundColor Styles.lightGray
-        , padding2 (px 7) (px 7)
-        , borderTop3 (px 1) solid Styles.darkGray
-        , height (px 16)
         ]
     ]

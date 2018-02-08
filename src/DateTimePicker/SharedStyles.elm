@@ -5,6 +5,5 @@ type CssClasses
     = Header
     | Body
     | Title
-    | Footer
     | Active
     | EmptyCell
