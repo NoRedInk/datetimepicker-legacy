@@ -23,32 +23,18 @@ css : List Snippet
 css =
     [ class DatePicker
         [ position relative ]
-    , class Dialog
-        [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
-        , fontSize (px 14)
-        , borderBoxStyle
-        , position absolute
-        , border3 (px 1) solid darkGray
-        , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
-        , children dialogCss
-        , property "z-index" "1"
-        , displayFlex
-        ]
     ]
 
 
-dialogCss : List Snippet
-dialogCss =
-    [ class TimePickerDialog
+timePickerDialog : Style
+timePickerDialog =
+    Css.batch
         [ float left
 
         -- , height calendarHeight
         , textAlign center
         , borderLeft3 (px 1) solid darkGray
-        , withClass DigitalTime digitalTimePickerDialogStyle
-        , withClass AnalogTime analogTimePickerDialogStyle
         ]
-    ]
 
 
 timeHeaderStyle : Style

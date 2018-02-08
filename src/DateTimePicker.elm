@@ -374,7 +374,17 @@ dialog pickerType state currentDate =
 
         attributes config =
             [ onMouseDownPreventDefault <| config.onChange (InternalState { stateValue | event = "dialog.onMouseDownPreventDefault" }) currentDate
-            , class [ Dialog ]
+            , css
+                [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
+                , fontSize (px 14)
+                , borderBoxStyle
+                , position absolute
+                , border3 (px 1) solid darkGray
+                , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
+                , children timePickerDialog
+                , property "z-index" "1"
+                , displayFlex
+                ]
             ]
 
         withTimeAttributes config timePickerType =
@@ -685,7 +695,7 @@ digitalTimePickerDialog pickerType state currentDate =
             ]
 
         html config =
-            div [ class [ TimePickerDialog, DigitalTime ] ]
+            div [ css [ Styles.timePickerDialog ] ]
                 [ div [ class [ Header ] ]
                     [ Maybe.map config.i18n.timeTitleFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
                 , div [ class [ Body ] ]
@@ -723,7 +733,7 @@ analogTimePickerDialog pickerType state currentDate =
                 []
 
         html config =
-            div [ class [ TimePickerDialog, AnalogTime ] ]
+            div [ css [ Styles.timePickerDialog, Styles.analogTimePickerDialogStyle ] ]
                 [ div [ class [ Header ] ]
                     [ span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)

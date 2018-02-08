@@ -6,13 +6,8 @@ type CssClasses
     | Header
     | Body
     | Title
-    | Dialog
-    | DatePickerDialog
-    | TimePickerDialog
     | DatePicker
     | TimePicker
     | Footer
-    | DigitalTime
-    | AnalogTime
     | Active
     | EmptyCell
