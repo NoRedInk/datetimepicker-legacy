@@ -12,8 +12,6 @@ type CssClasses
     | DatePicker
     | TimePicker
     | Footer
-    | SelectedHour
-    | SelectedMinute
     | DigitalTime
     | AnalogTime
     | Active

@@ -583,35 +583,33 @@ digitalTimePickerDialog pickerType state currentDate =
             td
                 [ onMouseDownPreventDefault <| hourClickHandler pickerType stateValue hour
                 , onTouchStartPreventDefault <| hourClickHandler pickerType stateValue hour
-                , stateValue.time.hour
-                    |> Maybe.map ((==) hour)
-                    |> Maybe.map
-                        (\selected ->
-                            if selected then
-                                class [ SelectedHour ]
-                            else
-                                class []
-                        )
-                    |> Maybe.withDefault (class [])
+                , case stateValue.time.hour of
+                    Just stateHour ->
+                        if stateHour == hour then
+                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                        else
+                            css []
+
+                    Nothing ->
+                        css []
                 ]
                 [ text <| (toString >> DateTimePicker.DateUtils.padding) hour ]
 
-        minuteCell min =
+        minuteCell minute =
             td
-                [ onMouseDownPreventDefault <| minuteClickHandler pickerType stateValue min
-                , onTouchStartPreventDefault <| minuteClickHandler pickerType stateValue min
-                , stateValue.time.minute
-                    |> Maybe.map ((==) min)
-                    |> Maybe.map
-                        (\selected ->
-                            if selected then
-                                class [ SelectedMinute ]
-                            else
-                                class []
-                        )
-                    |> Maybe.withDefault (class [])
+                [ onMouseDownPreventDefault <| minuteClickHandler pickerType stateValue minute
+                , onTouchStartPreventDefault <| minuteClickHandler pickerType stateValue minute
+                , case stateValue.time.minute of
+                    Just stateMinute ->
+                        if stateMinute == minute then
+                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                        else
+                            css []
+
+                    Nothing ->
+                        css []
                 ]
-                [ text <| (toString >> DateTimePicker.DateUtils.padding) min ]
+                [ text <| (toString >> DateTimePicker.DateUtils.padding) minute ]
 
         amPmCell ampm =
             let

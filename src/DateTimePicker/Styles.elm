@@ -112,8 +112,6 @@ digitalTimePickerDialogStyle =
                                 ]
                             , withClass EmptyCell [ emptyCellStyle ]
                             ]
-                        , class SelectedHour [ highlightStyle, hover [ highlightStyle ] ]
-                        , class SelectedMinute [ highlightStyle, hover [ highlightStyle ] ]
                         ]
                     ]
                 ]
