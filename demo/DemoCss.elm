@@ -1,7 +1,6 @@
 module DemoCss exposing (CssClasses(..), css)
 
 import Css exposing (..)
-import Css.Elements exposing (..)
 
 
 css : Css.Stylesheet
