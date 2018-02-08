@@ -701,7 +701,7 @@ analogTimePickerDialog pickerType state currentDate =
                         , class (Hour :: isActive DateTimePicker.Internal.HourIndicator)
                         ]
                         [ text (stateValue.time.hour |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
-                    , span [ class [ Separator ] ] [ text " : " ]
+                    , span [] [ text " : " ]
                     , span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
@@ -791,7 +791,7 @@ calendar pickerType state currentDate =
                             DateTimePicker.DateUtils.generateCalendar config.firstDayOfWeek month year
 
                         header =
-                            thead [ class [ DaysOfWeek ] ]
+                            thead []
                                 [ tr
                                     []
                                     (dayNames config)
@@ -879,8 +879,7 @@ calendar pickerType state currentDate =
                             tr [] (List.map toCell week)
 
                         body =
-                            tbody [ class [ Days ] ]
-                                (List.map toWeekRow days)
+                            tbody [] (List.map toWeekRow days)
                     in
                     table [ class [ Calendar ] ]
                         [ header

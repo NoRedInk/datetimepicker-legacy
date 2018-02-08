@@ -3,13 +3,10 @@ module DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 type CssClasses
     = Calendar
-    | DaysOfWeek
     | PreviousMonth
-    | CurrentMonth
     | Header
     | Body
     | NextMonth
-    | Days
     | Title
     | NoYearNavigation
     | ArrowLeft
@@ -32,12 +29,10 @@ type CssClasses
     | Today
     | DigitalTime
     | AnalogTime
-    | AnalogClock
     | Active
     | Hour
     | Minute
     | AMPM
-    | Separator
     | AMPMPicker
     | AM
     | PM

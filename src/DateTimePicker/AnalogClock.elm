@@ -7,7 +7,6 @@ import DateTimePicker.Events exposing (MoveData, onMouseDownPreventDefault, onMo
 import DateTimePicker.Geometry exposing (Point)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue)
-import DateTimePicker.SharedStyles exposing (CssClasses(..))
 import Dict
 import Html.Styled as Html exposing (Html, div)
 import Json.Decode
@@ -33,8 +32,7 @@ clock pickerType onChange state date =
             getStateValue state
     in
     div
-        [ class [ AnalogClock ]
-        ]
+        []
         [ svg
             [ width "200"
             , height "200"
