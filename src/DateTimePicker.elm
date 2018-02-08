@@ -353,13 +353,13 @@ view pickerType attributes state currentDate =
     in
     case pickerType of
         DateType config ->
-            html config (class [ DatePicker ])
+            html config (css [ position relative ])
 
         DateTimeType config ->
-            html config (class [ DatePicker, TimePicker ])
+            html config (css [ position relative ])
 
         TimeType config ->
-            html config (class [ TimePicker ])
+            html config (css [])
 
 
 

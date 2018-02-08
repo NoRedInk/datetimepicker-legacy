@@ -6,8 +6,6 @@ type CssClasses
     | Header
     | Body
     | Title
-    | DatePicker
-    | TimePicker
     | Footer
     | Active
     | EmptyCell

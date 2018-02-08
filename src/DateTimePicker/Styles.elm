@@ -17,15 +17,6 @@ import Css.Foreign exposing (Snippet, children, class, descendants, td, tr, with
 import DateTimePicker.SharedStyles exposing (CssClasses(..))
 
 
-{-| DatePicker's Css Stylesheet
--}
-css : List Snippet
-css =
-    [ class DatePicker
-        [ position relative ]
-    ]
-
-
 timePickerDialog : Style
 timePickerDialog =
     Css.batch
