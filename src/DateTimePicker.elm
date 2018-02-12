@@ -362,7 +362,7 @@ view pickerType attributes state currentDate =
 
 
 
--- VIEW HELPERSs
+-- VIEW HELPERS
 
 
 dialog : Type msg -> State -> Maybe Date -> Html msg
