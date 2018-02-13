@@ -8,8 +8,7 @@
     ],
     "exposed-modules": [
         "DateTimePicker",
-        "DateTimePicker.Config",
-        "DateTimePicker.Css"
+        "DateTimePicker.Config"
     ],
     "dependencies": {
         "abadi199/dateparser": "1.0.0 <= v < 2.0.0",
