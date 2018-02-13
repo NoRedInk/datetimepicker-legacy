@@ -64,4 +64,5 @@ all =
 
 attribute : String -> String -> Selector
 attribute attr value =
-    Test.Html.Selector.attribute <| Html.Attributes.attribute attr value
+    Html.Attributes.attribute attr value
+        |> Test.Html.Selector.attribute

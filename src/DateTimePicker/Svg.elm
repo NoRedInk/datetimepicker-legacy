@@ -8,8 +8,8 @@ module DateTimePicker.Svg
         , upArrow
         )
 
-import Svg exposing (Svg, polygon, svg)
-import Svg.Attributes exposing (height, points, style, viewBox, width)
+import Svg.Styled exposing (Svg, polygon, svg)
+import Svg.Styled.Attributes exposing (height, points, style, viewBox, width)
 
 
 type Orientation

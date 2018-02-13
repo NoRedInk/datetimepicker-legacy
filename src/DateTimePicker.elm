@@ -31,6 +31,8 @@ module DateTimePicker
 
 -}
 
+import Css exposing (..)
+import Css.Foreign exposing (Snippet, children, descendants, withClass)
 import Date exposing (Date)
 import Date.Extra.Core
 import Date.Extra.Duration
@@ -42,11 +44,11 @@ import DateTimePicker.Events exposing (onBlurWithChange, onMouseDownPreventDefau
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, Time, getStateValue, initialStateValue, initialStateValueWithToday)
-import DateTimePicker.SharedStyles exposing (CssClasses(..), datepickerNamespace)
+import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
-import Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
-import Html.Attributes exposing (value)
-import Html.Events exposing (onBlur, onClick, onFocus)
+import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
+import Html.Styled.Attributes exposing (attribute, css, value)
+import Html.Styled.Events exposing (onBlur, onClick, onFocus)
 import String
 import Task
 import Time
@@ -160,10 +162,6 @@ gotoPreviousYear config state =
 
 
 -- VIEWS
-
-
-{ id, class, classList } =
-    datepickerNamespace
 
 
 {-| Date Picker view function with default configuration.
@@ -342,9 +340,9 @@ view pickerType attributes state currentDate =
         shouldForceClose config =
             config.autoClose && stateValue.forceClose
 
-        html config cssClasses =
+        html config =
             div
-                (cssClasses :: config.attributes)
+                (css [ position relative ] :: config.attributes)
                 [ input (inputAttributes config) []
                 , if config.usePicker && stateValue.inputFocused && not (shouldForceClose config) then
                     dialog pickerType state currentDate
@@ -354,17 +352,17 @@ view pickerType attributes state currentDate =
     in
     case pickerType of
         DateType config ->
-            html config (class [ DatePicker ])
+            html config
 
         DateTimeType config ->
-            html config (class [ DatePicker, TimePicker ])
+            html config
 
         TimeType config ->
-            html config (class [ TimePicker ])
+            html config
 
 
 
--- VIEW HELPERSs
+-- VIEW HELPERS
 
 
 dialog : Type msg -> State -> Maybe Date -> Html msg
@@ -375,7 +373,16 @@ dialog pickerType state currentDate =
 
         attributes config =
             [ onMouseDownPreventDefault <| config.onChange (InternalState { stateValue | event = "dialog.onMouseDownPreventDefault" }) currentDate
-            , class [ Dialog ]
+            , css
+                [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
+                , fontSize (px 14)
+                , Styles.borderBoxStyle
+                , position absolute
+                , border3 (px 1) solid Styles.darkGray
+                , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
+                , property "z-index" "1"
+                , displayFlex
+                ]
             ]
 
         withTimeAttributes config timePickerType =
@@ -407,12 +414,28 @@ datePickerDialog pickerType state currentDate =
             getStateValue state
 
         html config =
-            div [ class [ DatePickerDialog ] ]
-                [ div [ class [ Header ] ]
+            div
+                [ css [ float left ] ]
+                [ div
+                    [ css
+                        [ Styles.headerStyle
+                        , Styles.borderBoxStyle
+                        , Styles.headerStyle
+                        , position relative
+                        ]
+                    ]
                     (navigation config state currentDate)
                 , calendar pickerType state currentDate
-                , div
-                    [ class [ Footer ] ]
+                , -- Footer
+                  div
+                    [ css
+                        [ textAlign center
+                        , backgroundColor Styles.lightGray
+                        , padding2 (px 7) (px 7)
+                        , borderTop3 (px 1) solid Styles.darkGray
+                        , height (px 16)
+                        ]
+                    ]
                     [ stateValue.date |> Maybe.map config.i18n.footerFormatter |> Maybe.withDefault "--" |> text ]
                 ]
     in
@@ -447,7 +470,12 @@ title config state currentDate =
             stateValue.titleDate
     in
     span
-        [ class [ Title ]
+        [ css
+            [ Styles.borderBoxStyle
+            , display inlineBlock
+            , width (pct 100)
+            , textAlign center
+            ]
         , onMouseDownPreventDefault <| switchMode config state currentDate
         ]
         [ date
@@ -461,7 +489,10 @@ previousYearButton : DatePickerConfig (Config config msg) -> State -> Maybe Date
 previousYearButton config state currentDate =
     if config.allowYearNavigation then
         span
-            [ class [ DoubleArrowLeft ]
+            [ css
+                [ Styles.arrowStyle
+                , left (px 0)
+                ]
             , onMouseDownPreventDefault <| gotoPreviousYear config state currentDate
             , onTouchStartPreventDefault <| gotoPreviousYear config state currentDate
             ]
@@ -470,18 +501,22 @@ previousYearButton config state currentDate =
         Html.text ""
 
 
-noYearNavigationClass : DatePickerConfig (Config config msg) -> List CssClasses
-noYearNavigationClass config =
+noYearNavigationStyle : DatePickerConfig (Config config msg) -> Css.Style
+noYearNavigationStyle config =
     if config.allowYearNavigation then
-        []
+        Css.batch []
     else
-        [ NoYearNavigation ]
+        left (px 0)
 
 
 previousButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> Html msg
 previousButton config state currentDate =
     span
-        [ class <| ArrowLeft :: noYearNavigationClass config
+        [ css
+            [ Styles.arrowStyle
+            , left (px 22)
+            , noYearNavigationStyle config
+            ]
         , onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
         , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
         ]
@@ -491,7 +526,11 @@ previousButton config state currentDate =
 nextButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> Html msg
 nextButton config state currentDate =
     span
-        [ class <| ArrowRight :: noYearNavigationClass config
+        [ css
+            [ Styles.arrowStyle
+            , right (px 22)
+            , noYearNavigationStyle config
+            ]
         , onMouseDownPreventDefault <| gotoNextMonth config state currentDate
         , onTouchStartPreventDefault <| gotoNextMonth config state currentDate
         ]
@@ -502,7 +541,10 @@ nextYearButton : DatePickerConfig (Config config msg) -> State -> Maybe Date -> 
 nextYearButton config state currentDate =
     if config.allowYearNavigation then
         span
-            [ class [ DoubleArrowRight ]
+            [ css
+                [ Styles.arrowStyle
+                , right (px 0)
+                ]
             , onMouseDownPreventDefault <| gotoNextYear config state currentDate
             , onTouchStartPreventDefault <| gotoNextYear config state currentDate
             ]
@@ -565,105 +607,128 @@ digitalTimePickerDialog pickerType state currentDate =
             td
                 [ onMouseDownPreventDefault <| hourClickHandler pickerType stateValue hour
                 , onTouchStartPreventDefault <| hourClickHandler pickerType stateValue hour
-                , stateValue.time.hour
-                    |> Maybe.map ((==) hour)
-                    |> Maybe.map
-                        (\selected ->
-                            if selected then
-                                class [ SelectedHour ]
-                            else
-                                class []
-                        )
-                    |> Maybe.withDefault (class [])
+                , case stateValue.time.hour of
+                    Just stateHour ->
+                        if stateHour == hour then
+                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                        else
+                            css []
+
+                    Nothing ->
+                        css []
                 ]
                 [ text <| (toString >> DateTimePicker.DateUtils.padding) hour ]
 
-        minuteCell min =
+        minuteCell minute =
             td
-                [ onMouseDownPreventDefault <| minuteClickHandler pickerType stateValue min
-                , onTouchStartPreventDefault <| minuteClickHandler pickerType stateValue min
-                , stateValue.time.minute
-                    |> Maybe.map ((==) min)
-                    |> Maybe.map
-                        (\selected ->
-                            if selected then
-                                class [ SelectedMinute ]
-                            else
-                                class []
-                        )
-                    |> Maybe.withDefault (class [])
+                [ onMouseDownPreventDefault <| minuteClickHandler pickerType stateValue minute
+                , onTouchStartPreventDefault <| minuteClickHandler pickerType stateValue minute
+                , case stateValue.time.minute of
+                    Just stateMinute ->
+                        if stateMinute == minute then
+                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                        else
+                            css []
+
+                    Nothing ->
+                        css []
                 ]
-                [ text <| (toString >> DateTimePicker.DateUtils.padding) min ]
+                [ text <| (toString >> DateTimePicker.DateUtils.padding) minute ]
 
         amPmCell ampm =
             let
-                defaultClasses =
-                    class <|
-                        if ampm == "" then
-                            [ EmptyCell ]
-                        else
-                            []
-            in
-            td
-                ([ stateValue.time.amPm
-                    |> Maybe.map ((==) ampm)
-                    |> Maybe.map
-                        (\selected ->
-                            if selected then
-                                class [ SelectedAmPm ]
+                defaultStyles =
+                    if String.isEmpty ampm then
+                        css [ Styles.emptyCellStyle ]
+                    else
+                        css []
+
+                styles =
+                    case stateValue.time.amPm of
+                        Just stateAmPm ->
+                            if stateAmPm == ampm then
+                                css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
                             else
-                                defaultClasses
-                        )
-                    |> Maybe.withDefault defaultClasses
-                 ]
-                    ++ (if ampm == "" then
-                            []
-                        else
-                            [ onMouseDownPreventDefault <| amPmClickHandler pickerType stateValue ampm
-                            , onTouchStartPreventDefault <| amPmClickHandler pickerType stateValue ampm
-                            ]
-                       )
-                )
-                [ text ampm ]
+                                defaultStyles
+
+                        Nothing ->
+                            defaultStyles
+
+                handlers =
+                    if String.isEmpty ampm then
+                        []
+                    else
+                        [ onMouseDownPreventDefault <| amPmClickHandler pickerType stateValue ampm
+                        , onTouchStartPreventDefault <| amPmClickHandler pickerType stateValue ampm
+                        ]
+            in
+            td (styles :: handlers) [ text ampm ]
+
+        upArrowTd =
+            Html.styled td [ borderBottom3 (px 1) solid Styles.darkGray ]
 
         upArrows config =
-            [ tr [ class [ ArrowUp ] ]
-                [ td
+            [ tr [ css [ backgroundColor Styles.lightGray ] ]
+                [ upArrowTd
                     [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
                     ]
                     [ DateTimePicker.Svg.upArrow ]
-                , td
+                , upArrowTd
                     [ onMouseDownPreventDefault <| minuteUpHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| minuteUpHandler config stateValue currentDate
                     ]
                     [ DateTimePicker.Svg.upArrow ]
-                , td [] []
+                , upArrowTd [] []
                 ]
             ]
 
+        downArrowTd =
+            Html.styled td [ borderTop3 (px 1) solid Styles.darkGray ]
+
         downArrows config =
-            [ tr [ class [ ArrowDown ] ]
-                [ td
+            [ tr [ css [ backgroundColor Styles.lightGray ] ]
+                [ downArrowTd
                     [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
                     ]
                     [ DateTimePicker.Svg.downArrow ]
-                , td
+                , downArrowTd
                     [ onMouseDownPreventDefault <| minuteDownHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| minuteDownHandler config stateValue currentDate
                     ]
                     [ DateTimePicker.Svg.downArrow ]
-                , td [] []
+                , downArrowTd [] []
                 ]
             ]
 
         html config =
-            div [ class [ TimePickerDialog, DigitalTime ] ]
-                [ div [ class [ Header ] ]
+            div [ css [ Styles.timePickerDialog ] ]
+                [ div [ css [ Styles.headerStyle ] ]
                     [ Maybe.map config.i18n.timeTitleFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
-                , div [ class [ Body ] ]
-                    [ table []
+                , div
+                    [ css
+                        [ backgroundColor (hex "#fff")
+                        , descendants
+                            [ Css.Foreign.table
+                                [ Styles.tableStyle
+                                , width (px 120)
+                                , descendants
+                                    [ Css.Foreign.tr [ verticalAlign top ]
+                                    , Css.Foreign.td
+                                        [ width (pct 33)
+                                        , Styles.cellStyle
+                                        , hover
+                                            [ backgroundColor Styles.highlightedDay
+                                            , Styles.highlightBorderStyle
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                    [ Html.table []
                         [ tbody []
                             (upArrows config
                                 ++ timeSelector
@@ -692,34 +757,43 @@ analogTimePickerDialog pickerType state currentDate =
 
         isActive timeIndicator =
             if stateValue.activeTimeIndicator == Just timeIndicator then
-                [ Active ]
+                [ Styles.activeStyle ]
             else
                 []
 
         html config =
-            div [ class [ TimePickerDialog, AnalogTime ] ]
-                [ div [ class [ Header ] ]
+            div [ css [ Styles.timePickerDialog, width (px 230) ] ]
+                [ div [ css [ Styles.headerStyle, fontSize (Css.em 1.2) ] ]
                     [ span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
-                        , class (Hour :: isActive DateTimePicker.Internal.HourIndicator)
+                        , css [ Styles.timeHeaderStyle ]
+                        , css (isActive DateTimePicker.Internal.HourIndicator)
                         ]
                         [ text (stateValue.time.hour |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
-                    , span [ class [ Separator ] ] [ text " : " ]
+                    , span [] [ text " : " ]
                     , span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
-                        , class (Minute :: isActive DateTimePicker.Internal.MinuteIndicator)
+                        , css [ Styles.timeHeaderStyle ]
+                        , css (isActive DateTimePicker.Internal.MinuteIndicator)
                         ]
                         [ text (stateValue.time.minute |> Maybe.map (toString >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
                     , span
                         [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
                         , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
-                        , class (AMPM :: isActive DateTimePicker.Internal.AMPMIndicator)
+                        , css [ Styles.timeHeaderStyle ]
+                        , css (isActive DateTimePicker.Internal.AMPMIndicator)
                         ]
                         [ text (stateValue.time.amPm |> Maybe.withDefault "--") ]
                     ]
-                , div [ class [ Body ] ]
+                , div
+                    [ css
+                        [ backgroundColor (hex "#fff")
+                        , padding2 (px 12) (px 15)
+                        , height (px 202)
+                        ]
+                    ]
                     [ case stateValue.activeTimeIndicator of
                         Just DateTimePicker.Internal.AMPMIndicator ->
                             amPmPicker config
@@ -729,28 +803,33 @@ analogTimePickerDialog pickerType state currentDate =
                     ]
                 ]
 
+        highlighted =
+            [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+
         amPmPicker config =
-            div [ class [ AMPMPicker ] ]
+            div [ css [ padding2 (px 40) (px 0) ] ]
                 [ div
                     [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
                     , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
+                    , css [ Styles.amPmStyle ]
                     , case stateValue.time.amPm of
                         Just "AM" ->
-                            class [ AM, SelectedAmPm ]
+                            css highlighted
 
                         _ ->
-                            class [ AM ]
+                            css []
                     ]
                     [ text "AM" ]
                 , div
                     [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
                     , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
+                    , css [ Styles.amPmStyle ]
                     , case stateValue.time.amPm of
                         Just "PM" ->
-                            class [ PM, SelectedAmPm ]
+                            css highlighted
 
                         _ ->
-                            class [ PM ]
+                            css []
                     ]
                     [ text "PM" ]
                 ]
@@ -795,7 +874,7 @@ calendar pickerType state currentDate =
                             DateTimePicker.DateUtils.generateCalendar config.firstDayOfWeek month year
 
                         header =
-                            thead [ class [ DaysOfWeek ] ]
+                            thead []
                                 [ tr
                                     []
                                     (dayNames config)
@@ -834,25 +913,37 @@ calendar pickerType state currentDate =
                                 selectedDate =
                                     DateTimePicker.DateUtils.toDate year month day
 
-                                classes =
+                                styles =
                                     List.concat
                                         [ case day.monthType of
                                             DateTimePicker.DateUtils.Previous ->
-                                                [ PreviousMonth ]
+                                                [ color Styles.fadeText ]
 
                                             DateTimePicker.DateUtils.Current ->
                                                 []
 
                                             DateTimePicker.DateUtils.Next ->
-                                                [ NextMonth ]
+                                                [ color Styles.fadeText ]
                                         , if isInRange day then
                                             []
                                           else
-                                            [ DisabledDate ]
+                                            [ backgroundColor inherit
+                                            , cursor default
+                                            , color Styles.darkGray
+                                            , hover
+                                                [ backgroundColor inherit
+                                                ]
+                                            ]
                                         , if matchesDay stateValue.date day then
-                                            [ SelectedDate ]
+                                            [ Styles.highlightStyle
+                                            , hover [ Styles.highlightStyle ]
+                                            ]
                                           else if matchesDay stateValue.today day then
-                                            [ Today ]
+                                            [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
+                                            , Styles.highlightBorderStyle
+                                            , hover
+                                                [ backgroundColor Styles.highlightSelectedDay ]
+                                            ]
                                           else
                                             []
                                         ]
@@ -870,9 +961,9 @@ calendar pickerType state currentDate =
                             in
                             td
                                 (List.concat
-                                    [ [ class classes
-                                      , Html.Attributes.attribute "role" "button"
-                                      , Html.Attributes.attribute "aria-label" (accessibilityDateFormatter selectedDate)
+                                    [ [ css styles
+                                      , attribute "role" "button"
+                                      , attribute "aria-label" (accessibilityDateFormatter selectedDate)
                                       ]
                                     , handlers
                                     ]
@@ -883,10 +974,33 @@ calendar pickerType state currentDate =
                             tr [] (List.map toCell week)
 
                         body =
-                            tbody [ class [ Days ] ]
-                                (List.map toWeekRow days)
+                            tbody [] (List.map toWeekRow days)
                     in
-                    table [ class [ Calendar ] ]
+                    Html.table
+                        [ css
+                            [ backgroundColor (hex "#ffffff")
+                            , Styles.tableStyle
+                            , width auto
+                            , margin (px 0)
+                            , descendants
+                                [ Css.Foreign.thead
+                                    []
+                                , Css.Foreign.td
+                                    [ Styles.dayStyle
+                                    , hover
+                                        [ backgroundColor Styles.highlightedDay
+                                        , Styles.highlightBorderStyle
+                                        ]
+                                    ]
+                                , Css.Foreign.th
+                                    [ Styles.dayStyle
+                                    , backgroundColor Styles.lightGray
+                                    , fontWeight normal
+                                    , borderBottom3 (px 1) solid Styles.darkGray
+                                    ]
+                                ]
+                            ]
+                        ]
                         [ header
                         , body
                         ]
