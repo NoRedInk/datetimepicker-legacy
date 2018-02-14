@@ -341,7 +341,7 @@ view pickerType attributes state currentDate =
             config.autoClose && stateValue.forceClose
 
         html config =
-            div
+            Html.node "date-time-picker"
                 (css [ position relative ] :: config.attributes)
                 [ input (inputAttributes config) []
                 , if config.usePicker && stateValue.inputFocused && not (shouldForceClose config) then
@@ -395,16 +395,21 @@ dialog pickerType state currentDate =
     in
     case pickerType of
         DateType datePickerConfig ->
-            div (attributes datePickerConfig) [ datePickerDialog pickerType state currentDate ]
+            dialogNode (attributes datePickerConfig) [ datePickerDialog pickerType state currentDate ]
 
         TimeType timePickerConfig ->
-            div (withTimeAttributes timePickerConfig timePickerConfig.timePickerType) [ timePickerDialog pickerType state currentDate ]
+            dialogNode (withTimeAttributes timePickerConfig timePickerConfig.timePickerType) [ timePickerDialog pickerType state currentDate ]
 
         DateTimeType timePickerConfig ->
-            div (withTimeAttributes timePickerConfig timePickerConfig.timePickerType)
+            dialogNode (withTimeAttributes timePickerConfig timePickerConfig.timePickerType)
                 [ datePickerDialog pickerType state currentDate
                 , timePickerDialog pickerType state currentDate
                 ]
+
+
+dialogNode : List (Html.Attribute msg) -> List (Html msg) -> Html msg
+dialogNode =
+    Html.node "date-time-picker-dialog"
 
 
 datePickerDialog : Type msg -> State -> Maybe Date -> Html msg
@@ -416,7 +421,7 @@ datePickerDialog pickerType state currentDate =
         html config =
             div
                 [ css [ float left ] ]
-                [ div
+                [ Html.node "date-time-picker-header"
                     [ css
                         [ Styles.headerStyle
                         , Styles.borderBoxStyle
@@ -427,7 +432,7 @@ datePickerDialog pickerType state currentDate =
                     (navigation config state currentDate)
                 , calendar pickerType state currentDate
                 , -- Footer
-                  div
+                  Html.node "date-time-picker-footer"
                     [ css
                         [ textAlign center
                         , backgroundColor Styles.lightGray
