@@ -1,6 +1,5 @@
 module RandomDate exposing (main)
 
-import Date exposing (Date)
 import DateTimePicker
 import DateTimePicker.Config exposing (defaultDatePickerConfig, defaultDateTimePickerConfig)
 import Html.Styled as Html exposing (Html, button, div, form, label, li, p, text, ul)
@@ -20,7 +19,7 @@ main =
 
 
 type alias Model =
-    { dateValue : Maybe Date
+    { dateValue : Maybe DateTimePicker.DateTime
     , datePickerState : DateTimePicker.State
     }
 
@@ -49,7 +48,10 @@ view model =
                 defaultDateTimeConfig =
                     defaultDateTimePickerConfig DateChanged
             in
-            { defaultDateTimeConfig | timePickerType = DateTimePicker.Config.Digital, allowYearNavigation = False }
+            { defaultDateTimeConfig
+                | timePickerType = DateTimePicker.Config.Digital
+                , allowYearNavigation = False
+            }
     in
     form []
         [ div []
@@ -71,9 +73,9 @@ view model =
 
 type Msg
     = NoOp
-    | DateChanged DateTimePicker.State (Maybe Date)
+    | DateChanged DateTimePicker.State (Maybe DateTimePicker.DateTime)
     | GetRandomDate
-    | GetRandomDateCompleted (Maybe Date)
+    | GetRandomDateCompleted (Maybe DateTimePicker.DateTime)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -96,7 +98,12 @@ getRandomDate : Cmd Msg
 getRandomDate =
     let
         dateGenerator =
-            Random.float 10000000 1000000000000000
-                |> Random.map (Date.fromTime >> Just)
+            Random.map5 DateTimePicker.dateTime
+                (Random.int 2015 2018)
+                (Random.int 1 12)
+                (Random.int 1 28)
+                (Random.int 0 23)
+                (Random.int 0 59)
+                |> Random.map Just
     in
     Random.generate GetRandomDateCompleted dateGenerator

@@ -3,9 +3,10 @@ module TestHelper exposing (TestResult, init, open, render, selection, simulate,
 {-| This module provides functions that allow high-level test interactions with datetimepickers
 -}
 
-import Date exposing (Date)
+import Date
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig)
+import DateTimePicker.DateTime as DateTime
 import Html.Styled as Html
 import Html.Styled.Attributes as Attr
 import Json.Encode as Json
@@ -18,9 +19,9 @@ import Test.Html.Selector exposing (..)
 -}
 type TestResult
     = TestResult
-        { config : Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe Date )
+        { config : Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe DateTime.DateTime )
         , state : DateTimePicker.State
-        , date : Maybe Date
+        , date : Maybe DateTime.DateTime
         }
 
 
@@ -29,7 +30,7 @@ type TestResult
   - `now`: the simulated current time in the test scenario
 
 -}
-init : Date -> TestResult
+init : DateTime.DateTime -> TestResult
 init now =
     TestResult
         { config = defaultDatePickerConfig (,)
@@ -43,7 +44,7 @@ init now =
 NOTE: You must not alter the `onChange` field of the config.
 
 -}
-withConfig : (Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe Date ) -> Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe Date )) -> TestResult -> TestResult
+withConfig : (Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe DateTime.DateTime ) -> Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe DateTime.DateTime )) -> TestResult -> TestResult
 withConfig fn (TestResult t) =
     let
         newConfig =
@@ -54,7 +55,7 @@ withConfig fn (TestResult t) =
 
 {-| Get the currently selected date
 -}
-selection : TestResult -> Maybe Date
+selection : TestResult -> Maybe DateTime.DateTime
 selection (TestResult t) =
     t.date
 

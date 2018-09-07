@@ -1,6 +1,7 @@
 module AccessibilityTests exposing (..)
 
-import Date exposing (Date)
+import Date
+import DateTimePicker.DateTime as DateTime
 import Html.Attributes
 import Test exposing (..)
 import Test.Html.Query as Query
@@ -8,10 +9,9 @@ import Test.Html.Selector exposing (..)
 import TestHelper exposing (init, open, render)
 
 
-now : Date
+now : DateTime.DateTime
 now =
-    -- 2017-08-11T22:30:55Z
-    Date.fromTime 1502490656000
+    DateTime.fromParts 2017 8 11 22 30
 
 
 datePickerTests : Test

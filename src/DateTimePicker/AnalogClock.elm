@@ -1,8 +1,8 @@
 module DateTimePicker.AnalogClock exposing (clock)
 
-import Date exposing (Date)
 import DateTimePicker.ClockUtils exposing (hours, minutes, minutesPerFive)
 import DateTimePicker.Config exposing (Type(..))
+import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Events exposing (MoveData, onMouseDownPreventDefault, onMouseMoveWithPosition, onPointerMoveWithPosition, onPointerUp, onTouchMovePreventDefault)
 import DateTimePicker.Geometry exposing (Point)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
@@ -25,7 +25,7 @@ minuteArrowLength =
     70
 
 
-clock : Type msg -> (InternalState -> Maybe Date -> msg) -> InternalState -> Maybe Date -> Html msg
+clock : Type msg -> (InternalState -> Maybe DateTime.DateTime -> msg) -> InternalState -> Maybe DateTime.DateTime -> Html msg
 clock pickerType onChange state date =
     let
         stateValue =
@@ -62,7 +62,7 @@ clock pickerType onChange state date =
         ]
 
 
-currentTime : Type msg -> (InternalState -> Maybe Date -> msg) -> InternalState -> Maybe Date -> Svg msg
+currentTime : Type msg -> (InternalState -> Maybe DateTime.DateTime -> msg) -> InternalState -> Maybe DateTime.DateTime -> Svg msg
 currentTime pickerType onChange state date =
     let
         stateValue =
@@ -93,7 +93,7 @@ currentTime pickerType onChange state date =
             text ""
 
 
-clockFace : Type msg -> (InternalState -> Maybe Date -> msg) -> InternalState -> Maybe Date -> ( String, Float ) -> Svg msg
+clockFace : Type msg -> (InternalState -> Maybe DateTime.DateTime -> msg) -> InternalState -> Maybe DateTime.DateTime -> ( String, Float ) -> Svg msg
 clockFace pickerType onChange state date ( number, radians ) =
     let
         point =
@@ -120,7 +120,7 @@ axisPoint =
     Point 200 100
 
 
-arrow : Type msg -> (InternalState -> Maybe Date -> msg) -> InternalState -> Maybe Date -> Svg msg
+arrow : Type msg -> (InternalState -> Maybe DateTime.DateTime -> msg) -> InternalState -> Maybe DateTime.DateTime -> Svg msg
 arrow pickerType onChange state date =
     let
         stateValue =
@@ -173,7 +173,7 @@ arrow pickerType onChange state date =
                 text ""
 
 
-drawArrow : Type msg -> (InternalState -> Maybe Date -> msg) -> InternalState -> Maybe Date -> Point -> Svg msg
+drawArrow : Type msg -> (InternalState -> Maybe DateTime.DateTime -> msg) -> InternalState -> Maybe DateTime.DateTime -> Point -> Svg msg
 drawArrow pickerType onChange state date point =
     line
         [ x1 "100"
@@ -188,7 +188,7 @@ drawArrow pickerType onChange state date point =
         []
 
 
-mouseDownHandler : Type msg -> InternalState -> Maybe Date -> (InternalState -> Maybe Date -> msg) -> msg
+mouseDownHandler : Type msg -> InternalState -> Maybe DateTime.DateTime -> (InternalState -> Maybe DateTime.DateTime -> msg) -> msg
 mouseDownHandler pickerType state date onChange =
     let
         stateValue =
@@ -216,7 +216,7 @@ mouseDownHandler pickerType state date onChange =
         updatedDate
 
 
-mouseOverHandler : InternalState -> Maybe Date -> (InternalState -> Maybe Date -> msg) -> MoveData -> Json.Decode.Decoder msg
+mouseOverHandler : InternalState -> Maybe DateTime.DateTime -> (InternalState -> Maybe DateTime.DateTime -> msg) -> MoveData -> Json.Decode.Decoder msg
 mouseOverHandler state date onChange moveData =
     let
         stateValue =
@@ -236,7 +236,7 @@ mouseOverHandler state date onChange moveData =
             decoder (InternalState stateValue)
 
 
-updateHourState : StateValue -> Maybe Date -> MoveData -> InternalState
+updateHourState : StateValue -> Maybe DateTime.DateTime -> MoveData -> InternalState
 updateHourState stateValue date moveData =
     let
         currentAngle =
@@ -261,7 +261,7 @@ updateHourState stateValue date moveData =
         }
 
 
-updateMinuteState : StateValue -> Maybe Date -> MoveData -> InternalState
+updateMinuteState : StateValue -> Maybe DateTime.DateTime -> MoveData -> InternalState
 updateMinuteState stateValue date moveData =
     let
         currentAngle =

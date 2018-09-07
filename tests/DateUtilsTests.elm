@@ -15,9 +15,6 @@ all =
     describe "DateUtils Test Suite"
         [ dayToIntTest
         , generateCalendarTest
-        , toDateTest
-        , toTimeTest
-        , setTimeTest
         , paddingTest
         , fromMillitaryHourTest
         , fromMillitaryAmPmTest
@@ -80,72 +77,6 @@ expectDaysAndShape days =
     Expect.all
         [ List.concat >> Expect.equal days
         , List.map List.length >> Expect.equal [ 7, 7, 7, 7, 7, 7 ]
-        ]
-
-
-toDateTest : Test
-toDateTest =
-    describe "DateUtils.toDate"
-        [ test "toDate for January 2016 previous month should return the right date" <|
-            \() ->
-                DateUtils.toDate 2016 Date.Jan (DateUtils.Day DateUtils.Previous 29)
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2015 Date.Dec 29 0 0 0 0)
-        , test "toDate for December 2016 next month should return the right date" <|
-            \() ->
-                DateUtils.toDate 2016 Date.Dec (DateUtils.Day DateUtils.Next 2)
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2017 Date.Jan 2 0 0 0 0)
-        , test "toDate for Feb 2016 current month should return the right date" <|
-            \() ->
-                DateUtils.toDate 2016 Date.Feb (DateUtils.Day DateUtils.Current 14)
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2016 Date.Feb 14 0 0 0 0)
-        ]
-
-
-toTimeTest : Test
-toTimeTest =
-    describe "DateUtils.toTime"
-        [ test "toTime for 12:00 AM should return the right time" <|
-            \() ->
-                DateUtils.toTime 12 0 "AM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 1969 Date.Dec 31 0 0 0 0)
-        , test "toTime for 12:00 PM should return the right time" <|
-            \() ->
-                DateUtils.toTime 12 0 "PM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 1969 Date.Dec 31 12 0 0 0)
-        , test "toTime for 3:15 PM should return the right time" <|
-            \() ->
-                DateUtils.toTime 3 15 "PM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 1969 Date.Dec 31 15 15 0 0)
-        , test "toTime for 3:15 AM should return the right time" <|
-            \() ->
-                DateUtils.toTime 3 15 "AM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 1969 Date.Dec 31 3 15 0 0)
-        ]
-
-
-setTimeTest : Test
-setTimeTest =
-    let
-        date =
-            Date.Extra.Create.dateFromFields 2017 Date.Jan 1 0 0 0 0
-    in
-    describe "DateUtils.setTime"
-        [ test "setTime for 12:00 AM should return the right time" <|
-            \() ->
-                DateUtils.setTime date 12 0 "AM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2017 Date.Jan 1 0 0 0 0)
-        , test "setTime for 12:00 PM should return the right time" <|
-            \() ->
-                DateUtils.setTime date 12 0 "PM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2017 Date.Jan 1 12 0 0 0)
-        , test "setTime for 3:15 PM should return the right time" <|
-            \() ->
-                DateUtils.setTime date 3 15 "PM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2017 Date.Jan 1 15 15 0 0)
-        , test "setTime for 3:15 AM should return the right time" <|
-            \() ->
-                DateUtils.setTime date 3 15 "AM"
-                    |> Expect.equal (Date.Extra.Create.dateFromFields 2017 Date.Jan 1 3 15 0 0)
         ]
 
 

@@ -2,15 +2,14 @@ module DateTimePicker.Internal
     exposing
         ( InternalState(..)
         , StateValue
-        , Time
         , TimeIndicator(..)
+        , TimeSelection
         , getStateValue
         , initialStateValue
         , initialStateValueWithToday
         )
 
-import Date exposing (Date)
-import Date.Extra.Core
+import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Geometry exposing (Point)
 
 
@@ -22,10 +21,10 @@ type alias StateValue =
     { inputFocused : Bool
     , forceClose : Bool
     , event : String
-    , today : Maybe Date
-    , titleDate : Maybe Date
-    , date : Maybe Date
-    , time : Time
+    , today : Maybe DateTime.DateTime
+    , titleDate : Maybe DateTime.DateTime
+    , date : Maybe DateTime.DateTime
+    , time : TimeSelection
     , hourPickerStart : Int
     , minutePickerStart : Int
     , currentAngle : Maybe Float
@@ -39,7 +38,7 @@ type TimeIndicator
     | AMPMIndicator
 
 
-type alias Time =
+type alias TimeSelection =
     { hour : Maybe Int, minute : Maybe Int, amPm : Maybe String }
 
 
@@ -51,7 +50,7 @@ initialStateValue =
     , today = Nothing
     , titleDate = Nothing
     , date = Nothing
-    , time = Time Nothing Nothing Nothing
+    , time = TimeSelection Nothing Nothing Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
     , currentAngle = Nothing
@@ -59,15 +58,15 @@ initialStateValue =
     }
 
 
-initialStateValueWithToday : Date -> StateValue
+initialStateValueWithToday : DateTime.DateTime -> StateValue
 initialStateValueWithToday today =
     { inputFocused = False
     , forceClose = False
     , event = ""
     , today = Just today
-    , titleDate = Just <| Date.Extra.Core.toFirstOfMonth today
+    , titleDate = Just <| DateTime.toFirstOfMonth today
     , date = Nothing
-    , time = Time Nothing Nothing Nothing
+    , time = TimeSelection Nothing Nothing Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
     , currentAngle = Nothing

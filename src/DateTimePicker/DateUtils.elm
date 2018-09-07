@@ -6,11 +6,9 @@ module DateTimePicker.DateUtils
         , fromMillitaryAmPm
         , fromMillitaryHour
         , generateCalendar
+        , monthToInt
         , padding
-        , setTime
-        , toDate
         , toMillitary
-        , toTime
         )
 
 import Date
@@ -18,6 +16,46 @@ import Date.Extra.Core
 import Date.Extra.Create
 import Date.Extra.Duration
 import String
+
+
+monthToInt : Date.Month -> Int
+monthToInt month =
+    case month of
+        Date.Jan ->
+            1
+
+        Date.Feb ->
+            2
+
+        Date.Mar ->
+            3
+
+        Date.Apr ->
+            4
+
+        Date.May ->
+            5
+
+        Date.Jun ->
+            6
+
+        Date.Jul ->
+            7
+
+        Date.Aug ->
+            8
+
+        Date.Sep ->
+            9
+
+        Date.Oct ->
+            10
+
+        Date.Nov ->
+            11
+
+        Date.Dec ->
+            12
 
 
 dayToInt : Date.Day -> Date.Day -> Int
@@ -134,51 +172,6 @@ byWeek list =
         List.take 7 list :: byWeek (List.drop 7 list)
     else
         []
-
-
-toDateTime : Int -> Date.Month -> Day -> Int -> Int -> Date.Date
-toDateTime year month day hour minute =
-    case day.monthType of
-        Current ->
-            Date.Extra.Create.dateFromFields year month day.day hour minute 0 0
-
-        Previous ->
-            let
-                previousMonth =
-                    Date.Extra.Create.dateFromFields year month day.day hour minute 0 0
-                        |> Date.Extra.Core.lastOfPrevMonthDate
-            in
-            Date.Extra.Create.dateFromFields (Date.year previousMonth) (Date.month previousMonth) day.day hour minute 0 0
-
-        Next ->
-            let
-                nextMonth =
-                    Date.Extra.Create.dateFromFields year month day.day hour minute 0 0
-                        |> Date.Extra.Core.firstOfNextMonthDate
-            in
-            Date.Extra.Create.dateFromFields (Date.year nextMonth) (Date.month nextMonth) day.day hour minute 0 0
-
-
-toDate : Int -> Date.Month -> Day -> Date.Date
-toDate year month day =
-    toDateTime year month day 0 0
-
-
-toTime : Int -> Int -> String -> Date.Date
-toTime hour minute amPm =
-    setTime (Date.fromTime 0) hour minute amPm
-
-
-setTime : Date.Date -> Int -> Int -> String -> Date.Date
-setTime date hour minute amPm =
-    Date.Extra.Create.dateFromFields
-        (Date.year date)
-        (Date.month date)
-        (Date.day date)
-        (toMillitary hour amPm)
-        minute
-        0
-        0
 
 
 padding : String -> String
