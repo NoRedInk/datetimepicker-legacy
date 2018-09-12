@@ -127,44 +127,41 @@ fullDayOfWeek dateTime =
             "Saturday"
 
 
-fullMonth : Int -> String
+fullMonth : Date.Month -> String
 fullMonth month =
-    case (month - 1) % 12 + 1 of
-        1 ->
+    case month of
+        Date.Jan ->
             "January"
 
-        2 ->
+        Date.Feb ->
             "February"
 
-        3 ->
+        Date.Mar ->
             "March"
 
-        4 ->
+        Date.Apr ->
             "April"
 
-        5 ->
+        Date.May ->
             "May"
 
-        6 ->
+        Date.Jun ->
             "June"
 
-        7 ->
+        Date.Jul ->
             "July"
 
-        8 ->
+        Date.Aug ->
             "August"
 
-        9 ->
+        Date.Sep ->
             "September"
 
-        10 ->
+        Date.Oct ->
             "October"
 
-        11 ->
+        Date.Nov ->
             "November"
 
-        12 ->
+        Date.Dec ->
             "December"
-
-        _ ->
-            "Error"

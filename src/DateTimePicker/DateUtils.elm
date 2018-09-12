@@ -12,9 +12,7 @@ module DateTimePicker.DateUtils
         )
 
 import Date
-import Date.Extra.Core
-import Date.Extra.Create
-import Date.Extra.Duration
+import DateTimePicker.DateTime as DateTime
 import String
 
 
@@ -131,21 +129,24 @@ generateCalendar : Date.Day -> Date.Month -> Int -> List (List Day)
 generateCalendar firstDayOfWeek month year =
     let
         firstDateOfMonth =
-            Date.Extra.Create.dateFromFields year month 1 0 0 0 0
+            DateTime.fromParts year month 1 0 0
 
         firstDayOfMonth =
             firstDateOfMonth
-                |> Date.dayOfWeek
+                |> DateTime.dayOfWeek
                 |> dayToInt firstDayOfWeek
 
         numberOfDaysForPreviousMonth =
             calculateNumberOfDaysForPreviousMonth firstDayOfMonth
 
         daysInMonth =
-            Date.Extra.Core.daysInMonthDate firstDateOfMonth
+            DateTime.daysInMonth firstDateOfMonth.year firstDateOfMonth.month
+
+        firstOfPreviousMonth =
+            DateTime.addMonths -1 firstDateOfMonth
 
         daysInPreviousMonth =
-            Date.Extra.Core.daysInPrevMonth firstDateOfMonth
+            DateTime.daysInMonth firstOfPreviousMonth.year firstOfPreviousMonth.month
 
         previousMonth =
             List.range (daysInPreviousMonth - numberOfDaysForPreviousMonth + 1) daysInPreviousMonth

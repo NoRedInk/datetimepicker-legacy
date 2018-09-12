@@ -55,7 +55,6 @@ import Html.Styled.Attributes exposing (attribute, css, value)
 import Html.Styled.Events exposing (onBlur, onClick, onFocus)
 import String
 import Task
-import Time
 
 
 -- MODEL
@@ -75,7 +74,7 @@ type alias DateTime =
 
 {-| Construct a DateTime
 -}
-dateTime : Int -> Int -> Int -> Int -> Int -> DateTime.DateTime
+dateTime : Int -> Date.Month -> Int -> Int -> Int -> DateTime.DateTime
 dateTime =
     DateTime.DateTime
 
@@ -895,7 +894,7 @@ calendar pickerType state currentDate =
                         days =
                             DateTimePicker.DateUtils.generateCalendar
                                 config.firstDayOfWeek
-                                (DateTime.intToMonth month)
+                                month
                                 year
 
                         header =
@@ -931,7 +930,7 @@ calendar pickerType state currentDate =
 
                                 Just earliestDate ->
                                     (date.year >= earliestDate.year)
-                                        && (date.month >= earliestDate.month)
+                                        && (DateTime.monthToInt date.month >= DateTime.monthToInt earliestDate.month)
                                         && (date.day >= earliestDate.day)
 
                         toCell day =
@@ -975,7 +974,7 @@ calendar pickerType state currentDate =
                                         ]
 
                                 handler =
-                                    dateClickHandler pickerType stateValue year (DateTime.intToMonth month) day
+                                    dateClickHandler pickerType stateValue year month day
 
                                 handlers =
                                     if isInRange day.day then
@@ -1274,7 +1273,7 @@ dateClickHandler : Type msg -> StateValue -> Int -> Date.Month -> DateTimePicker
 dateClickHandler pickerType stateValue year month day =
     let
         selectedDate =
-            DateTime.fromDate year (DateTimePicker.DateUtils.monthToInt month) day.day
+            DateTime.fromDate year month day.day
 
         updatedStateValue =
             { stateValue

@@ -60,7 +60,7 @@ looseInt =
 
 makeDateTime : Int -> Int -> Int -> Int -> Int -> String -> DateTime.DateTime
 makeDateTime month day year hour minute amPm =
-    DateTime.fromDate year month day
+    DateTime.fromDate year (DateTime.intToMonth month) day
         |> DateTime.setTime hour minute amPm
 
 

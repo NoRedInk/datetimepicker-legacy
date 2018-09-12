@@ -5,7 +5,6 @@ import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import Dict exposing (Dict)
 import Html.Styled as Html exposing (Html, div, form, h3, label, li, p, text, ul)
-import Task
 
 
 main : Program Never Model Msg
@@ -38,17 +37,15 @@ init : ( Model, Cmd Msg )
 init =
     ( { dates = Dict.empty
       , datePickerState = Dict.empty
-      , now = { year = 2018, month = 9, day = 7, hour = 4, minute = 49 }
+      , now = { year = 2018, month = Date.Sep, day = 7, hour = 4, minute = 49 }
       }
     , Cmd.batch
         [ DateTimePicker.initialCmd (DatePickerChanged DatePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged DigitalDateTimePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged AnalogDateTimePicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged CustomI18n) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged TimePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged NoPicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged LimitedRangePicker) DateTimePicker.initialState
-        , Date.now |> Task.perform InitialDate
         ]
     )
 
@@ -115,7 +112,7 @@ digitalTimePickerConfig =
     }
 
 
-limitedPickerConfig : Date -> Config (DatePickerConfig TimePickerConfig) Msg
+limitedPickerConfig : DateTimePicker.DateTime -> Config (DatePickerConfig TimePickerConfig) Msg
 limitedPickerConfig now =
     let
         defaultDateTimeConfig =
@@ -127,7 +124,7 @@ limitedPickerConfig now =
     }
 
 
-viewPicker : DemoPicker -> Date -> Maybe Date -> DateTimePicker.State -> Html Msg
+viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateTime -> DateTimePicker.State -> Html Msg
 viewPicker which now date state =
     p []
         [ label []
@@ -142,9 +139,6 @@ viewPicker which now date state =
 
                 AnalogDateTimePicker ->
                     DateTimePicker.dateTimePickerWithConfig analogDateTimePickerConfig [] state date
-
-                CustomI18n ->
-                    DateTimePicker.dateTimePickerWithConfig customI18nConfig [] state date
 
                 TimePicker ->
                     DateTimePicker.timePickerWithConfig digitalTimePickerConfig [] state date
