@@ -11,7 +11,7 @@ import TestHelper exposing (init, open, render)
 
 now : DateTime.DateTime
 now =
-    DateTime.fromParts 2017 8 11 22 30
+    DateTime.fromParts 2017 Date.Aug 11 22 30
 
 
 datePickerTests : Test

@@ -1,8 +1,6 @@
 module DatePickerTests exposing (all)
 
-import Date exposing (Date)
-import Date.Extra.Core
-import Date.Extra.Create
+import Date
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
@@ -15,7 +13,7 @@ import TestHelper exposing (init, open, render, selection, simulate, withConfig)
 
 now : DateTime.DateTime
 now =
-    DateTime.fromParts 2017 8 11 22 30
+    DateTime.fromParts 2017 Date.Aug 11 22 30
 
 
 all : Test
@@ -49,14 +47,14 @@ all =
           in
           describe "allowable date range"
             [ describe "with no restriction, all dates are allowed"
-                [ allowed Nothing ( 2017, 8, 10 )
-                , allowed Nothing ( 2017, 8, 11 )
-                , allowed Nothing ( 2017, 8, 12 )
+                [ allowed Nothing ( 2017, Date.Aug, 10 )
+                , allowed Nothing ( 2017, Date.Aug, 11 )
+                , allowed Nothing ( 2017, Date.Aug, 12 )
                 ]
             , describe "with earliestDate, dates including and after are allowed"
-                [ notAllowed (Just now) ( 2017, 8, 10 )
-                , allowed (Just now) ( 2017, 8, 11 )
-                , allowed (Just now) ( 2017, 8, 12 )
+                [ notAllowed (Just now) ( 2017, Date.Aug, 10 )
+                , allowed (Just now) ( 2017, Date.Aug, 11 )
+                , allowed (Just now) ( 2017, Date.Aug, 12 )
                 ]
             ]
         ]

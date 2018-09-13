@@ -1,7 +1,6 @@
 module DateUtilsTests exposing (..)
 
 import Date
-import Date.Extra.Create
 import DateTimePicker.DateUtils as DateUtils
 import Expect
 import Test exposing (..)
