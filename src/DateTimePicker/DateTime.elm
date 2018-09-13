@@ -3,7 +3,6 @@ module DateTimePicker.DateTime
         ( DateTime
         , addDays
         , addMonths
-        , compare
         , dayOfWeek
         , daysInMonth
         , fromDate
@@ -22,31 +21,6 @@ import Task exposing (Task)
 
 type alias DateTime =
     { year : Int, month : Date.Month, day : Int, hour : Int, minute : Int }
-
-
-compare : DateTime -> DateTime -> Order
-compare left right =
-    case Basics.compare left.year right.year of
-        EQ ->
-            case Basics.compare (monthToInt left.month) (monthToInt right.month) of
-                EQ ->
-                    case Basics.compare left.day right.day of
-                        EQ ->
-                            case Basics.compare left.hour right.hour of
-                                EQ ->
-                                    Basics.compare left.minute right.minute
-
-                                hourCompare ->
-                                    hourCompare
-
-                        dayCompare ->
-                            dayCompare
-
-                monthCompare ->
-                    monthCompare
-
-        yearCompare ->
-            yearCompare
 
 
 now : Task never DateTime

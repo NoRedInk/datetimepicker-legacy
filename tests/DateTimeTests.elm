@@ -79,8 +79,8 @@ addDaysTest =
         ]
 
 
-addMonths : Test
-addMonths =
+addMonthsTest : Test
+addMonthsTest =
     test "addMonths" <|
         \() ->
             let
@@ -102,3 +102,12 @@ addMonths =
                     inputsAndExpecteds
                 )
                 start
+
+
+dayOfWeekTest : Test
+dayOfWeekTest =
+    test "dayOfWeek" <|
+        \() ->
+            DateTime.fromParts 2018 Date.Sep 12 0 0
+                |> DateTime.dayOfWeek
+                |> Expect.equal Date.Wed
