@@ -13,17 +13,17 @@ import Parser exposing ((|.), (|=), Parser)
 
 parseDate : String -> Maybe DateTime.DateTime
 parseDate input =
-    runWithSurroundingSpace dateParser input
+    runWithSurroundingSpaceAndValidation dateParser input
 
 
 parseTime : String -> Maybe DateTime.DateTime
 parseTime input =
-    runWithSurroundingSpace timeParser input
+    runWithSurroundingSpaceAndValidation timeParser input
 
 
 parseDateTime : String -> Maybe DateTime.DateTime
 parseDateTime input =
-    runWithSurroundingSpace dateTimeParser input
+    runWithSurroundingSpaceAndValidation dateTimeParser input
 
 
 skipOptionalSpaces : Parser ()
@@ -56,8 +56,8 @@ amPm =
         ]
 
 
-runWithSurroundingSpace : Parser a -> String -> Maybe a
-runWithSurroundingSpace innerParser input =
+runWithSurroundingSpaceAndValidation : Parser DateTime.DateTime -> String -> Maybe DateTime.DateTime
+runWithSurroundingSpaceAndValidation innerParser input =
     let
         finalParser =
             Parser.succeed identity
@@ -65,6 +65,15 @@ runWithSurroundingSpace innerParser input =
                 |= innerParser
                 |. skipOptionalSpaces
                 |. Parser.end
+                |> Parser.andThen
+                    (\datetime ->
+                        case DateTime.validate datetime of
+                            Just validatedDateTime ->
+                                Parser.succeed validatedDateTime
+
+                            Nothing ->
+                                Parser.fail "Invalid date"
+                    )
     in
     Parser.run finalParser input
         |> Result.toMaybe

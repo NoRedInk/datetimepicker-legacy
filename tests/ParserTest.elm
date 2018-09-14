@@ -29,3 +29,11 @@ parseDateTimeTest =
         \() ->
             Parser.parseDateTime "9/7/2018 1:15 PM"
                 |> Expect.equal (Just (DateTime.fromParts 2018 Date.Sep 7 13 15))
+
+
+invalidDateTest : Test
+invalidDateTest =
+    test "it fails if a date is out of range" <|
+        \() ->
+            Parser.parseDateTime "2/30/2018 1:15 PM"
+                |> Expect.equal Nothing

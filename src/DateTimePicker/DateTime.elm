@@ -13,6 +13,7 @@ module DateTimePicker.DateTime
         , now
         , setTime
         , toFirstOfMonth
+        , validate
         )
 
 import Date
@@ -357,6 +358,38 @@ daysInMonth year month =
 
         _ ->
             31
+
+
+validate : DateTime -> Maybe DateTime
+validate datetime =
+    if datetime.hour > 23 || datetime.hour < 0 then
+        Nothing
+    else if datetime.minute > 59 || datetime.minute < 0 then
+        Nothing
+    else if datetime.year < 0 then
+        Nothing
+    else if datetime.day < 1 then
+        Nothing
+    else if datetime.month == Date.Feb then
+        if isLeapYear datetime.year && datetime.day > 29 then
+            Nothing
+        else if datetime.day > 28 then
+            Nothing
+        else
+            Just datetime
+    else if
+        ((datetime.month == Date.Sep)
+            || (datetime.month == Date.Apr)
+            || (datetime.month == Date.Jun)
+            || (datetime.month == Date.Nov)
+        )
+            && (datetime.day > 30)
+    then
+        Nothing
+    else if datetime.day > 31 then
+        Nothing
+    else
+        Just datetime
 
 
 fromParts : Int -> Date.Month -> Int -> Int -> Int -> DateTime
