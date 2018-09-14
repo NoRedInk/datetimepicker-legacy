@@ -344,10 +344,10 @@ view pickerType attributes state currentDate =
             attributes
                 ++ [ onFocus (datePickerFocused pickerType config stateValue currentDate)
                    , onBlurWithChange
-                        config.parseInput
+                        config.fromInput
                         (inputChangeHandler config stateValue currentDate)
                    , currentDate
-                        |> Maybe.map DateTimePicker.Formatter.dateTimeFormatter
+                        |> Maybe.map config.toInput
                         |> Maybe.withDefault ""
                         |> value
                    ]

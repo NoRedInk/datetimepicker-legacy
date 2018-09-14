@@ -32,7 +32,7 @@ accessibilityDateFormatter dateTime =
 
 dateFormatter : DateTime.DateTime -> String
 dateFormatter dateTime =
-    toString dateTime.month ++ "/" ++ toString dateTime.day ++ "/" ++ toString dateTime.year
+    toString (DateTime.monthToInt dateTime.month) ++ "/" ++ toString dateTime.day ++ "/" ++ toString dateTime.year
 
 
 footerFormatter : DateTime.DateTime -> String
@@ -40,6 +40,7 @@ footerFormatter dateTime =
     fullDayOfWeek dateTime
         ++ ", "
         ++ fullMonth dateTime.month
+        ++ " "
         ++ toString dateTime.day
         ++ ", "
         ++ toString dateTime.year
