@@ -336,14 +336,27 @@ isLeapYear y =
 
 daysInMonth : Int -> Date.Month -> Int
 daysInMonth year month =
-    if month == Date.Feb && year % 4 == 0 then
-        29
-    else if month == Date.Feb && year % 4 /= 0 then
-        28
-    else if month == Date.Sep || month == Date.Apr || month == Date.Jun || month == Date.Nov then
-        30
-    else
-        31
+    case month of
+        Date.Feb ->
+            if isLeapYear year then
+                29
+            else
+                28
+
+        Date.Sep ->
+            30
+
+        Date.Apr ->
+            30
+
+        Date.Jun ->
+            30
+
+        Date.Nov ->
+            30
+
+        _ ->
+            31
 
 
 fromParts : Int -> Date.Month -> Int -> Int -> Int -> DateTime
