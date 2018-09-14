@@ -7,16 +7,11 @@ module DateTimePicker.DateUtils
         , fromMillitaryHour
         , generateCalendar
         , padding
-        , setTime
-        , toDate
         , toMillitary
-        , toTime
         )
 
 import Date
-import Date.Extra.Core
-import Date.Extra.Create
-import Date.Extra.Duration
+import DateTimePicker.DateTime as DateTime
 import String
 
 
@@ -93,21 +88,24 @@ generateCalendar : Date.Day -> Date.Month -> Int -> List (List Day)
 generateCalendar firstDayOfWeek month year =
     let
         firstDateOfMonth =
-            Date.Extra.Create.dateFromFields year month 1 0 0 0 0
+            DateTime.fromParts year month 1 0 0
 
         firstDayOfMonth =
             firstDateOfMonth
-                |> Date.dayOfWeek
+                |> DateTime.dayOfWeek
                 |> dayToInt firstDayOfWeek
 
         numberOfDaysForPreviousMonth =
             calculateNumberOfDaysForPreviousMonth firstDayOfMonth
 
         daysInMonth =
-            Date.Extra.Core.daysInMonthDate firstDateOfMonth
+            DateTime.daysInMonth firstDateOfMonth.year firstDateOfMonth.month
+
+        firstOfPreviousMonth =
+            DateTime.addMonths -1 firstDateOfMonth
 
         daysInPreviousMonth =
-            Date.Extra.Core.daysInPrevMonth firstDateOfMonth
+            DateTime.daysInMonth firstOfPreviousMonth.year firstOfPreviousMonth.month
 
         previousMonth =
             List.range (daysInPreviousMonth - numberOfDaysForPreviousMonth + 1) daysInPreviousMonth
@@ -134,51 +132,6 @@ byWeek list =
         List.take 7 list :: byWeek (List.drop 7 list)
     else
         []
-
-
-toDateTime : Int -> Date.Month -> Day -> Int -> Int -> Date.Date
-toDateTime year month day hour minute =
-    case day.monthType of
-        Current ->
-            Date.Extra.Create.dateFromFields year month day.day hour minute 0 0
-
-        Previous ->
-            let
-                previousMonth =
-                    Date.Extra.Create.dateFromFields year month day.day hour minute 0 0
-                        |> Date.Extra.Core.lastOfPrevMonthDate
-            in
-            Date.Extra.Create.dateFromFields (Date.year previousMonth) (Date.month previousMonth) day.day hour minute 0 0
-
-        Next ->
-            let
-                nextMonth =
-                    Date.Extra.Create.dateFromFields year month day.day hour minute 0 0
-                        |> Date.Extra.Core.firstOfNextMonthDate
-            in
-            Date.Extra.Create.dateFromFields (Date.year nextMonth) (Date.month nextMonth) day.day hour minute 0 0
-
-
-toDate : Int -> Date.Month -> Day -> Date.Date
-toDate year month day =
-    toDateTime year month day 0 0
-
-
-toTime : Int -> Int -> String -> Date.Date
-toTime hour minute amPm =
-    setTime (Date.fromTime 0) hour minute amPm
-
-
-setTime : Date.Date -> Int -> Int -> String -> Date.Date
-setTime date hour minute amPm =
-    Date.Extra.Create.dateFromFields
-        (Date.year date)
-        (Date.month date)
-        (Date.day date)
-        (toMillitary hour amPm)
-        minute
-        0
-        0
 
 
 padding : String -> String

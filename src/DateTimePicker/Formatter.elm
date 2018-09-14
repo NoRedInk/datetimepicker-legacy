@@ -1,79 +1,131 @@
 module DateTimePicker.Formatter
     exposing
         ( accessibilityDateFormatter
-        , accessibilityDatePattern
         , dateFormatter
-        , datePattern
         , dateTimeFormatter
-        , dateTimePattern
         , footerFormatter
-        , footerPattern
         , timeFormatter
-        , timePattern
         , titleFormatter
-        , titlePattern
         )
 
-import Date exposing (Date)
-import Date.Extra.Config.Config_en_us exposing (config)
-import Date.Extra.Format
+import Date
+import DateTimePicker.DateTime as DateTime
 
 
-titleFormatter : Date -> String
-titleFormatter =
-    Date.Extra.Format.format config titlePattern
+titleFormatter : DateTime.DateTime -> String
+titleFormatter dateTime =
+    fullMonth dateTime.month
+        ++ " "
+        ++ toString dateTime.year
 
 
-titlePattern : String
-titlePattern =
-    "%B %Y"
+accessibilityDateFormatter : DateTime.DateTime -> String
+accessibilityDateFormatter dateTime =
+    toString dateTime.day
+        ++ ", "
+        ++ fullDayOfWeek dateTime
+        ++ " "
+        ++ fullMonth dateTime.month
+        ++ " "
+        ++ toString dateTime.year
 
 
-accessibilityDateFormatter : Date -> String
-accessibilityDateFormatter =
-    Date.Extra.Format.format config accessibilityDatePattern
+dateFormatter : DateTime.DateTime -> String
+dateFormatter dateTime =
+    toString dateTime.month ++ "/" ++ toString dateTime.day ++ "/" ++ toString dateTime.year
 
 
-accessibilityDatePattern : String
-accessibilityDatePattern =
-    "%e, %A %B %Y"
+footerFormatter : DateTime.DateTime -> String
+footerFormatter dateTime =
+    fullDayOfWeek dateTime
+        ++ ", "
+        ++ fullMonth dateTime.month
+        ++ toString dateTime.day
+        ++ ", "
+        ++ toString dateTime.year
 
 
-dateFormatter : Date -> String
-dateFormatter =
-    Date.Extra.Format.format config datePattern
+dateTimeFormatter : DateTime.DateTime -> String
+dateTimeFormatter dateTime =
+    dateFormatter dateTime ++ " " ++ timeFormatter dateTime
 
 
-datePattern : String
-datePattern =
-    "%m/%d/%Y"
+timeFormatter : DateTime.DateTime -> String
+timeFormatter dateTime =
+    let
+        ( hourString, amPm ) =
+            if dateTime.hour == 12 then
+                ( "12", "pm" )
+            else if dateTime.hour == 0 then
+                ( "12", "am" )
+            else if dateTime.hour > 12 then
+                ( toString (dateTime.hour % 12), "pm" )
+            else
+                ( toString dateTime.hour, "am" )
+    in
+    hourString ++ ":" ++ toString dateTime.minute ++ " " ++ amPm
 
 
-footerFormatter : Date -> String
-footerFormatter =
-    Date.Extra.Format.format config footerPattern
+fullDayOfWeek : DateTime.DateTime -> String
+fullDayOfWeek dateTime =
+    case DateTime.dayOfWeek dateTime of
+        Date.Sun ->
+            "Sunday"
+
+        Date.Mon ->
+            "Monday"
+
+        Date.Tue ->
+            "Tuesday"
+
+        Date.Wed ->
+            "Wednewday"
+
+        Date.Thu ->
+            "Thursday"
+
+        Date.Fri ->
+            "Friday"
+
+        Date.Sat ->
+            "Saturday"
 
 
-footerPattern : String
-footerPattern =
-    "%A, %B %d, %Y"
+fullMonth : Date.Month -> String
+fullMonth month =
+    case month of
+        Date.Jan ->
+            "January"
 
+        Date.Feb ->
+            "February"
 
-dateTimeFormatter : Date -> String
-dateTimeFormatter =
-    Date.Extra.Format.format config dateTimePattern
+        Date.Mar ->
+            "March"
 
+        Date.Apr ->
+            "April"
 
-dateTimePattern : String
-dateTimePattern =
-    "%m/%d/%Y %I:%M %p"
+        Date.May ->
+            "May"
 
+        Date.Jun ->
+            "June"
 
-timeFormatter : Date -> String
-timeFormatter =
-    Date.Extra.Format.format config timePattern
+        Date.Jul ->
+            "July"
 
+        Date.Aug ->
+            "August"
 
-timePattern : String
-timePattern =
-    "%I:%M %p"
+        Date.Sep ->
+            "September"
+
+        Date.Oct ->
+            "October"
+
+        Date.Nov ->
+            "November"
+
+        Date.Dec ->
+            "December"

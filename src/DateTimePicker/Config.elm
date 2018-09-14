@@ -2,19 +2,15 @@ module DateTimePicker.Config
     exposing
         ( Config
         , DatePickerConfig
-        , I18n
-        , InputFormat
         , NameOfDays
         , TimePickerConfig
         , TimePickerType(..)
         , Type(..)
-        , defaultDateI18n
-        , defaultDateInputFormat
         , defaultDatePickerConfig
-        , defaultDateTimeI18n
-        , defaultDateTimeInputFormat
         , defaultDateTimePickerConfig
-        , defaultTimeI18n
+        , defaultParseDate
+        , defaultParseDateTime
+        , defaultParseTime
         , defaultTimePickerConfig
         )
 
@@ -23,20 +19,19 @@ module DateTimePicker.Config
 
 # Configuration
 
-@docs Config, I18n, InputFormat, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType, Type
+@docs Config, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType, Type
 
 
 # Default Configuration
 
-@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateI18n, defaultTimeI18n, defaultDateTimeI18n, defaultDateInputFormat, defaultDateTimeInputFormat
+@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultParseDate, defaultParseTime, defaultParseDateTime
 
 -}
 
-import Date exposing (Date)
-import Date.Extra.Config.Config_en_us exposing (config)
-import DateParser
-import DateTimePicker.Formatter
+import Date
+import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Internal exposing (InternalState)
+import DateTimePicker.Parser as Parser
 import Html.Styled as Html
 
 
@@ -56,32 +51,16 @@ type Type msg
 
   - `onChange` is the message for when the selected value and internal `State` in the date picker has changed.
   - `autoClose` is a flag to indicate whether the dialog should be automatically closed when a date and/or time is selected.
-  - `i18n` is internationalization configuration.
+  - `parseInput` accepts a user string from the input element and attempts to convert it to a DateTime
 
 -}
 type alias Config otherConfig msg =
     { otherConfig
-        | onChange : State -> Maybe Date -> msg
+        | onChange : State -> Maybe DateTime.DateTime -> msg
         , autoClose : Bool
-        , i18n : I18n
         , usePicker : Bool
         , attributes : List (Html.Attribute msg)
-    }
-
-
-{-| Internationalization configuration
-
-  - `footerFormatter` is a Date to string formatter used to display the date in the footer section.
-  - `titleFormatter` is a Date to string formatter used to display the date in the title section.
-  - `timeTitleFormatter` is a Date to string formatter used to display the time in the title section.
-  - `inputFormat` is an input date formatter and parser.
-
--}
-type alias I18n =
-    { titleFormatter : Date -> String
-    , footerFormatter : Date -> String
-    , timeTitleFormatter : Date -> String
-    , inputFormat : InputFormat
+        , parseInput : String -> Maybe DateTime.DateTime
     }
 
 
@@ -89,8 +68,6 @@ type alias I18n =
 
   - `nameOfDays` is the configuration for name of days in a week.
   - `firstDayOfWeek` is the first day of the week.
-  - `titleFormatter` is the Date to String formatter for the dialog's title.
-  - `footerFormatter` is the Date to String formatter for the dialog's footer.
   - `allowYearNavigation` show/hide year navigation button.
   - `earliestDate` if given, dates before this cannot be selected
 
@@ -100,110 +77,7 @@ type alias DatePickerConfig otherConfig =
         | nameOfDays : NameOfDays
         , firstDayOfWeek : Date.Day
         , allowYearNavigation : Bool
-        , earliestDate : Maybe Date
-    }
-
-
-{-| Input formatter and parser
-
-  - `inputFormatter` is a Date to string formatter used to display the date in the input text
-  - `inputParser` is a String to Date parser used to parsed input text into Date
-
--}
-type alias InputFormat =
-    { inputFormatter : Date -> String
-    , inputParser : String -> Maybe Date
-    }
-
-
-{-| Default Date internationalization
-
-  - `titleFormatter` Default: `"%B %Y"`
-  - `footerFormatter` Default: `"%A, %B %d, %Y"`
-  - `inputFormat` Default: "%m/%d/%Y"
-
--}
-defaultDateI18n : I18n
-defaultDateI18n =
-    { titleFormatter = DateTimePicker.Formatter.titleFormatter
-    , footerFormatter = DateTimePicker.Formatter.footerFormatter
-    , timeTitleFormatter = DateTimePicker.Formatter.timeFormatter
-    , inputFormat = defaultDateInputFormat
-    }
-
-
-{-| Default Time internationalization
-
-  - `titleFormatter` Default: `"%B %Y"`
-  - `footerFormatter` Default: `"%A, %B %d, %Y"`
-  - `inputFormat` Default: "%I:%M %p"
-
--}
-defaultTimeI18n : I18n
-defaultTimeI18n =
-    { titleFormatter = DateTimePicker.Formatter.titleFormatter
-    , footerFormatter = DateTimePicker.Formatter.footerFormatter
-    , timeTitleFormatter = DateTimePicker.Formatter.timeFormatter
-    , inputFormat = defaultTimeInputFormat
-    }
-
-
-{-| Default Date and Time internationalization
-
-  - `titleFormatter` Default: `"%B %Y"`
-  - `footerFormatter` Default: `"%A, %B %d, %Y"`
-  - `inputFormat` Default: "%m/%d/%Y %I:%M %p"
-
--}
-defaultDateTimeI18n : I18n
-defaultDateTimeI18n =
-    { titleFormatter = DateTimePicker.Formatter.titleFormatter
-    , footerFormatter = DateTimePicker.Formatter.footerFormatter
-    , timeTitleFormatter = DateTimePicker.Formatter.timeFormatter
-    , inputFormat = defaultDateTimeInputFormat
-    }
-
-
-{-| Default input format for date picker
--}
-defaultDateInputFormat : InputFormat
-defaultDateInputFormat =
-    { inputFormatter = DateTimePicker.Formatter.dateFormatter
-    , inputParser =
-        \input ->
-            input
-                |> DateParser.parse config DateTimePicker.Formatter.datePattern
-                |> Result.toMaybe
-                |> Maybe.map Just
-                |> Maybe.withDefault (Date.fromString input |> Result.toMaybe)
-    }
-
-
-{-| Default input format for date and time picker
--}
-defaultDateTimeInputFormat : InputFormat
-defaultDateTimeInputFormat =
-    { inputFormatter = DateTimePicker.Formatter.dateTimeFormatter
-    , inputParser =
-        \input ->
-            input
-                |> DateParser.parse config DateTimePicker.Formatter.dateTimePattern
-                |> Result.toMaybe
-                |> Maybe.map Just
-                |> Maybe.withDefault (Date.fromString input |> Result.toMaybe)
-    }
-
-
-{-| Default input format for time picker
--}
-defaultTimeInputFormat : InputFormat
-defaultTimeInputFormat =
-    { inputFormatter = DateTimePicker.Formatter.timeFormatter
-    , inputParser =
-        \input ->
-            input
-                |> DateParser.parse config DateTimePicker.Formatter.timePattern
-                |> Result.toMaybe
+        , earliestDate : Maybe DateTime.DateTime
     }
 
 
@@ -234,17 +108,17 @@ type TimePickerType
   - `earliestDate` Default : Nothing
 
 -}
-defaultDatePickerConfig : (State -> Maybe Date -> msg) -> Config (DatePickerConfig {}) msg
+defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig {}) msg
 defaultDatePickerConfig onChange =
     { onChange = onChange
     , autoClose = True
     , nameOfDays = defaultNameOfDays
     , firstDayOfWeek = Date.Sun
     , allowYearNavigation = True
-    , i18n = defaultDateI18n
     , usePicker = True
     , attributes = []
     , earliestDate = Nothing
+    , parseInput = Parser.parseDate
     }
 
 
@@ -258,14 +132,14 @@ defaultDatePickerConfig onChange =
   - `timePickerType` Default: Analog
 
 -}
-defaultTimePickerConfig : (State -> Maybe Date -> msg) -> Config TimePickerConfig msg
+defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config TimePickerConfig msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
     , timePickerType = Analog
-    , i18n = defaultTimeI18n
     , usePicker = True
     , attributes = []
+    , parseInput = Parser.parseTime
     }
 
 
@@ -285,7 +159,7 @@ defaultTimePickerConfig onChange =
   - `earliestDate` Default : Nothing
 
 -}
-defaultDateTimePickerConfig : (State -> Maybe Date -> msg) -> Config (DatePickerConfig TimePickerConfig) msg
+defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig TimePickerConfig) msg
 defaultDateTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
@@ -293,11 +167,32 @@ defaultDateTimePickerConfig onChange =
     , firstDayOfWeek = Date.Sun
     , timePickerType = Analog
     , allowYearNavigation = True
-    , i18n = defaultDateTimeI18n
     , usePicker = True
     , attributes = []
     , earliestDate = Nothing
+    , parseInput = Parser.parseDateTime
     }
+
+
+{-| Default date parser
+-}
+defaultParseDate : String -> Maybe DateTime.DateTime
+defaultParseDate =
+    Parser.parseDate
+
+
+{-| Default time parser
+-}
+defaultParseTime : String -> Maybe DateTime.DateTime
+defaultParseTime =
+    Parser.parseTime
+
+
+{-| Default date and time parser
+-}
+defaultParseDateTime : String -> Maybe DateTime.DateTime
+defaultParseDateTime =
+    Parser.parseDateTime
 
 
 {-| Configuration for name of days in a week.

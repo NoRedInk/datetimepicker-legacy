@@ -1,8 +1,7 @@
 module DatePickerTests exposing (all)
 
-import Date exposing (Date)
-import Date.Extra.Core
-import Date.Extra.Create
+import Date
+import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
 import Html.Attributes
@@ -12,10 +11,9 @@ import Test.Html.Selector exposing (..)
 import TestHelper exposing (init, open, render, selection, simulate, withConfig)
 
 
-now : Date
+now : DateTime.DateTime
 now =
-    -- 2017-08-11T22:30:55Z
-    Date.fromTime 1502490656000
+    DateTime.fromParts 2017 Date.Aug 11 22 30
 
 
 all : Test
@@ -23,7 +21,7 @@ all =
     describe "date picker"
         [ let
             date ( year, month, day ) =
-                Date.Extra.Create.dateFromFields year (Date.Extra.Core.intToMonth month) day 0 0 0 0
+                DateTime.fromParts year month day 0 0
 
             allowed config d =
                 test ("can select " ++ toString d ++ " with earliestDate=" ++ toString config) <|
@@ -49,14 +47,14 @@ all =
           in
           describe "allowable date range"
             [ describe "with no restriction, all dates are allowed"
-                [ allowed Nothing ( 2017, 8, 10 )
-                , allowed Nothing ( 2017, 8, 11 )
-                , allowed Nothing ( 2017, 8, 12 )
+                [ allowed Nothing ( 2017, Date.Aug, 10 )
+                , allowed Nothing ( 2017, Date.Aug, 11 )
+                , allowed Nothing ( 2017, Date.Aug, 12 )
                 ]
             , describe "with earliestDate, dates including and after are allowed"
-                [ notAllowed (Just now) ( 2017, 8, 10 )
-                , allowed (Just now) ( 2017, 8, 11 )
-                , allowed (Just now) ( 2017, 8, 12 )
+                [ notAllowed (Just now) ( 2017, Date.Aug, 10 )
+                , allowed (Just now) ( 2017, Date.Aug, 11 )
+                , allowed (Just now) ( 2017, Date.Aug, 12 )
                 ]
             ]
         ]

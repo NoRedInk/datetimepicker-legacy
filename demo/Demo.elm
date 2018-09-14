@@ -1,14 +1,10 @@
 module Demo exposing (main)
 
 import Date exposing (Date)
-import Date.Extra.Config.Config_en_us exposing (config)
-import Date.Extra.Format
-import DateParser
 import DateTimePicker
-import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimeI18n, defaultDateTimePickerConfig, defaultTimePickerConfig)
+import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import Dict exposing (Dict)
 import Html.Styled as Html exposing (Html, div, form, h3, label, li, p, text, ul)
-import Task
 
 
 main : Program Never Model Msg
@@ -25,16 +21,15 @@ type DemoPicker
     = DatePicker
     | DigitalDateTimePicker
     | AnalogDateTimePicker
-    | CustomI18n
     | TimePicker
     | NoPicker
     | LimitedRangePicker
 
 
 type alias Model =
-    { dates : Dict String Date -- The key is actually a DemoPicker
+    { dates : Dict String DateTimePicker.DateTime -- The key is actually a DemoPicker
     , datePickerState : Dict String DateTimePicker.State -- The key is actually a DemoPicker
-    , now : Date
+    , now : DateTimePicker.DateTime
     }
 
 
@@ -42,17 +37,15 @@ init : ( Model, Cmd Msg )
 init =
     ( { dates = Dict.empty
       , datePickerState = Dict.empty
-      , now = Date.fromTime 0
+      , now = { year = 2018, month = Date.Sep, day = 7, hour = 4, minute = 49 }
       }
     , Cmd.batch
         [ DateTimePicker.initialCmd (DatePickerChanged DatePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged DigitalDateTimePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged AnalogDateTimePicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged CustomI18n) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged TimePicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged NoPicker) DateTimePicker.initialState
         , DateTimePicker.initialCmd (DatePickerChanged LimitedRangePicker) DateTimePicker.initialState
-        , Date.now |> Task.perform InitialDate
         ]
     )
 
@@ -97,31 +90,6 @@ noPickerConfig =
     }
 
 
-customI18nConfig : Config (DatePickerConfig TimePickerConfig) Msg
-customI18nConfig =
-    let
-        defaultDateTimeConfig =
-            defaultDateTimePickerConfig (DatePickerChanged CustomI18n)
-    in
-    { defaultDateTimeConfig
-        | timePickerType = DateTimePicker.Config.Analog
-        , allowYearNavigation = False
-        , i18n = { defaultDateTimeI18n | inputFormat = customInputFormat }
-    }
-
-
-customDatePattern : String
-customDatePattern =
-    "%d/%m/%Y %H:%M"
-
-
-customInputFormat : DateTimePicker.Config.InputFormat
-customInputFormat =
-    { inputFormatter = Date.Extra.Format.format config customDatePattern
-    , inputParser = DateParser.parse config customDatePattern >> Result.toMaybe
-    }
-
-
 digitalDateTimePickerConfig : Config (DatePickerConfig TimePickerConfig) Msg
 digitalDateTimePickerConfig =
     let
@@ -144,7 +112,7 @@ digitalTimePickerConfig =
     }
 
 
-limitedPickerConfig : Date -> Config (DatePickerConfig TimePickerConfig) Msg
+limitedPickerConfig : DateTimePicker.DateTime -> Config (DatePickerConfig TimePickerConfig) Msg
 limitedPickerConfig now =
     let
         defaultDateTimeConfig =
@@ -156,7 +124,7 @@ limitedPickerConfig now =
     }
 
 
-viewPicker : DemoPicker -> Date -> Maybe Date -> DateTimePicker.State -> Html Msg
+viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateTime -> DateTimePicker.State -> Html Msg
 viewPicker which now date state =
     p []
         [ label []
@@ -171,9 +139,6 @@ viewPicker which now date state =
 
                 AnalogDateTimePicker ->
                     DateTimePicker.dateTimePickerWithConfig analogDateTimePickerConfig [] state date
-
-                CustomI18n ->
-                    DateTimePicker.dateTimePickerWithConfig customI18nConfig [] state date
 
                 TimePicker ->
                     DateTimePicker.timePickerWithConfig digitalTimePickerConfig [] state date
@@ -194,7 +159,6 @@ view model =
             [ DatePicker
             , DigitalDateTimePicker
             , AnalogDateTimePicker
-            , CustomI18n
             , TimePicker
             , NoPicker
             , LimitedRangePicker
@@ -223,18 +187,12 @@ view model =
 
 
 type Msg
-    = InitialDate Date
-    | DatePickerChanged DemoPicker DateTimePicker.State (Maybe Date)
+    = DatePickerChanged DemoPicker DateTimePicker.State (Maybe DateTimePicker.DateTime)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        InitialDate now ->
-            ( { model | now = now }
-            , Cmd.none
-            )
-
         DatePickerChanged which state value ->
             ( { model
                 | dates =

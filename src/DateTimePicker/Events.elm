@@ -12,7 +12,7 @@ module DateTimePicker.Events
         , onTouchStartPreventDefault
         )
 
-import Date exposing (Date)
+import DateTimePicker.DateTime as DateTime
 import Html.Styled as Html
 import Html.Styled.Events as HtmlEvents exposing (targetValue)
 import Json.Decode
@@ -20,7 +20,7 @@ import Svg.Styled as Svg
 import Svg.Styled.Events as SvgEvents
 
 
-onBlurWithChange : (String -> Maybe Date) -> (Maybe Date -> msg) -> Html.Attribute msg
+onBlurWithChange : (String -> Maybe DateTime.DateTime) -> (Maybe DateTime.DateTime -> msg) -> Html.Attribute msg
 onBlurWithChange parser tagger =
     HtmlEvents.on "blur"
         (Json.Decode.map (parser >> tagger) targetValue)
