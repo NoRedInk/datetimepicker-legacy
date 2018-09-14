@@ -2,7 +2,6 @@ module DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 
 import DateTimePicker.Config exposing (Type(..))
 import DateTimePicker.DateTime as DateTime
-import DateTimePicker.DateUtils
 import DateTimePicker.Internal exposing (StateValue, TimeIndicator(..))
 
 

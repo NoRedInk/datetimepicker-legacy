@@ -8,6 +8,9 @@ module DateTimePicker.Config
         , Type(..)
         , defaultDatePickerConfig
         , defaultDateTimePickerConfig
+        , defaultParseDate
+        , defaultParseDateTime
+        , defaultParseTime
         , defaultTimePickerConfig
         )
 
@@ -21,13 +24,14 @@ module DateTimePicker.Config
 
 # Default Configuration
 
-@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig
+@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultParseDate, defaultParseTime, defaultParseDateTime
 
 -}
 
 import Date
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Internal exposing (InternalState)
+import DateTimePicker.Parser as Parser
 import Html.Styled as Html
 
 
@@ -47,7 +51,7 @@ type Type msg
 
   - `onChange` is the message for when the selected value and internal `State` in the date picker has changed.
   - `autoClose` is a flag to indicate whether the dialog should be automatically closed when a date and/or time is selected.
-  - `i18n` is internationalization configuration.
+  - `parseInput` accepts a user string from the input element and attempts to convert it to a DateTime
 
 -}
 type alias Config otherConfig msg =
@@ -56,6 +60,7 @@ type alias Config otherConfig msg =
         , autoClose : Bool
         , usePicker : Bool
         , attributes : List (Html.Attribute msg)
+        , parseInput : String -> Maybe DateTime.DateTime
     }
 
 
@@ -63,8 +68,6 @@ type alias Config otherConfig msg =
 
   - `nameOfDays` is the configuration for name of days in a week.
   - `firstDayOfWeek` is the first day of the week.
-  - `titleFormatter` is the Date to String formatter for the dialog's title.
-  - `footerFormatter` is the Date to String formatter for the dialog's footer.
   - `allowYearNavigation` show/hide year navigation button.
   - `earliestDate` if given, dates before this cannot be selected
 
@@ -115,6 +118,7 @@ defaultDatePickerConfig onChange =
     , usePicker = True
     , attributes = []
     , earliestDate = Nothing
+    , parseInput = Parser.parseDate
     }
 
 
@@ -135,6 +139,7 @@ defaultTimePickerConfig onChange =
     , timePickerType = Analog
     , usePicker = True
     , attributes = []
+    , parseInput = Parser.parseTime
     }
 
 
@@ -165,7 +170,29 @@ defaultDateTimePickerConfig onChange =
     , usePicker = True
     , attributes = []
     , earliestDate = Nothing
+    , parseInput = Parser.parseDateTime
     }
+
+
+{-| Default date parser
+-}
+defaultParseDate : String -> Maybe DateTime.DateTime
+defaultParseDate =
+    Parser.parseDate
+
+
+{-| Default time parser
+-}
+defaultParseTime : String -> Maybe DateTime.DateTime
+defaultParseTime =
+    Parser.parseTime
+
+
+{-| Default date and time parser
+-}
+defaultParseDateTime : String -> Maybe DateTime.DateTime
+defaultParseDateTime =
+    Parser.parseDateTime
 
 
 {-| Configuration for name of days in a week.

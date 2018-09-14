@@ -7,9 +7,25 @@ import Expect
 import Test exposing (..)
 
 
-parseTest : Test
-parseTest =
-    test "it parsers a string correctly" <|
+parseDateTest : Test
+parseDateTest =
+    test "it parses a date correctly" <|
         \() ->
-            Parser.parse "9/7/2018 1:07 PM"
-                |> Expect.equal (Just (DateTime.fromParts 2018 Date.Sep 7 13 7))
+            Parser.parseDate "9/7/2018"
+                |> Expect.equal (Just (DateTime.fromParts 2018 Date.Sep 7 0 0))
+
+
+parseTimeTest : Test
+parseTimeTest =
+    test "it parses a time correctly" <|
+        \() ->
+            Parser.parseTime "1:15 PM"
+                |> Expect.equal (Just (DateTime.fromParts 0 Date.Jan 1 13 15))
+
+
+parseDateTimeTest : Test
+parseDateTimeTest =
+    test "it parses a date and time correctly" <|
+        \() ->
+            Parser.parseDateTime "9/7/2018 1:15 PM"
+                |> Expect.equal (Just (DateTime.fromParts 2018 Date.Sep 7 13 15))

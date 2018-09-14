@@ -345,7 +345,7 @@ view pickerType attributes state currentDate =
             attributes
                 ++ [ onFocus (datePickerFocused pickerType config stateValue currentDate)
                    , onBlurWithChange
-                        DateTimePicker.Parser.parse
+                        config.parseInput
                         (inputChangeHandler config stateValue currentDate)
                    , currentDate
                         |> Maybe.map DateTimePicker.Formatter.dateTimeFormatter

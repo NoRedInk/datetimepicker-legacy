@@ -1,15 +1,29 @@
-module DateTimePicker.Parser exposing (..)
+module DateTimePicker.Parser
+    exposing
+        ( parseDate
+        , parseDateTime
+        , parseTime
+        )
 
 import Char
+import Date
 import DateTimePicker.DateTime as DateTime
 import Parser exposing ((|.), (|=), Parser)
 
 
-parse : String -> Maybe DateTime.DateTime
-parse input =
-    Parser.run parser input
-        |> Debug.log "result"
-        |> Result.toMaybe
+parseDate : String -> Maybe DateTime.DateTime
+parseDate input =
+    runWithSurroundingSpace dateParser input
+
+
+parseTime : String -> Maybe DateTime.DateTime
+parseTime input =
+    runWithSurroundingSpace timeParser input
+
+
+parseDateTime : String -> Maybe DateTime.DateTime
+parseDateTime input =
+    runWithSurroundingSpace dateTimeParser input
 
 
 skipOptionalSpaces : Parser ()
@@ -42,6 +56,20 @@ amPm =
         ]
 
 
+runWithSurroundingSpace : Parser a -> String -> Maybe a
+runWithSurroundingSpace innerParser input =
+    let
+        finalParser =
+            Parser.succeed identity
+                |. skipOptionalSpaces
+                |= innerParser
+                |. skipOptionalSpaces
+                |. Parser.end
+    in
+    Parser.run finalParser input
+        |> Result.toMaybe
+
+
 {-| A fixed-length integer padded with zeroes.
 -}
 looseInt : Parser Int
@@ -58,35 +86,65 @@ looseInt =
             )
 
 
-makeDateTime : Int -> Int -> Int -> Int -> Int -> String -> DateTime.DateTime
+clamped : Int -> Int -> Parser Int -> Parser Int
+clamped min max previousParser =
+    Parser.andThen
+        (\int ->
+            if int > max || int < min then
+                Parser.fail "Int out of range"
+            else
+                Parser.succeed int
+        )
+        previousParser
+
+
+makeDateTime : Date.Month -> Int -> Int -> Int -> Int -> String -> DateTime.DateTime
 makeDateTime month day year hour minute amPm =
-    DateTime.fromDate year (DateTime.intToMonth month) day
+    DateTime.fromDate year month day
         |> DateTime.setTime hour minute amPm
 
 
-{-| Parse the exact format "%m/%d/%Y %I:%M %p"
+{-| Parse the exact format "%m/%d/%Y"
 -}
-parser : Parser DateTime.DateTime
-parser =
-    -- Write a function to make a datetime
-    Parser.succeed makeDateTime
-        |. skipOptionalSpaces
-        |= looseInt
+dateParser : Parser DateTime.DateTime
+dateParser =
+    Parser.succeed (\month day year -> DateTime.fromDate year month day)
+        |= Parser.map DateTime.intToMonth (clamped 1 12 looseInt)
         |. skipOptionalSpaces
         |. Parser.symbol "/"
         |. skipOptionalSpaces
-        |= looseInt
+        |= clamped 1 31 looseInt
         |. skipOptionalSpaces
         |. Parser.symbol "/"
         |. skipOptionalSpaces
         |= Parser.int
-        |. skipAtLeastOneSpace
-        |= looseInt
+
+
+{-| Parse the exact format "%I:%M %p"
+-}
+timeParser : Parser DateTime.DateTime
+timeParser =
+    Parser.succeed DateTime.fromTime
+        |= clamped 1 12 looseInt
         |. skipOptionalSpaces
         |. Parser.symbol ":"
         |. skipOptionalSpaces
-        |= looseInt
+        |= clamped 0 59 looseInt
         |. skipAtLeastOneSpace
         |= amPm
-        |. skipOptionalSpaces
-        |. Parser.end
+
+
+dateTimeParser : Parser DateTime.DateTime
+dateTimeParser =
+    Parser.succeed
+        (\dateComponent timeComponent ->
+            DateTime.fromParts
+                dateComponent.year
+                dateComponent.month
+                dateComponent.day
+                timeComponent.hour
+                timeComponent.minute
+        )
+        |= dateParser
+        |. skipAtLeastOneSpace
+        |= timeParser
