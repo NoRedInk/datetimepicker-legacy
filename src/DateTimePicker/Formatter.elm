@@ -1,17 +1,11 @@
 module DateTimePicker.Formatter
     exposing
         ( accessibilityDateFormatter
-        , accessibilityDatePattern
         , dateFormatter
-        , datePattern
         , dateTimeFormatter
-        , dateTimePattern
         , footerFormatter
-        , footerPattern
         , timeFormatter
-        , timePattern
         , titleFormatter
-        , titlePattern
         )
 
 import Date
@@ -25,11 +19,6 @@ titleFormatter dateTime =
         ++ toString dateTime.year
 
 
-titlePattern : String
-titlePattern =
-    "%B %Y"
-
-
 accessibilityDateFormatter : DateTime.DateTime -> String
 accessibilityDateFormatter dateTime =
     toString dateTime.day
@@ -41,19 +30,9 @@ accessibilityDateFormatter dateTime =
         ++ toString dateTime.year
 
 
-accessibilityDatePattern : String
-accessibilityDatePattern =
-    "%e, %A %B %Y"
-
-
 dateFormatter : DateTime.DateTime -> String
 dateFormatter dateTime =
     toString dateTime.month ++ "/" ++ toString dateTime.day ++ "/" ++ toString dateTime.year
-
-
-datePattern : String
-datePattern =
-    "%m/%d/%Y"
 
 
 footerFormatter : DateTime.DateTime -> String
@@ -66,19 +45,9 @@ footerFormatter dateTime =
         ++ toString dateTime.year
 
 
-footerPattern : String
-footerPattern =
-    "%A, %B %d, %Y"
-
-
 dateTimeFormatter : DateTime.DateTime -> String
 dateTimeFormatter dateTime =
     dateFormatter dateTime ++ " " ++ timeFormatter dateTime
-
-
-dateTimePattern : String
-dateTimePattern =
-    "%m/%d/%Y %I:%M %p"
 
 
 timeFormatter : DateTime.DateTime -> String
@@ -95,11 +64,6 @@ timeFormatter dateTime =
                 ( toString dateTime.hour, "am" )
     in
     hourString ++ ":" ++ toString dateTime.minute ++ " " ++ amPm
-
-
-timePattern : String
-timePattern =
-    "%I:%M %p"
 
 
 fullDayOfWeek : DateTime.DateTime -> String
