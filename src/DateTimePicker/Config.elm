@@ -6,12 +6,15 @@ module DateTimePicker.Config
         , TimePickerConfig
         , TimePickerType(..)
         , Type(..)
+        , defaultDateFromInput
         , defaultDatePickerConfig
+        , defaultDateTimeFromInput
         , defaultDateTimePickerConfig
-        , defaultParseDate
-        , defaultParseDateTime
-        , defaultParseTime
+        , defaultDateTimeToInput
+        , defaultDateToInput
+        , defaultTimeFromInput
         , defaultTimePickerConfig
+        , defaultTimeToInput
         )
 
 {-| DateTimePicker configuration
@@ -24,12 +27,13 @@ module DateTimePicker.Config
 
 # Default Configuration
 
-@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultParseDate, defaultParseTime, defaultParseDateTime
+@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
 
 -}
 
 import Date
 import DateTimePicker.DateTime as DateTime
+import DateTimePicker.Formatter as Formatter
 import DateTimePicker.Internal exposing (InternalState)
 import DateTimePicker.Parser as Parser
 import Html.Styled as Html
@@ -60,7 +64,8 @@ type alias Config otherConfig msg =
         , autoClose : Bool
         , usePicker : Bool
         , attributes : List (Html.Attribute msg)
-        , parseInput : String -> Maybe DateTime.DateTime
+        , fromInput : String -> Maybe DateTime.DateTime
+        , toInput : DateTime.DateTime -> String
     }
 
 
@@ -118,7 +123,8 @@ defaultDatePickerConfig onChange =
     , usePicker = True
     , attributes = []
     , earliestDate = Nothing
-    , parseInput = Parser.parseDate
+    , fromInput = Parser.parseDate
+    , toInput = Formatter.dateFormatter
     }
 
 
@@ -139,7 +145,8 @@ defaultTimePickerConfig onChange =
     , timePickerType = Analog
     , usePicker = True
     , attributes = []
-    , parseInput = Parser.parseTime
+    , fromInput = Parser.parseTime
+    , toInput = Formatter.timeFormatter
     }
 
 
@@ -170,29 +177,51 @@ defaultDateTimePickerConfig onChange =
     , usePicker = True
     , attributes = []
     , earliestDate = Nothing
-    , parseInput = Parser.parseDateTime
+    , fromInput = Parser.parseDateTime
+    , toInput = Formatter.dateTimeFormatter
     }
 
 
 {-| Default date parser
 -}
-defaultParseDate : String -> Maybe DateTime.DateTime
-defaultParseDate =
+defaultDateFromInput : String -> Maybe DateTime.DateTime
+defaultDateFromInput =
     Parser.parseDate
+
+
+{-| Default date printer
+-}
+defaultDateToInput : DateTime.DateTime -> String
+defaultDateToInput =
+    Formatter.dateFormatter
 
 
 {-| Default time parser
 -}
-defaultParseTime : String -> Maybe DateTime.DateTime
-defaultParseTime =
+defaultTimeFromInput : String -> Maybe DateTime.DateTime
+defaultTimeFromInput =
     Parser.parseTime
+
+
+{-| Default time printer
+-}
+defaultTimeToInput : DateTime.DateTime -> String
+defaultTimeToInput =
+    Formatter.timeFormatter
 
 
 {-| Default date and time parser
 -}
-defaultParseDateTime : String -> Maybe DateTime.DateTime
-defaultParseDateTime =
+defaultDateTimeFromInput : String -> Maybe DateTime.DateTime
+defaultDateTimeFromInput =
     Parser.parseDateTime
+
+
+{-| Default date and time printer
+-}
+defaultDateTimeToInput : DateTime.DateTime -> String
+defaultDateTimeToInput =
+    Formatter.dateTimeFormatter
 
 
 {-| Configuration for name of days in a week.
