@@ -2,6 +2,7 @@ module DateTimePicker.DateUtils
     exposing
         ( Day
         , MonthType(..)
+        , dayToDateTime
         , dayToInt
         , fromMillitaryAmPm
         , fromMillitaryHour
@@ -82,6 +83,29 @@ type MonthType
     = Previous
     | Current
     | Next
+
+
+dayToDateTime : Int -> Date.Month -> Day -> DateTime.DateTime
+dayToDateTime year month day =
+    case day.monthType of
+        Current ->
+            DateTime.fromDate year month day.day
+
+        Previous ->
+            let
+                previousMonth =
+                    DateTime.fromDate year month day.day
+                        |> DateTime.addMonths -1
+            in
+            DateTime.fromDate previousMonth.year previousMonth.month day.day
+
+        Next ->
+            let
+                nextMonth =
+                    DateTime.fromDate year month day.day
+                        |> DateTime.addMonths 1
+            in
+            DateTime.fromDate nextMonth.year nextMonth.month day.day
 
 
 generateCalendar : Date.Day -> Date.Month -> Int -> List (List Day)

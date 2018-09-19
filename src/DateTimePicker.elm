@@ -907,7 +907,7 @@ calendar pickerType state currentDate =
                         matchesDay reference day =
                             let
                                 date =
-                                    DateTime.fromDate year month day.day
+                                    DateTimePicker.DateUtils.dayToDateTime year month day
                             in
                             reference
                                 |> Maybe.map
@@ -921,7 +921,7 @@ calendar pickerType state currentDate =
                         isInRange day =
                             let
                                 date =
-                                    DateTime.fromDate year month day
+                                    DateTimePicker.DateUtils.dayToDateTime year month day
                             in
                             case config.earliestDate of
                                 Nothing ->
@@ -935,7 +935,7 @@ calendar pickerType state currentDate =
                         toCell day =
                             let
                                 selectedDate =
-                                    DateTime.fromDate year month day.day
+                                    DateTimePicker.DateUtils.dayToDateTime year month day
 
                                 styles =
                                     List.concat
@@ -948,7 +948,7 @@ calendar pickerType state currentDate =
 
                                             DateTimePicker.DateUtils.Next ->
                                                 [ color Styles.fadeText ]
-                                        , if isInRange day.day then
+                                        , if isInRange day then
                                             []
                                           else
                                             [ backgroundColor inherit
@@ -976,7 +976,7 @@ calendar pickerType state currentDate =
                                     dateClickHandler pickerType stateValue year month day
 
                                 handlers =
-                                    if isInRange day.day then
+                                    if isInRange day then
                                         [ onMouseDownPreventDefault handler
                                         , onTouchStartPreventDefault handler
                                         ]
