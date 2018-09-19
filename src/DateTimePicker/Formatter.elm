@@ -32,7 +32,7 @@ accessibilityDateFormatter dateTime =
 
 dateFormatter : DateTime.DateTime -> String
 dateFormatter dateTime =
-    toString (DateTime.monthToInt dateTime.month) ++ "/" ++ toString dateTime.day ++ "/" ++ toString dateTime.year
+    padWithZero (DateTime.monthToInt dateTime.month) ++ "/" ++ padWithZero dateTime.day ++ "/" ++ toString dateTime.year
 
 
 footerFormatter : DateTime.DateTime -> String
@@ -56,15 +56,15 @@ timeFormatter dateTime =
     let
         ( hourString, amPm ) =
             if dateTime.hour == 12 then
-                ( "12", "pm" )
+                ( "12", "PM" )
             else if dateTime.hour == 0 then
-                ( "12", "am" )
+                ( "12", "AM" )
             else if dateTime.hour > 12 then
-                ( toString (dateTime.hour % 12), "pm" )
+                ( padWithZero (dateTime.hour % 12), "PM" )
             else
-                ( toString dateTime.hour, "am" )
+                ( padWithZero dateTime.hour, "AM" )
     in
-    hourString ++ ":" ++ toString dateTime.minute ++ " " ++ amPm
+    hourString ++ ":" ++ padWithZero dateTime.minute ++ " " ++ amPm
 
 
 fullDayOfWeek : DateTime.DateTime -> String
@@ -130,3 +130,11 @@ fullMonth month =
 
         Date.Dec ->
             "December"
+
+
+padWithZero : Int -> String
+padWithZero input =
+    if input < 10 then
+        "0" ++ toString input
+    else
+        toString input
