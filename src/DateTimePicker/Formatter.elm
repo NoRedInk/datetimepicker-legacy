@@ -56,13 +56,13 @@ timeFormatter dateTime =
     let
         ( hourString, amPm ) =
             if dateTime.hour == 12 then
-                ( "12", "PM" )
+                ( "12", "pm" )
             else if dateTime.hour == 0 then
-                ( "12", "AM" )
+                ( "12", "am" )
             else if dateTime.hour > 12 then
-                ( padWithZero (dateTime.hour % 12), "PM" )
+                ( padWithZero (dateTime.hour % 12), "pm" )
             else
-                ( padWithZero dateTime.hour, "AM" )
+                ( padWithZero dateTime.hour, "am" )
     in
     hourString ++ ":" ++ padWithZero dateTime.minute ++ " " ++ amPm
 
