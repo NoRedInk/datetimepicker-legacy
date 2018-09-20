@@ -36,7 +36,7 @@ dateFormatterTest =
         \() ->
             date
                 |> Formatter.dateFormatter
-                |> Expect.equal "9/10/2018"
+                |> Expect.equal "09/10/2018"
 
 
 footerFormatterTest : Test
@@ -54,7 +54,7 @@ dateTimeFormatterTest =
         \() ->
             date
                 |> Formatter.dateTimeFormatter
-                |> Expect.equal "9/10/2018 1:15 pm"
+                |> Expect.equal "09/10/2018 01:15 pm"
 
 
 timeFormatterTest : Test
@@ -63,4 +63,4 @@ timeFormatterTest =
         \() ->
             date
                 |> Formatter.timeFormatter
-                |> Expect.equal "1:15 pm"
+                |> Expect.equal "01:15 pm"
