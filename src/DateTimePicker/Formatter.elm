@@ -80,7 +80,7 @@ fullDayOfWeek dateTime =
             "Tuesday"
 
         Date.Wed ->
-            "Wednewday"
+            "Wednesday"
 
         Date.Thu ->
             "Thursday"
