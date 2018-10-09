@@ -926,7 +926,7 @@ calendar pickerType state currentDate =
                                 Just earliestDate ->
                                     DateTime.compareDays
                                         (DateTimePicker.DateUtils.dayToDateTime year month day)
-                                        (DateTime.addDays -1 earliestDate)
+                                        earliestDate
                                         /= LT
 
                         toCell day =
