@@ -919,18 +919,15 @@ calendar pickerType state currentDate =
                                 |> Maybe.withDefault False
 
                         isInRange day =
-                            let
-                                date =
-                                    DateTimePicker.DateUtils.dayToDateTime year month day
-                            in
                             case config.earliestDate of
                                 Nothing ->
                                     True
 
                                 Just earliestDate ->
-                                    (date.year >= earliestDate.year)
-                                        && (DateTime.monthToInt date.month >= DateTime.monthToInt earliestDate.month)
-                                        && (date.day >= earliestDate.day)
+                                    DateTime.compareDays
+                                        (DateTimePicker.DateUtils.dayToDateTime year month day)
+                                        (DateTime.addDays -1 earliestDate)
+                                        /= LT
 
                         toCell day =
                             let
@@ -988,6 +985,11 @@ calendar pickerType state currentDate =
                                     [ [ css styles
                                       , attribute "role" "button"
                                       , attribute "aria-label" (accessibilityDateFormatter selectedDate)
+                                      , attribute "data-in-range" <|
+                                            if isInRange day then
+                                                "true"
+                                            else
+                                                "false"
                                       ]
                                     , handlers
                                     ]
