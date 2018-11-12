@@ -36,7 +36,7 @@ module DateTimePicker
 -}
 
 import Css exposing (..)
-import Css.Foreign exposing (Snippet, children, descendants, withClass)
+import Css.Global exposing (Snippet, children, descendants, withClass)
 import Date exposing (Date)
 import DateTimePicker.AnalogClock
 import DateTimePicker.ClockUtils
@@ -730,12 +730,12 @@ digitalTimePickerDialog pickerType state currentDate =
                     [ css
                         [ backgroundColor (hex "#fff")
                         , descendants
-                            [ Css.Foreign.table
+                            [ Css.Global.table
                                 [ Styles.tableStyle
                                 , width (px 120)
                                 , descendants
-                                    [ Css.Foreign.tr [ verticalAlign top ]
-                                    , Css.Foreign.td
+                                    [ Css.Global.tr [ verticalAlign top ]
+                                    , Css.Global.td
                                         [ width (pct 33)
                                         , Styles.cellStyle
                                         , hover
@@ -1009,16 +1009,16 @@ calendar pickerType state currentDate =
                             , width auto
                             , margin (px 0)
                             , descendants
-                                [ Css.Foreign.thead
+                                [ Css.Global.thead
                                     []
-                                , Css.Foreign.td
+                                , Css.Global.td
                                     [ Styles.dayStyle
                                     , hover
                                         [ backgroundColor Styles.highlightedDay
                                         , Styles.highlightBorderStyle
                                         ]
                                     ]
-                                , Css.Foreign.th
+                                , Css.Global.th
                                     [ Styles.dayStyle
                                     , backgroundColor Styles.lightGray
                                     , fontWeight normal
