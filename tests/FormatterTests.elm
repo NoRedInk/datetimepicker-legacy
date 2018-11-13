@@ -1,15 +1,15 @@
-module FormatterTests exposing (..)
+module FormatterTests exposing (accessibilityDateFormatterTest, date, dateFormatterTest, dateTimeFormatterTest, footerFormatterTest, timeFormatterTest, titleFormatterTest)
 
-import Date
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter as Formatter
 import Expect
 import Test exposing (..)
+import Time
 
 
 date : DateTime.DateTime
 date =
-    DateTime.fromParts 2018 Date.Sep 10 13 15
+    DateTime.fromParts 2018 Time.Sep 10 13 15
 
 
 titleFormatterTest : Test

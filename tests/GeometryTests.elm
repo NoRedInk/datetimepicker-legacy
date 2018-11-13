@@ -1,4 +1,4 @@
-module GeometryTests exposing (..)
+module GeometryTests exposing (all, calculateAngleTests, calculateArrowPointTests)
 
 import DateTimePicker.Geometry as Geometry exposing (Point)
 import Expect
@@ -19,11 +19,11 @@ calculateAngleTests =
         [ test "calculateAngle for pi/6" <|
             \() ->
                 Geometry.calculateAngle (Point 0 0) (Point 100 0) (Point 100 100)
-                    |> Expect.equal 5.497787143782138
+                    |> Expect.within (Expect.Absolute 0.000000001) 5.497787143782138
         , test "calculateAngle for 09:00" <|
             \() ->
                 Geometry.calculateAngle (Point 100 100) (Point 200 100) (Point 200 100)
-                    |> Expect.equal 6.283185307179586
+                    |> Expect.within (Expect.Absolute 0.000000001) 6.283185307179586
         ]
 
 
