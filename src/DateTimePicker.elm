@@ -1,7 +1,7 @@
 module DateTimePicker exposing
     ( DateTime, dateTime
     , datePicker, datePickerWithConfig, dateTimePicker, dateTimePickerWithConfig, timePicker, timePickerWithConfig
-    , initialState, initialStateWithToday
+    , initialStateWithToday
     , State
     )
 
@@ -17,7 +17,7 @@ module DateTimePicker exposing
 
 # Initial
 
-@docs initialState, initialStateWithToday
+@docs initialStateWithToday
 
 
 # Internal State
@@ -68,14 +68,6 @@ type alias DateTime =
 dateTime : Int -> Time.Month -> Int -> Int -> Int -> DateTime.DateTime
 dateTime =
     DateTime.DateTime
-
-
-{-| Initial state of the DatePicker
--}
-initialState : State
-initialState =
-    InternalState
-        initialStateValue
 
 
 {-| Initial state of the DatePicker with today Date
