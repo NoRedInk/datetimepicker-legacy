@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "elm-test",
-    "make": "elm-make --yes src/DateTimePicker.elm --output dist/elm.js",
-    "make-demos": "cd demo && elm-make --yes Demo.elm --output /dev/null && elm-make --yes RandomDate.elm --output /dev/null"
+    "make": "elm make src/DateTimePicker.elm --output dist/elm.js",
+    "make-demos": "cd demo && elm make Demo.elm --output /dev/null && elm make RandomDate.elm --output /dev/null"
   },
   "repository": {
     "type": "git",
