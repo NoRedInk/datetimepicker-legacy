@@ -8,7 +8,7 @@ module DateTimePicker.Formatter
         , titleFormatter
         )
 
-import Date
+import Time
 import DateTimePicker.DateTime as DateTime
 
 
@@ -16,23 +16,23 @@ titleFormatter : DateTime.DateTime -> String
 titleFormatter dateTime =
     fullMonth dateTime.month
         ++ " "
-        ++ toString dateTime.year
+        ++ String.fromInt dateTime.year
 
 
 accessibilityDateFormatter : DateTime.DateTime -> String
 accessibilityDateFormatter dateTime =
-    toString dateTime.day
+    String.fromInt dateTime.day
         ++ ", "
         ++ fullDayOfWeek dateTime
         ++ " "
         ++ fullMonth dateTime.month
         ++ " "
-        ++ toString dateTime.year
+        ++ String.fromInt dateTime.year
 
 
 dateFormatter : DateTime.DateTime -> String
 dateFormatter dateTime =
-    padWithZero (DateTime.monthToInt dateTime.month) ++ "/" ++ padWithZero dateTime.day ++ "/" ++ toString dateTime.year
+    padWithZero (DateTime.monthToInt dateTime.month) ++ "/" ++ padWithZero dateTime.day ++ "/" ++ String.fromInt dateTime.year
 
 
 footerFormatter : DateTime.DateTime -> String
@@ -41,9 +41,9 @@ footerFormatter dateTime =
         ++ ", "
         ++ fullMonth dateTime.month
         ++ " "
-        ++ toString dateTime.day
+        ++ String.fromInt dateTime.day
         ++ ", "
-        ++ toString dateTime.year
+        ++ String.fromInt dateTime.year
 
 
 dateTimeFormatter : DateTime.DateTime -> String
@@ -60,7 +60,7 @@ timeFormatter dateTime =
             else if dateTime.hour == 0 then
                 ( "12", "am" )
             else if dateTime.hour > 12 then
-                ( padWithZero (dateTime.hour % 12), "pm" )
+                ( padWithZero (modBy 12 dateTime.hour), "pm" )
             else
                 ( padWithZero dateTime.hour, "am" )
     in
@@ -70,71 +70,71 @@ timeFormatter dateTime =
 fullDayOfWeek : DateTime.DateTime -> String
 fullDayOfWeek dateTime =
     case DateTime.dayOfWeek dateTime of
-        Date.Sun ->
+        Time.Sun ->
             "Sunday"
 
-        Date.Mon ->
+        Time.Mon ->
             "Monday"
 
-        Date.Tue ->
+        Time.Tue ->
             "Tuesday"
 
-        Date.Wed ->
+        Time.Wed ->
             "Wednesday"
 
-        Date.Thu ->
+        Time.Thu ->
             "Thursday"
 
-        Date.Fri ->
+        Time.Fri ->
             "Friday"
 
-        Date.Sat ->
+        Time.Sat ->
             "Saturday"
 
 
-fullMonth : Date.Month -> String
+fullMonth : Time.Month -> String
 fullMonth month =
     case month of
-        Date.Jan ->
+        Time.Jan ->
             "January"
 
-        Date.Feb ->
+        Time.Feb ->
             "February"
 
-        Date.Mar ->
+        Time.Mar ->
             "March"
 
-        Date.Apr ->
+        Time.Apr ->
             "April"
 
-        Date.May ->
+        Time.May ->
             "May"
 
-        Date.Jun ->
+        Time.Jun ->
             "June"
 
-        Date.Jul ->
+        Time.Jul ->
             "July"
 
-        Date.Aug ->
+        Time.Aug ->
             "August"
 
-        Date.Sep ->
+        Time.Sep ->
             "September"
 
-        Date.Oct ->
+        Time.Oct ->
             "October"
 
-        Date.Nov ->
+        Time.Nov ->
             "November"
 
-        Date.Dec ->
+        Time.Dec ->
             "December"
 
 
 padWithZero : Int -> String
 padWithZero input =
     if input < 10 then
-        "0" ++ toString input
+        "0" ++ String.fromInt input
     else
-        toString input
+        String.fromInt input

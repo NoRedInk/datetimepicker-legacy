@@ -11,58 +11,58 @@ module DateTimePicker.DateUtils
         , toMillitary
         )
 
-import Date
+import Time
 import DateTimePicker.DateTime as DateTime
 import String
 
 
-dayToInt : Date.Day -> Date.Day -> Int
+dayToInt : Time.Weekday -> Time.Weekday -> Int
 dayToInt startOfWeek day =
     let
         base =
             case day of
-                Date.Sun ->
+                Time.Sun ->
                     0
 
-                Date.Mon ->
+                Time.Mon ->
                     1
 
-                Date.Tue ->
+                Time.Tue ->
                     2
 
-                Date.Wed ->
+                Time.Wed ->
                     3
 
-                Date.Thu ->
+                Time.Thu ->
                     4
 
-                Date.Fri ->
+                Time.Fri ->
                     5
 
-                Date.Sat ->
+                Time.Sat ->
                     6
     in
     case startOfWeek of
-        Date.Sun ->
+        Time.Sun ->
             base
 
-        Date.Mon ->
-            (base - 1) % 7
+        Time.Mon ->
+            modBy 7 (base - 1)
 
-        Date.Tue ->
-            (base - 2) % 7
+        Time.Tue ->
+            modBy 7 (base - 2)
 
-        Date.Wed ->
-            (base - 3) % 7
+        Time.Wed ->
+            modBy 7 (base - 3)
 
-        Date.Thu ->
-            (base - 4) % 7
+        Time.Thu ->
+            modBy 7 (base - 4)
 
-        Date.Fri ->
-            (base - 5) % 7
+        Time.Fri ->
+            modBy 7 (base - 5)
 
-        Date.Sat ->
-            (base - 6) % 7
+        Time.Sat ->
+            modBy 7 (base - 6)
 
 
 calculateNumberOfDaysForPreviousMonth : Int -> Int
@@ -85,7 +85,7 @@ type MonthType
     | Next
 
 
-dayToDateTime : Int -> Date.Month -> Day -> DateTime.DateTime
+dayToDateTime : Int -> Time.Month -> Day -> DateTime.DateTime
 dayToDateTime year month day =
     case day.monthType of
         Current ->
@@ -108,7 +108,7 @@ dayToDateTime year month day =
             DateTime.fromDate nextMonth.year nextMonth.month day.day
 
 
-generateCalendar : Date.Day -> Date.Month -> Int -> List (List Day)
+generateCalendar : Time.Weekday -> Time.Month -> Int -> List (List Day)
 generateCalendar firstDayOfWeek month year =
     let
         firstDateOfMonth =
@@ -178,7 +178,7 @@ fromMillitaryHour hour =
             12
 
         _ ->
-            hour % 12
+            modBy 12 hour
 
 
 fromMillitaryAmPm : Int -> String

@@ -6,7 +6,7 @@ module DateTimePicker.Parser
         )
 
 import Char
-import Date
+import Time
 import DateTimePicker.DateTime as DateTime
 import Parser exposing ((|.), (|=), Parser)
 
@@ -28,12 +28,18 @@ parseDateTime input =
 
 skipOptionalSpaces : Parser ()
 skipOptionalSpaces =
-    Parser.ignore Parser.zeroOrMore (\c -> c == ' ')
+    Parser.chompWhile (\c -> c == ' ')
+        |> Parser.getChompedString
+        |> Parser.map (\_ -> ())
 
 
 skipAtLeastOneSpace : Parser ()
 skipAtLeastOneSpace =
-    Parser.ignore Parser.oneOrMore (\c -> c == ' ')
+    Parser.succeed ()
+        |. Parser.chompIf (\c -> c == ' ')
+        |. Parser.chompWhile (\c -> c == ' ')
+        |> Parser.getChompedString
+        |> Parser.map (\_ -> ())
 
 
 amPm : Parser String
@@ -72,7 +78,7 @@ runWithSurroundingSpaceAndValidation innerParser input =
                                 Parser.succeed validatedDateTime
 
                             Nothing ->
-                                Parser.fail "Invalid date"
+                                Parser.problem "Invalid date"
                     )
     in
     Parser.run finalParser input
@@ -83,15 +89,18 @@ runWithSurroundingSpaceAndValidation innerParser input =
 -}
 looseInt : Parser Int
 looseInt =
-    Parser.keep Parser.oneOrMore (\c -> Char.isDigit c)
+    Parser.succeed ()
+        |. Parser.chompIf Char.isDigit
+        |. Parser.chompWhile Char.isDigit
+        |> Parser.getChompedString
         |> Parser.andThen
             (\digitsString ->
                 case String.toInt digitsString of
-                    Ok int ->
+                    Just int ->
                         Parser.succeed int
 
-                    Err message ->
-                        Parser.fail message
+                    Nothing ->
+                        Parser.problem (digitsString ++ " is not an integer")
             )
 
 
@@ -100,17 +109,17 @@ clamped min max previousParser =
     Parser.andThen
         (\int ->
             if int > max || int < min then
-                Parser.fail "Int out of range"
+                Parser.problem "Int out of range"
             else
                 Parser.succeed int
         )
         previousParser
 
 
-makeDateTime : Date.Month -> Int -> Int -> Int -> Int -> String -> DateTime.DateTime
-makeDateTime month day year hour minute amPm =
+makeDateTime : Time.Month -> Int -> Int -> Int -> Int -> String -> DateTime.DateTime
+makeDateTime month day year hour minute amPm_ =
     DateTime.fromDate year month day
-        |> DateTime.setTime hour minute amPm
+        |> DateTime.setTime hour minute amPm_
 
 
 {-| Parse the exact format "%m/%d/%Y"

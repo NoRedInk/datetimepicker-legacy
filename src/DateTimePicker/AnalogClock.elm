@@ -71,22 +71,19 @@ currentTime pickerType onChange state date =
         time =
             stateValue.time
 
-        hourArrowLength =
-            50
-
         drawHour hour minute =
-            Dict.get (toString hour) hours
-                |> Maybe.map (flip (-) (toFloat minute * pi / 360))
+            Dict.get (String.fromInt hour) hours
+                |> Maybe.map (\a -> a - (toFloat minute * pi / 360))
                 |> Maybe.map (DateTimePicker.Geometry.calculateArrowPoint originPoint hourArrowLength >> drawArrow pickerType onChange state date)
                 |> Maybe.withDefault (text "")
 
         drawMinute minute =
-            Dict.get (toString minute) minutes
+            Dict.get (String.fromInt minute) minutes
                 |> Maybe.map (DateTimePicker.Geometry.calculateArrowPoint originPoint minuteArrowLength >> drawArrow pickerType onChange state date)
                 |> Maybe.withDefault (text "")
     in
-    case ( stateValue.activeTimeIndicator, time.hour, time.minute, time.amPm ) of
-        ( Nothing, Just hour, Just minute, Just _ ) ->
+    case ( ( stateValue.activeTimeIndicator, time.hour ), ( time.minute, time.amPm ) ) of
+        ( ( Nothing, Just hour ), ( Just minute, Just _ ) ) ->
             g [] [ drawHour hour minute, drawMinute minute ]
 
         _ ->
@@ -100,8 +97,8 @@ clockFace pickerType onChange state date ( number, radians ) =
             DateTimePicker.Geometry.calculateArrowPoint originPoint 85 radians
     in
     text_
-        [ x <| toString point.x
-        , y <| toString point.y
+        [ x <| String.fromInt point.x
+        , y <| String.fromInt point.y
         , textAnchor "middle"
         , dominantBaseline "central"
         , onMouseDownPreventDefault (mouseDownHandler pickerType state date onChange)
@@ -169,6 +166,7 @@ arrow pickerType onChange state date =
                 angle
                     |> arrowPoint
                     |> drawArrow pickerType onChange state date
+
             else
                 text ""
 
@@ -178,8 +176,8 @@ drawArrow pickerType onChange state date point =
     line
         [ x1 "100"
         , y1 "100"
-        , x2 <| toString point.x
-        , y2 <| toString point.y
+        , x2 <| String.fromInt point.x
+        , y2 <| String.fromInt point.y
         , strokeWidth "2px"
         , stroke "#aaa"
         , onMouseDownPreventDefault (mouseDownHandler pickerType state date onChange)
@@ -251,7 +249,7 @@ updateHourState stateValue date moveData =
                 |> Maybe.map Tuple.first
 
         updateTime time hour =
-            { time | hour = hour |> Maybe.andThen (String.toInt >> Result.toMaybe) }
+            { time | hour = hour |> Maybe.andThen String.toInt }
     in
     InternalState
         { stateValue
@@ -276,7 +274,7 @@ updateMinuteState stateValue date moveData =
                 |> Maybe.map Tuple.first
 
         updateTime time minute =
-            { time | minute = minute |> Maybe.andThen (String.toInt >> Result.toMaybe) }
+            { time | minute = minute |> Maybe.andThen String.toInt }
     in
     InternalState
         { stateValue
