@@ -1,9 +1,9 @@
 {
     "type": "package",
-    "name": "NoRedInk/datetimepicker",
+    "name": "NoRedInk/datetimepicker-legacy",
     "summary": "Reusable date and time picker view",
     "license": "Apache-2.0",
-    "version": "3.0.2",
+    "version": "1.0.0",
     "exposed-modules": [
         "DateTimePicker",
         "DateTimePicker.Config"
