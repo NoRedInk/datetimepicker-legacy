@@ -1,21 +1,7 @@
-module DateTimePicker.Config
-    exposing
-        ( Config
-        , DatePickerConfig
-        , NameOfDays
-        , TimePickerConfig
-        , TimePickerType(..)
-        , Type(..)
-        , defaultDateFromInput
-        , defaultDatePickerConfig
-        , defaultDateTimeFromInput
-        , defaultDateTimePickerConfig
-        , defaultDateTimeToInput
-        , defaultDateToInput
-        , defaultTimeFromInput
-        , defaultTimePickerConfig
-        , defaultTimeToInput
-        )
+module DateTimePicker.Config exposing
+    ( Config, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType(..), Type(..)
+    , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+    )
 
 {-| DateTimePicker configuration
 
@@ -31,12 +17,12 @@ module DateTimePicker.Config
 
 -}
 
-import Date
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter as Formatter
 import DateTimePicker.Internal exposing (InternalState)
 import DateTimePicker.Parser as Parser
 import Html.Styled as Html
+import Time
 
 
 type alias State =
@@ -80,7 +66,7 @@ type alias Config otherConfig msg =
 type alias DatePickerConfig otherConfig =
     { otherConfig
         | nameOfDays : NameOfDays
-        , firstDayOfWeek : Date.Day
+        , firstDayOfWeek : Time.Weekday
         , allowYearNavigation : Bool
         , earliestDate : Maybe DateTime.DateTime
     }
@@ -118,7 +104,7 @@ defaultDatePickerConfig onChange =
     { onChange = onChange
     , autoClose = True
     , nameOfDays = defaultNameOfDays
-    , firstDayOfWeek = Date.Sun
+    , firstDayOfWeek = Time.Sun
     , allowYearNavigation = True
     , usePicker = True
     , attributes = []
@@ -171,7 +157,7 @@ defaultDateTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
     , nameOfDays = defaultNameOfDays
-    , firstDayOfWeek = Date.Sun
+    , firstDayOfWeek = Time.Sun
     , timePickerType = Analog
     , allowYearNavigation = True
     , usePicker = True

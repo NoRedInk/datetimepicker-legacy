@@ -1,18 +1,19 @@
 module Demo exposing (main)
 
-import Date exposing (Date)
+import Browser
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import Dict exposing (Dict)
 import Html.Styled as Html exposing (Html, div, form, h3, label, li, p, text, ul)
+import Time
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program
-        { init = init
+    Browser.element
+        { init = \_ -> init
         , update = update
-        , view = view
+        , view = Html.toUnstyled << view
         , subscriptions = subscriptions
         }
 
@@ -37,16 +38,9 @@ init : ( Model, Cmd Msg )
 init =
     ( { dates = Dict.empty
       , datePickerState = Dict.empty
-      , now = { year = 2018, month = Date.Sep, day = 7, hour = 4, minute = 49 }
+      , now = { year = 2018, month = Time.Sep, day = 7, hour = 4, minute = 49 }
       }
-    , Cmd.batch
-        [ DateTimePicker.initialCmd (DatePickerChanged DatePicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged DigitalDateTimePicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged AnalogDateTimePicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged TimePicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged NoPicker) DateTimePicker.initialState
-        , DateTimePicker.initialCmd (DatePickerChanged LimitedRangePicker) DateTimePicker.initialState
-        ]
+    , Cmd.none
     )
 
 
@@ -128,7 +122,7 @@ viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateT
 viewPicker which now date state =
     p []
         [ label []
-            [ text (toString which)
+            [ text (Debug.toString which)
             , text ":"
             , case which of
                 DatePicker ->
@@ -170,8 +164,8 @@ view model =
                 (\which ->
                     viewPicker which
                         model.now
-                        (Dict.get (toString which) model.dates)
-                        (Dict.get (toString which) model.datePickerState |> Maybe.withDefault DateTimePicker.initialState)
+                        (Dict.get (Debug.toString which) model.dates)
+                        (Dict.get (Debug.toString which) model.datePickerState |> Maybe.withDefault (DateTimePicker.initialStateWithToday model.now))
                 )
             |> div []
         , h3 [] [ text "Selected values" ]
@@ -179,7 +173,7 @@ view model =
             [ allPickers
                 |> List.map
                     (\which ->
-                        li [] [ text (toString which), text ": ", text <| toString <| Dict.get (toString which) model.dates ]
+                        li [] [ text (Debug.toString which), text ": ", text <| Debug.toString <| Dict.get (Debug.toString which) model.dates ]
                     )
                 |> ul []
             ]
@@ -198,11 +192,11 @@ update msg model =
                 | dates =
                     case value of
                         Nothing ->
-                            Dict.remove (toString which) model.dates
+                            Dict.remove (Debug.toString which) model.dates
 
                         Just date ->
-                            Dict.insert (toString which) date model.dates
-                , datePickerState = Dict.insert (toString which) state model.datePickerState
+                            Dict.insert (Debug.toString which) date model.dates
+                , datePickerState = Dict.insert (Debug.toString which) state model.datePickerState
               }
             , Cmd.none
             )

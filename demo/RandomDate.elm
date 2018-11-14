@@ -1,20 +1,21 @@
 module RandomDate exposing (main)
 
-import Date
+import Browser
 import DateTimePicker
 import DateTimePicker.Config exposing (defaultDatePickerConfig, defaultDateTimePickerConfig)
 import Html.Styled as Html exposing (Html, button, div, form, label, li, p, text, ul)
 import Html.Styled.Attributes exposing (type_)
 import Html.Styled.Events exposing (onClick)
 import Random
+import Time
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program
-        { init = init
+    Browser.element
+        { init = \_ -> init
         , update = update
-        , view = view
+        , view = view >> Html.toUnstyled
         , subscriptions = subscriptions
         }
 
@@ -28,11 +29,9 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { dateValue = Nothing
-      , datePickerState = DateTimePicker.initialState
+      , datePickerState = DateTimePicker.initialStateWithToday { year = 2018, month = Time.Nov, day = 13, hour = 14, minute = 0 }
       }
-    , Cmd.batch
-        [ DateTimePicker.initialCmd DateChanged DateTimePicker.initialState
-        ]
+    , Cmd.none
     )
 
 
@@ -110,41 +109,41 @@ getRandomDate =
     Random.generate GetRandomDateCompleted dateGenerator
 
 
-intToMonth : Int -> Date.Month
+intToMonth : Int -> Time.Month
 intToMonth month =
     case month of
         1 ->
-            Date.Jan
+            Time.Jan
 
         2 ->
-            Date.Feb
+            Time.Feb
 
         3 ->
-            Date.Mar
+            Time.Mar
 
         4 ->
-            Date.Apr
+            Time.Apr
 
         5 ->
-            Date.May
+            Time.May
 
         6 ->
-            Date.Jun
+            Time.Jun
 
         7 ->
-            Date.Jul
+            Time.Jul
 
         8 ->
-            Date.Aug
+            Time.Aug
 
         9 ->
-            Date.Sep
+            Time.Sep
 
         10 ->
-            Date.Oct
+            Time.Oct
 
         11 ->
-            Date.Nov
+            Time.Nov
 
         _ ->
-            Date.Dec
+            Time.Dec

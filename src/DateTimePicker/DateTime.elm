@@ -11,18 +11,17 @@ module DateTimePicker.DateTime
         , fromTime
         , intToMonth
         , monthToInt
-        , now
         , setTime
         , toFirstOfMonth
         , validate
         )
 
-import Date
+import Time
 import Task exposing (Task)
 
 
 type alias DateTime =
-    { year : Int, month : Date.Month, day : Int, hour : Int, minute : Int }
+    { year : Int, month : Time.Month, day : Int, hour : Int, minute : Int }
 
 
 compareDays : DateTime -> DateTime -> Order
@@ -40,101 +39,87 @@ compareDays left right =
             yearOrder
 
 
-now : Task never DateTime
-now =
-    Task.map
-        (\date ->
-            { year = Date.year date
-            , month = Date.month date
-            , day = Date.day date
-            , hour = Date.hour date
-            , minute = Date.minute date
-            }
-        )
-        Date.now
-
-
-monthToInt : Date.Month -> Int
+monthToInt : Time.Month -> Int
 monthToInt month =
     case month of
-        Date.Jan ->
+        Time.Jan ->
             1
 
-        Date.Feb ->
+        Time.Feb ->
             2
 
-        Date.Mar ->
+        Time.Mar ->
             3
 
-        Date.Apr ->
+        Time.Apr ->
             4
 
-        Date.May ->
+        Time.May ->
             5
 
-        Date.Jun ->
+        Time.Jun ->
             6
 
-        Date.Jul ->
+        Time.Jul ->
             7
 
-        Date.Aug ->
+        Time.Aug ->
             8
 
-        Date.Sep ->
+        Time.Sep ->
             9
 
-        Date.Oct ->
+        Time.Oct ->
             10
 
-        Date.Nov ->
+        Time.Nov ->
             11
 
-        Date.Dec ->
+        Time.Dec ->
             12
 
 
-intToMonth : Int -> Date.Month
+intToMonth : Int -> Time.Month
 intToMonth month =
     case month of
         1 ->
-            Date.Jan
+            Time.Jan
 
         2 ->
-            Date.Feb
+            Time.Feb
 
         3 ->
-            Date.Mar
+            Time.Mar
 
         4 ->
-            Date.Apr
+            Time.Apr
 
         5 ->
-            Date.May
+            Time.May
 
         6 ->
-            Date.Jun
+            Time.Jun
 
         7 ->
-            Date.Jul
+            Time.Jul
 
         8 ->
-            Date.Aug
+            Time.Aug
 
         9 ->
-            Date.Sep
+            Time.Sep
 
         10 ->
-            Date.Oct
+            Time.Oct
 
         11 ->
-            Date.Nov
+            Time.Nov
 
         _ ->
-            Date.Dec
+            Time.Dec
 
 
-dayOfWeek : DateTime -> Date.Day
+dayOfWeek : DateTime -> Time.Weekday
 dayOfWeek { year, month, day } =
     let
         om =
@@ -154,34 +139,34 @@ dayOfWeek { year, month, day } =
 
         y =
             if om <= 2 then
-                year % 100 - 1
+                (modBy 100 year) - 1
             else
-                year % 100
+                modBy 100 year
 
         w =
-            (k + floor (2.6 * toFloat m - 0.2) - 2 * c + y + floor (toFloat y / 4) + floor (toFloat c / 4)) % 7
+            modBy 7 (k + floor (2.6 * toFloat m - 0.2) - 2 * c + y + floor (toFloat y / 4) + floor (toFloat c / 4))
     in
     case w of
         0 ->
-            Date.Sun
+            Time.Sun
 
         1 ->
-            Date.Mon
+            Time.Mon
 
         2 ->
-            Date.Tue
+            Time.Tue
 
         3 ->
-            Date.Wed
+            Time.Wed
 
         4 ->
-            Date.Thu
+            Time.Thu
 
         5 ->
-            Date.Fri
+            Time.Fri
 
         _ ->
-            Date.Sat
+            Time.Sat
 
 
 addDays : Int -> DateTime -> DateTime
@@ -217,7 +202,7 @@ addMonths n date =
             wholeMonths // 12 + 1
 
         m =
-            intToMonth ((wholeMonths % 12) + 1)
+            intToMonth ((modBy 12 wholeMonths) + 1)
     in
     fromParts y m (min date.day (daysInMonth y m)) date.hour date.minute
 
@@ -282,12 +267,12 @@ flooredDiv numerator denominator =
     floor (toFloat numerator / denominator)
 
 
-rataDie : Int -> Date.Month -> Int -> Int
+rataDie : Int -> Time.Month -> Int -> Int
 rataDie year month day =
     daysBeforeYear year + daysBeforeMonth year month + day
 
 
-daysBeforeMonth : Int -> Date.Month -> Int
+daysBeforeMonth : Int -> Time.Month -> Int
 daysBeforeMonth year month =
     let
         leapDays =
@@ -297,40 +282,40 @@ daysBeforeMonth year month =
                 0
     in
     case month of
-        Date.Jan ->
+        Time.Jan ->
             0
 
-        Date.Feb ->
+        Time.Feb ->
             31
 
-        Date.Mar ->
+        Time.Mar ->
             59 + leapDays
 
-        Date.Apr ->
+        Time.Apr ->
             90 + leapDays
 
-        Date.May ->
+        Time.May ->
             120 + leapDays
 
-        Date.Jun ->
+        Time.Jun ->
             151 + leapDays
 
-        Date.Jul ->
+        Time.Jul ->
             181 + leapDays
 
-        Date.Aug ->
+        Time.Aug ->
             212 + leapDays
 
-        Date.Sep ->
+        Time.Sep ->
             243 + leapDays
 
-        Date.Oct ->
+        Time.Oct ->
             273 + leapDays
 
-        Date.Nov ->
+        Time.Nov ->
             304 + leapDays
 
-        Date.Dec ->
+        Time.Dec ->
             334 + leapDays
 
 
@@ -348,28 +333,28 @@ daysBeforeYear y1 =
 
 isLeapYear : Int -> Bool
 isLeapYear y =
-    y % 4 == 0 && y % 100 /= 0 || y % 400 == 0
+    modBy 4 y == 0 && modBy 100 y /= 0 || modBy 400 y == 0
 
 
-daysInMonth : Int -> Date.Month -> Int
+daysInMonth : Int -> Time.Month -> Int
 daysInMonth year month =
     case month of
-        Date.Feb ->
+        Time.Feb ->
             if isLeapYear year then
                 29
             else
                 28
 
-        Date.Sep ->
+        Time.Sep ->
             30
 
-        Date.Apr ->
+        Time.Apr ->
             30
 
-        Date.Jun ->
+        Time.Jun ->
             30
 
-        Date.Nov ->
+        Time.Nov ->
             30
 
         _ ->
@@ -386,7 +371,7 @@ validate datetime =
         Nothing
     else if datetime.day < 1 then
         Nothing
-    else if datetime.month == Date.Feb then
+    else if datetime.month == Time.Feb then
         if isLeapYear datetime.year && datetime.day > 29 then
             Nothing
         else if datetime.day > 28 then
@@ -394,10 +379,10 @@ validate datetime =
         else
             Just datetime
     else if
-        ((datetime.month == Date.Sep)
-            || (datetime.month == Date.Apr)
-            || (datetime.month == Date.Jun)
-            || (datetime.month == Date.Nov)
+        ((datetime.month == Time.Sep)
+            || (datetime.month == Time.Apr)
+            || (datetime.month == Time.Jun)
+            || (datetime.month == Time.Nov)
         )
             && (datetime.day > 30)
     then
@@ -408,7 +393,7 @@ validate datetime =
         Just datetime
 
 
-fromParts : Int -> Date.Month -> Int -> Int -> Int -> DateTime
+fromParts : Int -> Time.Month -> Int -> Int -> Int -> DateTime
 fromParts year month day hour minute =
     { year = year
     , month = month
@@ -420,10 +405,10 @@ fromParts year month day hour minute =
 
 fromTime : Int -> Int -> String -> DateTime
 fromTime hour minute amPm =
-    fromParts 0 Date.Jan 1 (toMillitary hour amPm) minute
+    fromParts 0 Time.Jan 1 (toMillitary hour amPm) minute
 
 
-fromDate : Int -> Date.Month -> Int -> DateTime
+fromDate : Int -> Time.Month -> Int -> DateTime
 fromDate year month day =
     fromParts year month day 0 0
 

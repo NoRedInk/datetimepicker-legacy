@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "elm-test",
-    "make": "elm-make --yes src/DateTimePicker.elm --output dist/elm.js",
-    "make-demos": "cd demo && elm-make --yes Demo.elm --output /dev/null && elm-make --yes RandomDate.elm --output /dev/null"
+    "make": "elm make src/DateTimePicker.elm --output dist/elm.js",
+    "make-demos": "cd demo && elm make Demo.elm --output /dev/null && elm make RandomDate.elm --output /dev/null"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/abadi199/datetimepicker#readme",
   "devDependencies": {
-    "elm": "^0.18.0",
-    "elm-css": "^0.6.0",
-    "elm-test": "0.18.7"
+    "elm": "0.19.0-bugfix2",
+    "elm-format": "0.8.1",
+    "elm-test": "0.19.0-beta5"
   }
 }

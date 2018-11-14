@@ -1,23 +1,22 @@
-module DateTimePicker.ClockUtils
-    exposing
-        ( hourToAngle
-        , hours
-        , minuteToAngle
-        , minutes
-        , minutesPerFive
-        )
+module DateTimePicker.ClockUtils exposing
+    ( hourToAngle
+    , hours
+    , minuteToAngle
+    , minutes
+    , minutesPerFive
+    )
 
 import Dict
 
 
 hourToAngle : Int -> Maybe Float
 hourToAngle hour =
-    Dict.get (toString hour) hours
+    Dict.get (String.fromInt hour) hours
 
 
 minuteToAngle : Int -> Maybe Float
 minuteToAngle minute =
-    Dict.get (toString minute) minutes
+    Dict.get (String.fromInt minute) minutes
 
 
 
@@ -63,5 +62,5 @@ minutesPerFive =
 minutes : Dict.Dict String Float
 minutes =
     List.range 0 59
-        |> List.map (\minute -> ( toString minute, pi * toFloat (60 - ((45 + minute) % 60)) / 30 ))
+        |> List.map (\minute -> ( String.fromInt minute, pi * toFloat (60 - modBy 60 (45 + minute)) / 30 ))
         |> Dict.fromList
