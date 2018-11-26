@@ -3,7 +3,6 @@ module TestHelper exposing (TestResult, init, open, render, selection, simulate,
 {-| This module provides functions that allow high-level test interactions with datetimepickers
 -}
 
-import Date
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig)
 import DateTimePicker.DateTime as DateTime
@@ -33,7 +32,7 @@ type TestResult
 init : DateTime.DateTime -> TestResult
 init now =
     TestResult
-        { config = defaultDatePickerConfig (,)
+        { config = defaultDatePickerConfig Tuple.pair
         , state = DateTimePicker.initialStateWithToday now
         , date = Nothing
         }
@@ -73,6 +72,9 @@ and return a `Test.Html.Query.Single` of the resulting Html.
 render : TestResult -> Query.Single TestResult
 render (TestResult t) =
     let
+        uncurry f ( a, b ) =
+            f a b
+
         origConfig =
             t.config
 
@@ -84,9 +86,16 @@ render (TestResult t) =
                 }
 
         config =
-            { origConfig
-                | onChange = makeResult
-                , attributes = List.map (Attr.map (uncurry makeResult)) origConfig.attributes
+            { autoClose = origConfig.autoClose
+            , usePicker = origConfig.usePicker
+            , fromInput = origConfig.fromInput
+            , toInput = origConfig.toInput
+            , nameOfDays = origConfig.nameOfDays
+            , firstDayOfWeek = origConfig.firstDayOfWeek
+            , allowYearNavigation = origConfig.allowYearNavigation
+            , earliestDate = origConfig.earliestDate
+            , attributes = List.map (Attr.map (uncurry makeResult)) origConfig.attributes
+            , onChange = makeResult
             }
     in
     DateTimePicker.datePickerWithConfig
@@ -117,8 +126,9 @@ simulate event selector (TestResult t) =
                     Err message ->
                         if String.contains ("The event " ++ Tuple.first event ++ " does not exist on the found node.") message then
                             TestResult t
+
                         else
-                            Debug.crash message
+                            Debug.todo message
 
                     Ok result ->
                         result
