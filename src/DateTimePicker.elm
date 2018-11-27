@@ -1256,9 +1256,20 @@ dateClickHandler pickerType stateValue year month day =
         selectedDate =
             DateTime.fromDate year month day.day
 
+        adjustedSelectedDate =
+            case day.monthType of
+                DateTimePicker.DateUtils.Previous ->
+                    DateTime.addMonths -1 selectedDate
+
+                DateTimePicker.DateUtils.Current ->
+                    selectedDate
+
+                DateTimePicker.DateUtils.Next ->
+                    DateTime.addMonths 1 selectedDate
+
         updatedStateValue =
             { stateValue
-                | date = Just <| selectedDate
+                | date = Just <| adjustedSelectedDate
                 , forceClose = forceClose
                 , activeTimeIndicator =
                     if stateValue.time.hour == Nothing then
@@ -1277,12 +1288,12 @@ dateClickHandler pickerType stateValue year month day =
         ( updatedDate, forceClose ) =
             case ( ( pickerType, stateValue.time.hour ), ( stateValue.time.minute, stateValue.time.amPm ) ) of
                 ( ( DateTimeType _, Just hour ), ( Just minute, Just amPm ) ) ->
-                    ( Just <| DateTime.setTime hour minute amPm selectedDate
+                    ( Just <| DateTime.setTime hour minute amPm adjustedSelectedDate
                     , True
                     )
 
                 ( ( DateType _, _ ), _ ) ->
-                    ( Just selectedDate
+                    ( Just adjustedSelectedDate
                     , True
                     )
 
