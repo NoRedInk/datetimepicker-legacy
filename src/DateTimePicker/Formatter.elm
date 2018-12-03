@@ -1,15 +1,14 @@
-module DateTimePicker.Formatter
-    exposing
-        ( accessibilityDateFormatter
-        , dateFormatter
-        , dateTimeFormatter
-        , footerFormatter
-        , timeFormatter
-        , titleFormatter
-        )
+module DateTimePicker.Formatter exposing
+    ( accessibilityDateFormatter
+    , dateFormatter
+    , dateTimeFormatter
+    , footerFormatter
+    , timeFormatter
+    , titleFormatter
+    )
 
-import Time
 import DateTimePicker.DateTime as DateTime
+import Time
 
 
 titleFormatter : DateTime.DateTime -> String
@@ -56,13 +55,16 @@ timeFormatter dateTime =
     let
         ( hourString, amPm ) =
             if dateTime.hour == 12 then
-                ( "12", "pm" )
+                ( "12", "p.m." )
+
             else if dateTime.hour == 0 then
-                ( "12", "am" )
+                ( "12", "a.m." )
+
             else if dateTime.hour > 12 then
-                ( padWithZero (modBy 12 dateTime.hour), "pm" )
+                ( padWithZero (modBy 12 dateTime.hour), "p.m." )
+
             else
-                ( padWithZero dateTime.hour, "am" )
+                ( padWithZero dateTime.hour, "a.m." )
     in
     hourString ++ ":" ++ padWithZero dateTime.minute ++ " " ++ amPm
 
@@ -136,5 +138,6 @@ padWithZero : Int -> String
 padWithZero input =
     if input < 10 then
         "0" ++ String.fromInt input
+
     else
         String.fromInt input

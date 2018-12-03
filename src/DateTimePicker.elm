@@ -579,7 +579,7 @@ digitalTimePickerDialog pickerType state currentDate =
             List.range stateValue.minutePickerStart (stateValue.minutePickerStart + 6)
 
         ampmList =
-            [ "AM", "PM" ]
+            [ "a.m.", "p.m." ]
 
         timeSelector =
             List.map3 toRow hours minutes (ampmList ++ List.repeat 4 "")
@@ -803,29 +803,29 @@ analogTimePickerDialog pickerType state currentDate =
         amPmPicker config =
             div [ css [ padding2 (px 40) (px 0) ] ]
                 [ div
-                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
-                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
+                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "a.m."
+                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "a.m."
                     , css [ Styles.amPmStyle ]
                     , case stateValue.time.amPm of
-                        Just "AM" ->
+                        Just "a.m." ->
                             css highlighted
 
                         _ ->
                             css []
                     ]
-                    [ text "AM" ]
+                    [ text "a.m." ]
                 , div
-                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
-                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
+                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "a.m."
+                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "a.m."
                     , css [ Styles.amPmStyle ]
                     , case stateValue.time.amPm of
-                        Just "PM" ->
+                        Just "p.m." ->
                             css highlighted
 
                         _ ->
                             css []
                     ]
-                    [ text "PM" ]
+                    [ text "p.m." ]
                 ]
     in
     case pickerType of
@@ -1473,14 +1473,14 @@ amPmIndicatorHandler config stateValue currentDate =
     let
         updateTime time =
             case time.amPm of
-                Just "AM" ->
-                    { time | amPm = Just "PM" }
+                Just "a.m." ->
+                    { time | amPm = Just "p.m." }
 
-                Just "PM" ->
-                    { time | amPm = Just "AM" }
+                Just "p.m." ->
+                    { time | amPm = Just "a.m." }
 
                 _ ->
-                    { time | amPm = Just "AM" }
+                    { time | amPm = Just "a.m." }
 
         updatedState =
             { stateValue

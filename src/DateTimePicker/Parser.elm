@@ -1,14 +1,13 @@
-module DateTimePicker.Parser
-    exposing
-        ( parseDate
-        , parseDateTime
-        , parseTime
-        )
+module DateTimePicker.Parser exposing
+    ( parseDate
+    , parseDateTime
+    , parseTime
+    )
 
 import Char
-import Time
 import DateTimePicker.DateTime as DateTime
 import Parser exposing ((|.), (|=), Parser)
+import Time
 
 
 parseDate : String -> Maybe DateTime.DateTime
@@ -45,20 +44,16 @@ skipAtLeastOneSpace =
 amPm : Parser String
 amPm =
     Parser.oneOf
-        [ Parser.map (\_ -> "AM") <|
-            Parser.oneOf
-                [ Parser.symbol "AM"
-                , Parser.symbol "am"
-                , Parser.symbol "aM"
-                , Parser.symbol "Am"
-                ]
-        , Parser.map (\_ -> "PM") <|
-            Parser.oneOf
-                [ Parser.symbol "PM"
-                , Parser.symbol "pm"
-                , Parser.symbol "pM"
-                , Parser.symbol "Pm"
-                ]
+        [ Parser.succeed "a.m."
+            |. Parser.oneOf [ Parser.symbol "A", Parser.symbol "a" ]
+            |. Parser.oneOf [ Parser.backtrackable (Parser.symbol "."), Parser.succeed () ]
+            |. Parser.oneOf [ Parser.symbol "M", Parser.symbol "m" ]
+            |. Parser.oneOf [ Parser.backtrackable (Parser.symbol "."), Parser.succeed () ]
+        , Parser.succeed "p.m."
+            |. Parser.oneOf [ Parser.symbol "P", Parser.symbol "p" ]
+            |. Parser.oneOf [ Parser.backtrackable (Parser.symbol "."), Parser.succeed () ]
+            |. Parser.oneOf [ Parser.symbol "M", Parser.symbol "m" ]
+            |. Parser.oneOf [ Parser.backtrackable (Parser.symbol "."), Parser.succeed () ]
         ]
 
 
@@ -110,6 +105,7 @@ clamped min max previousParser =
         (\int ->
             if int > max || int < min then
                 Parser.problem "Int out of range"
+
             else
                 Parser.succeed int
         )

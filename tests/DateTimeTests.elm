@@ -26,19 +26,19 @@ setTimeTest =
     describe "DateTime.setTime"
         [ test "setTime for 12:00 AM should return the right time" <|
             \() ->
-                DateTime.setTime 12 0 "AM" date
+                DateTime.setTime 12 0 "a.m." date
                     |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 0 0)
         , test "setTime for 12:00 PM should return the right time" <|
             \() ->
-                DateTime.setTime 12 0 "PM" date
+                DateTime.setTime 12 0 "p.m." date
                     |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 12 0)
         , test "setTime for 3:15 PM should return the right time" <|
             \() ->
-                DateTime.setTime 3 15 "PM" date
+                DateTime.setTime 3 15 "p.m." date
                     |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 15 15)
         , test "setTime for 3:15 AM should return the right time" <|
             \() ->
-                DateTime.setTime 3 15 "AM" date
+                DateTime.setTime 3 15 "a.m." date
                     |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 3 15)
         ]
 
