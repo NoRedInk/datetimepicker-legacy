@@ -1,4 +1,4 @@
-module ParserTest exposing (invalidDateTest, parseDateTest, parseDateTimeTest, parseTimeTest)
+module ParserTest exposing (invalidDateTest, parseDateBelow100Test, parseDateBelow50Test, parseDateTest, parseDateTimeTest, parseTimeTest)
 
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Parser as Parser
@@ -13,6 +13,22 @@ parseDateTest =
         \() ->
             Parser.parseDate "9/7/2018"
                 |> Expect.equal (Just (DateTime.fromParts 2018 Time.Sep 7 0 0))
+
+
+parseDateBelow50Test : Test
+parseDateBelow50Test =
+    test "it parses a date below 50 correctly" <|
+        \() ->
+            Parser.parseDate "9/7/18"
+                |> Expect.equal (Just (DateTime.fromParts 2018 Time.Sep 7 0 0))
+
+
+parseDateBelow100Test : Test
+parseDateBelow100Test =
+    test "it parses a date below 100 correctly" <|
+        \() ->
+            Parser.parseDate "9/7/83"
+                |> Expect.equal (Just (DateTime.fromParts 1983 Time.Sep 7 0 0))
 
 
 parseTimeTest : Test

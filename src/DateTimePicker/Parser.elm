@@ -135,7 +135,7 @@ dateParser =
         |. skipOptionalSpaces
         |. Parser.symbol "/"
         |. skipOptionalSpaces
-        |= Parser.int
+        |= Parser.map adjustYear Parser.int
 
 
 {-| Parse the exact format "%I:%M %p"
@@ -166,3 +166,18 @@ dateTimeParser =
         |= dateParser
         |. skipAtLeastOneSpace
         |= timeParser
+
+
+{-| Adjust year values less than 100 to either 19xx or 20xx,
+so for example "19" means "2019".
+-}
+adjustYear : Int -> Int
+adjustYear year =
+    if year < 50 then
+        2000 + year
+
+    else if year < 100 then
+        1900 + year
+
+    else
+        year
