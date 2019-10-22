@@ -388,8 +388,11 @@ dialog pickerType state currentDate =
 
 
 dialogNode : List (Html.Attribute msg) -> List (Html msg) -> Html msg
-dialogNode =
+dialogNode attributes =
     Html.node "date-time-picker-dialog"
+        ([ css [ display block ] ]
+            ++ attributes
+        )
 
 
 datePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
@@ -406,6 +409,7 @@ datePickerDialog pickerType state currentDate =
                         [ Styles.headerStyle
                         , Styles.borderBoxStyle
                         , Styles.headerStyle
+                        , display block
                         , position relative
                         ]
                     ]
@@ -414,7 +418,8 @@ datePickerDialog pickerType state currentDate =
                 , -- Footer
                   Html.node "date-time-picker-footer"
                     [ css
-                        [ textAlign center
+                        [ display block
+                        , textAlign center
                         , backgroundColor Styles.lightGray
                         , padding2 (px 7) (px 7)
                         , borderTop3 (px 1) solid Styles.darkGray
