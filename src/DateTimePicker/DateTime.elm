@@ -371,23 +371,7 @@ validate datetime =
         Nothing
     else if datetime.day < 1 then
         Nothing
-    else if datetime.month == Time.Feb then
-        if not (isLeapYear datetime.year) && datetime.day > 28 then
-            Nothing
-        else if datetime.day > 29 then
-            Nothing
-        else
-            Just datetime
-    else if
-        ((datetime.month == Time.Sep)
-            || (datetime.month == Time.Apr)
-            || (datetime.month == Time.Jun)
-            || (datetime.month == Time.Nov)
-        )
-            && (datetime.day > 30)
-    then
-        Nothing
-    else if datetime.day > 31 then
+    else if datetime.day > daysInMonth datetime.year datetime.month then
         Nothing
     else
         Just datetime

@@ -115,20 +115,37 @@ dayOfWeekTest =
 
 validateTest : Test
 validateTest =
-    describe "validate"
-        [ test "leap day (2020) is valid)" <|
-            \() ->
-                DateTime.fromParts 2020 Time.Feb 29 0 0
-                    |> DateTime.validate
-                    |> expectJust
+    describe "validate" <|
+        let
+            testMaxDayInMonth year month lastDay =
+                describe ("max day in month: " ++ Debug.toString ( year, month ))
+                    [ test ("day " ++ String.fromInt lastDay ++ " is valid") <|
+                        \() ->
+                            DateTime.fromParts year month lastDay 0 0
+                                |> DateTime.validate
+                                |> Expect.equal (Just <| DateTime.fromParts year month lastDay 0 0)
+                    , test ("day " ++ String.fromInt (lastDay + 1) ++ " is not valid") <|
+                        \() ->
+                            DateTime.fromParts year month (lastDay + 1) 0 0
+                                |> DateTime.validate
+                                |> Expect.equal Nothing
+                    ]
+        in
+        [ testMaxDayInMonth 2019 Time.Jan 31
+        , describe "leap years"
+            [ testMaxDayInMonth 2019 Time.Feb 28 -- not a leap year
+            , testMaxDayInMonth 2020 Time.Feb 29 -- leap year
+            , testMaxDayInMonth 2100 Time.Feb 28 -- not a leap year
+            , testMaxDayInMonth 2000 Time.Feb 29 -- leap year
+            ]
+        , testMaxDayInMonth 2019 Time.Mar 31
+        , testMaxDayInMonth 2019 Time.Apr 30
+        , testMaxDayInMonth 2019 Time.May 31
+        , testMaxDayInMonth 2019 Time.Jun 30
+        , testMaxDayInMonth 2019 Time.Jul 31
+        , testMaxDayInMonth 2019 Time.Aug 31
+        , testMaxDayInMonth 2019 Time.Sep 30
+        , testMaxDayInMonth 2019 Time.Oct 31
+        , testMaxDayInMonth 2019 Time.Nov 30
+        , testMaxDayInMonth 2019 Time.Dec 31
         ]
-
-
-expectJust : Maybe a -> Expectation
-expectJust maybe =
-    case maybe of
-        Nothing ->
-            Expect.fail "Expected a Just, but got: Nothing"
-
-        Just _ ->
-            Expect.pass
