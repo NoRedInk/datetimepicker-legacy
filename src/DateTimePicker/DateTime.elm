@@ -372,9 +372,9 @@ validate datetime =
     else if datetime.day < 1 then
         Nothing
     else if datetime.month == Time.Feb then
-        if isLeapYear datetime.year && datetime.day > 29 then
+        if not (isLeapYear datetime.year) && datetime.day > 28 then
             Nothing
-        else if datetime.day > 28 then
+        else if datetime.day > 29 then
             Nothing
         else
             Just datetime

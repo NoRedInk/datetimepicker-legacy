@@ -4,6 +4,7 @@ import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
 import Html.Attributes
+import Json.Encode
 import Test exposing (..)
 import Test.Html.Event as Event
 import Test.Html.Selector exposing (..)
@@ -56,5 +57,15 @@ all =
                 , allowed (Just now) ( 2017, Time.Aug, 11 )
                 , allowed (Just now) ( 2017, Time.Aug, 12 )
                 ]
+            ]
+        , describe "handles leap year"
+            [ test "leap day can be selected" <|
+                \() ->
+                    init (DateTime.fromParts 2020 Time.Feb 26 12 12)
+                        |> open
+                        |> clickDate ( 2020, Time.Feb, 29 )
+                        |> simulate ( "blur", Json.Encode.object [ ( "target", Json.Encode.object [ ( "value", Json.Encode.string "02/29/2020" ) ] ) ] ) [ tag "input" ]
+                        |> selection
+                        |> Expect.equal (Just (date ( 2020, Time.Feb, 29 )))
             ]
         ]

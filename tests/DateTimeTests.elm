@@ -1,7 +1,7 @@
-module DateTimeTests exposing (addDaysTest, addMonthsTest, dayOfWeekTest, firstOfMonthTest, setTimeTest)
+module DateTimeTests exposing (addDaysTest, addMonthsTest, dayOfWeekTest, firstOfMonthTest, setTimeTest, validateTest)
 
 import DateTimePicker.DateTime as DateTime
-import Expect
+import Expect exposing (Expectation)
 import Test exposing (..)
 import Time
 
@@ -111,3 +111,24 @@ dayOfWeekTest =
             DateTime.fromParts 2018 Time.Sep 12 0 0
                 |> DateTime.dayOfWeek
                 |> Expect.equal Time.Wed
+
+
+validateTest : Test
+validateTest =
+    describe "validate"
+        [ test "leap day (2020) is valid)" <|
+            \() ->
+                DateTime.fromParts 2020 Time.Feb 29 0 0
+                    |> DateTime.validate
+                    |> expectJust
+        ]
+
+
+expectJust : Maybe a -> Expectation
+expectJust maybe =
+    case maybe of
+        Nothing ->
+            Expect.fail "Expected a Just, but got: Nothing"
+
+        Just _ ->
+            Expect.pass
