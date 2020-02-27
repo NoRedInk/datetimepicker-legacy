@@ -4,10 +4,11 @@ import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
 import Html.Attributes
+import Json.Encode
 import Test exposing (..)
 import Test.Html.Event as Event
 import Test.Html.Selector exposing (..)
-import TestHelper exposing (init, open, render, selection, simulate, withConfig)
+import TestHelper exposing (clickDate, init, open, render, selection, simulate, withConfig)
 import Time
 
 
@@ -16,21 +17,22 @@ now =
     DateTime.fromParts 2017 Time.Aug 11 22 30
 
 
+date : ( Int, Time.Month, Int ) -> DateTime.DateTime
+date ( year, month, day ) =
+    DateTime.fromParts year month day 0 0
+
+
 all : Test
 all =
     describe "date picker"
         [ let
-            date ( year, month, day ) =
-                DateTime.fromParts year month day 0 0
-
             allowed config d =
                 test ("can select " ++ Debug.toString d ++ " with earliestDate=" ++ Debug.toString config) <|
                     \() ->
                         init now
                             |> withConfig (\c -> { c | earliestDate = config })
                             |> open
-                            |> simulate Event.mouseDown
-                                [ tag "td", attribute "aria-label" (accessibilityDateFormatter (date d)) ]
+                            |> clickDate d
                             |> selection
                             |> Expect.equal (Just (date d))
 
@@ -40,8 +42,7 @@ all =
                         init now
                             |> withConfig (\c -> { c | earliestDate = config })
                             |> open
-                            |> simulate Event.mouseDown
-                                [ tag "td", attribute "aria-label" (accessibilityDateFormatter (date d)) ]
+                            |> clickDate d
                             |> selection
                             |> Expect.equal Nothing
           in
@@ -57,10 +58,14 @@ all =
                 , allowed (Just now) ( 2017, Time.Aug, 12 )
                 ]
             ]
+        , describe "handles leap year"
+            [ test "leap day can be selected" <|
+                \() ->
+                    init (DateTime.fromParts 2020 Time.Feb 26 12 12)
+                        |> open
+                        |> clickDate ( 2020, Time.Feb, 29 )
+                        |> simulate ( "blur", Json.Encode.object [ ( "target", Json.Encode.object [ ( "value", Json.Encode.string "02/29/2020" ) ] ) ] ) [ tag "input" ]
+                        |> selection
+                        |> Expect.equal (Just (date ( 2020, Time.Feb, 29 )))
+            ]
         ]
-
-
-attribute : String -> String -> Selector
-attribute attr value =
-    Html.Attributes.attribute attr value
-        |> Test.Html.Selector.attribute

@@ -1,4 +1,4 @@
-module TestHelper exposing (TestResult, init, open, render, selection, simulate, withConfig)
+module TestHelper exposing (TestResult, clickDate, init, open, render, selection, simulate, withConfig)
 
 {-| This module provides functions that allow high-level test interactions with datetimepickers
 -}
@@ -6,12 +6,15 @@ module TestHelper exposing (TestResult, init, open, render, selection, simulate,
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig)
 import DateTimePicker.DateTime as DateTime
+import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
+import Html.Attributes
 import Html.Styled as Html
 import Html.Styled.Attributes as Attr
 import Json.Encode as Json
 import Test.Html.Event as Event
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (..)
+import Time
 
 
 {-| The state of a datetimepicker
@@ -133,3 +136,14 @@ simulate event selector (TestResult t) =
                     Ok result ->
                         result
            )
+
+
+{-| Simulates clicking on a specific date within the datepicker popup.
+-}
+clickDate : ( Int, Time.Month, Int ) -> TestResult -> TestResult
+clickDate ( year, month, day ) =
+    simulate Event.mouseDown
+        [ tag "td"
+        , Test.Html.Selector.attribute <|
+            Html.Attributes.attribute "aria-label" (accessibilityDateFormatter (DateTime.fromParts year month day 0 0))
+        ]

@@ -9,10 +9,16 @@ import Time
 
 parseDateTest : Test
 parseDateTest =
-    test "it parses a date correctly" <|
-        \() ->
-            Parser.parseDate "9/7/2018"
-                |> Expect.equal (Just (DateTime.fromParts 2018 Time.Sep 7 0 0))
+    describe "it parses a date correctly"
+        [ test "some date" <|
+            \() ->
+                Parser.parseDate "9/7/2018"
+                    |> Expect.equal (Just (DateTime.fromParts 2018 Time.Sep 7 0 0))
+        , test "a leap day" <|
+            \() ->
+                Parser.parseDate "02/29/2020"
+                    |> Expect.equal (Just (DateTime.fromParts 2020 Time.Feb 29 0 0))
+        ]
 
 
 parseTimeTest : Test
