@@ -106,38 +106,38 @@ The DateTimePicker.Config module provides some default configurations for both d
 ### Example
 Here's a snippet of typical Elm application:
 ```elm
-main = 
-    Html.program 
-        { init = init 
+main =
+    Html.program
+        { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions 
+        , subscriptions = subscriptions
         }
 
-type Msg 
+type Msg
     = DateChange DateTimePicker.State (Maybe DateTimePicker.DateTime)
 
-type alias Model = 
+type alias Model =
     { selectedDate : Maybe DateTimePicker.DateTime
-    , datePickerState : DateTimePicker.State 
+    , datePickerState : DateTimePicker.State
     }
 
-init = 
+init =
     ( { selectedDate = Nothing, datePickerState.initialState }
     , DateTimePicker.initialCmd DateChange DateTimePicker.initialState
     )
 
-view model = 
-    DateTimePicker.dateTimePickerWithConfig 
-        DateChange 
-        [ class "my-datetimepicker" ] 
-        model.datePickerState 
+view model =
+    DateTimePicker.dateTimePickerWithConfig
+        DateChange
+        [ class "my-datetimepicker" ]
+        model.datePickerState
         model.selectedDate
 
 update msg model =
     case msg of
         DateChange datePickerState selectedDate ->
-            ( { model | selectedDate = selectedDate, datePickerState = datePickerState }, Cmd.none ) 
+            ( { model | selectedDate = selectedDate, datePickerState = datePickerState }, Cmd.none )
 
 subscriptions =
     ...
