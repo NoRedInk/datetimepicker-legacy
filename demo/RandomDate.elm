@@ -48,10 +48,7 @@ view model =
                 defaultDateTimeConfig =
                     defaultDateTimePickerConfig DateChanged
             in
-            { defaultDateTimeConfig
-                | timePickerType = DateTimePicker.Config.Digital
-                , allowYearNavigation = False
-            }
+            { defaultDateTimeConfig | allowYearNavigation = False }
     in
     form []
         [ div []

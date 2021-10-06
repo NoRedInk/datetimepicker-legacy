@@ -28,7 +28,6 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.AnalogClock
 import DateTimePicker.ClockUtils
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
@@ -366,12 +365,7 @@ dialog pickerType state currentDate =
             ]
 
         withTimeAttributes config timePickerType =
-            case timePickerType of
-                Analog ->
-                    (onClick <| onChangeHandler pickerType stateValue currentDate) :: attributes config
-
-                Digital ->
-                    attributes config
+            attributes config
     in
     case pickerType of
         DateType datePickerConfig ->
@@ -550,12 +544,7 @@ timePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
 timePickerDialog pickerType state currentDate =
     let
         html config =
-            case config.timePickerType of
-                Digital ->
-                    digitalTimePickerDialog pickerType state currentDate
-
-                Analog ->
-                    analogTimePickerDialog pickerType state currentDate
+            digitalTimePickerDialog pickerType state currentDate
     in
     case pickerType of
         DateType _ ->
@@ -734,103 +723,6 @@ digitalTimePickerDialog pickerType state currentDate =
                             )
                         ]
                     ]
-                ]
-    in
-    case pickerType of
-        DateType _ ->
-            text ""
-
-        DateTimeType config ->
-            html config
-
-        TimeType config ->
-            html config
-
-
-analogTimePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-analogTimePickerDialog pickerType state currentDate =
-    let
-        stateValue =
-            getStateValue state
-
-        isActive timeIndicator =
-            if stateValue.activeTimeIndicator == Just timeIndicator then
-                [ Styles.activeStyle ]
-
-            else
-                []
-
-        html config =
-            div [ css [ Styles.timePickerDialog, width (px 230) ] ]
-                [ div [ css [ Styles.headerStyle, fontSize (Css.em 1.2) ] ]
-                    [ span
-                        [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
-                        , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
-                        , css [ Styles.timeHeaderStyle ]
-                        , css (isActive DateTimePicker.Internal.HourIndicator)
-                        ]
-                        [ text (stateValue.time.hour |> Maybe.map (String.fromInt >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
-                    , span [] [ text " : " ]
-                    , span
-                        [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
-                        , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
-                        , css [ Styles.timeHeaderStyle ]
-                        , css (isActive DateTimePicker.Internal.MinuteIndicator)
-                        ]
-                        [ text (stateValue.time.minute |> Maybe.map (String.fromInt >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
-                    , span
-                        [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
-                        , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
-                        , css [ Styles.timeHeaderStyle ]
-                        , css (isActive DateTimePicker.Internal.AMPMIndicator)
-                        ]
-                        [ text (stateValue.time.amPm |> Maybe.withDefault "--") ]
-                    ]
-                , div
-                    [ css
-                        [ backgroundColor (hex "#fff")
-                        , padding2 (px 12) (px 15)
-                        , height (px 202)
-                        ]
-                    ]
-                    [ case stateValue.activeTimeIndicator of
-                        Just DateTimePicker.Internal.AMPMIndicator ->
-                            amPmPicker config
-
-                        _ ->
-                            DateTimePicker.AnalogClock.clock pickerType config.onChange state currentDate
-                    ]
-                ]
-
-        highlighted =
-            [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
-
-        amPmPicker config =
-            div [ css [ padding2 (px 40) (px 0) ] ]
-                [ div
-                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
-                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
-                    , css [ Styles.amPmStyle ]
-                    , case stateValue.time.amPm of
-                        Just "AM" ->
-                            css highlighted
-
-                        _ ->
-                            css []
-                    ]
-                    [ text "AM" ]
-                , div
-                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
-                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
-                    , css [ Styles.amPmStyle ]
-                    , case stateValue.time.amPm of
-                        Just "PM" ->
-                            css highlighted
-
-                        _ ->
-                            css []
-                    ]
-                    [ text "PM" ]
                 ]
     in
     case pickerType of

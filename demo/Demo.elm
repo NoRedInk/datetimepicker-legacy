@@ -21,7 +21,6 @@ main =
 type DemoPicker
     = DatePicker
     | DigitalDateTimePicker
-    | AnalogDateTimePicker
     | TimePicker
     | NoPicker
     | LimitedRangePicker
@@ -49,27 +48,9 @@ subscriptions model =
     Sub.none
 
 
-analogDateTimePickerConfig : Config (DatePickerConfig TimePickerConfig) Msg
-analogDateTimePickerConfig =
-    let
-        defaultDateTimeConfig =
-            defaultDateTimePickerConfig (DatePickerChanged AnalogDateTimePicker)
-    in
-    { defaultDateTimeConfig
-        | timePickerType = DateTimePicker.Config.Analog
-        , allowYearNavigation = False
-    }
-
-
 timePickerConfig : Config TimePickerConfig Msg
 timePickerConfig =
-    let
-        defaultDateTimeConfig =
-            defaultTimePickerConfig (DatePickerChanged TimePicker)
-    in
-    { defaultDateTimeConfig
-        | timePickerType = DateTimePicker.Config.Analog
-    }
+    defaultTimePickerConfig (DatePickerChanged TimePicker)
 
 
 noPickerConfig : Config (DatePickerConfig {}) Msg
@@ -131,9 +112,6 @@ viewPicker which now date state =
                 DigitalDateTimePicker ->
                     DateTimePicker.dateTimePickerWithConfig digitalDateTimePickerConfig [] state date
 
-                AnalogDateTimePicker ->
-                    DateTimePicker.dateTimePickerWithConfig analogDateTimePickerConfig [] state date
-
                 TimePicker ->
                     DateTimePicker.timePickerWithConfig digitalTimePickerConfig [] state date
 
@@ -152,7 +130,6 @@ view model =
         allPickers =
             [ DatePicker
             , DigitalDateTimePicker
-            , AnalogDateTimePicker
             , TimePicker
             , NoPicker
             , LimitedRangePicker

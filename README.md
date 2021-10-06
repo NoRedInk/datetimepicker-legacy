@@ -2,31 +2,6 @@
 
 # THIS IS A FORK OF https://github.com/abadi199/datetimepicker
 
-## Demo
-
-### [Live Demo](https://abadi199.github.io/datetimepicker/)
-
-### Date Time Picker
-
-The date and time picker can be used in two modes:
-- Analog Time Picker
-- Digital Time Picker
-
-#### Analog time picker
-
-![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/datetimepicker-analog.gif "Date Time Picker with Analog Time Picker Preview")
-
-Code:
-```elm
-view model =
-    DateTimePicker.dateTimePickerWithConfig
-        { defaultDateTimeConfig | timePickerType = DateTimePicker.Config.Analog }
-        [ class "my-datetimepicker" ]
-        model.state
-        model.value
-```
-
-
 ### Digital time picker
 
 ![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/datetimepicker-digital.gif "Date Time Picker with Digital Time Picker Preview")
