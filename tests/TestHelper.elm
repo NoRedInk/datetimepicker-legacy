@@ -127,7 +127,7 @@ simulate event selector (TestResult t) =
         |> (\r ->
                 case r of
                     Err message ->
-                        if String.contains ("The event " ++ Tuple.first event ++ " does not exist on the found node.") message then
+                        if String.contains ("I found a node, but it does not listen for \"" ++ Tuple.first event ++ "\" events like I expected it would.") message then
                             TestResult t
 
                         else
