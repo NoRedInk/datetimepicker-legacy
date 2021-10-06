@@ -2,6 +2,19 @@
 
 # THIS IS A FORK OF https://github.com/abadi199/datetimepicker
 
+# Contributing
+
+To check that the library still compiles:
+```
+elm make --output=/dev/null
+```
+
+To re-compile and open the Demo application:
+```
+cd demo && elm make Demo.elm && open index.html && cd ..
+```
+
+
 ### Digital time picker
 
 ![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/datetimepicker-digital.gif "Date Time Picker with Digital Time Picker Preview")
