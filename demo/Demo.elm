@@ -22,8 +22,6 @@ type DemoPicker
     = DatePicker
     | DigitalDateTimePicker
     | TimePicker
-    | NoPicker
-    | LimitedRangePicker
 
 
 type alias Model =
@@ -53,18 +51,6 @@ timePickerConfig =
     defaultTimePickerConfig (DatePickerChanged TimePicker)
 
 
-noPickerConfig : Config (DatePickerConfig {}) Msg
-noPickerConfig =
-    let
-        defaultDateConfig =
-            defaultDatePickerConfig (DatePickerChanged NoPicker)
-    in
-    { defaultDateConfig
-        | usePicker = False
-        , attributes = []
-    }
-
-
 digitalDateTimePickerConfig : Config (DatePickerConfig TimePickerConfig) Msg
 digitalDateTimePickerConfig =
     let
@@ -87,18 +73,6 @@ digitalTimePickerConfig =
     }
 
 
-limitedPickerConfig : DateTimePicker.DateTime -> Config (DatePickerConfig TimePickerConfig) Msg
-limitedPickerConfig now =
-    let
-        defaultDateTimeConfig =
-            defaultDateTimePickerConfig (DatePickerChanged LimitedRangePicker)
-    in
-    { defaultDateTimeConfig
-        | timePickerType = DateTimePicker.Config.Digital
-        , earliestDate = Just now
-    }
-
-
 viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateTime -> DateTimePicker.State -> Html Msg
 viewPicker which now date state =
     p []
@@ -114,12 +88,6 @@ viewPicker which now date state =
 
                 TimePicker ->
                     DateTimePicker.timePickerWithConfig digitalTimePickerConfig [] state date
-
-                NoPicker ->
-                    DateTimePicker.datePickerWithConfig noPickerConfig [] state date
-
-                LimitedRangePicker ->
-                    DateTimePicker.dateTimePickerWithConfig (limitedPickerConfig now) [] state date
             ]
         ]
 
@@ -131,8 +99,6 @@ view model =
             [ DatePicker
             , DigitalDateTimePicker
             , TimePicker
-            , NoPicker
-            , LimitedRangePicker
             ]
     in
     form []
