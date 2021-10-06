@@ -9,7 +9,6 @@ module DateTimePicker.Internal exposing
     )
 
 import DateTimePicker.DateTime as DateTime
-import DateTimePicker.Geometry exposing (Point)
 
 
 type InternalState
