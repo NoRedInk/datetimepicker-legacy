@@ -1,19 +1,18 @@
-module DateTimePicker.DateUtils
-    exposing
-        ( Day
-        , MonthType(..)
-        , dayToDateTime
-        , dayToInt
-        , fromMillitaryAmPm
-        , fromMillitaryHour
-        , generateCalendar
-        , padding
-        , toMillitary
-        )
+module DateTimePicker.DateUtils exposing
+    ( Day
+    , MonthType(..)
+    , dayToDateTime
+    , dayToInt
+    , fromMillitaryAmPm
+    , fromMillitaryHour
+    , generateCalendar
+    , padding
+    , toMillitary
+    )
 
-import Time
 import DateTimePicker.DateTime as DateTime
 import String
+import Time
 
 
 dayToInt : Time.Weekday -> Time.Weekday -> Int
@@ -69,6 +68,7 @@ calculateNumberOfDaysForPreviousMonth : Int -> Int
 calculateNumberOfDaysForPreviousMonth firstDayInInt =
     if firstDayInInt == 0 then
         7
+
     else
         firstDayInInt
 
@@ -154,6 +154,7 @@ byWeek : List Day -> List (List Day)
 byWeek list =
     if List.length list >= 7 then
         List.take 7 list :: byWeek (List.drop 7 list)
+
     else
         []
 
@@ -162,8 +163,10 @@ padding : String -> String
 padding str =
     if String.length str == 0 then
         "00"
+
     else if String.length str == 1 then
         "0" ++ str
+
     else
         str
 
@@ -193,6 +196,7 @@ fromMillitaryAmPm hour =
         _ ->
             if hour >= 12 then
                 "PM"
+
             else
                 "AM"
 
