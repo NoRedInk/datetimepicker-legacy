@@ -41,6 +41,7 @@ import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (attribute, css, value)
 import Html.Styled.Events exposing (onBlur, onClick, onFocus)
+import Nri.Ui.Colors.V1 as Colors
 import String
 import Task
 import Time
@@ -357,7 +358,7 @@ dialog pickerType state currentDate =
                 , fontSize (px 14)
                 , Styles.borderBoxStyle
                 , position absolute
-                , border3 (px 1) solid Styles.darkGray
+                , border3 (px 1) solid Colors.gray85
                 , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
                 , property "z-index" "1"
                 , displayFlex
@@ -414,9 +415,9 @@ datePickerDialog pickerType state currentDate =
                     [ css
                         [ display block
                         , textAlign center
-                        , backgroundColor Styles.lightGray
+                        , backgroundColor Colors.gray96
                         , padding2 (px 7) (px 7)
-                        , borderTop3 (px 1) solid Styles.darkGray
+                        , borderTop3 (px 1) solid Colors.gray85
                         , height (px 16)
                         ]
                     ]
@@ -652,10 +653,10 @@ digitalTimePickerDialog pickerType state currentDate =
             td (styles :: handlers) [ text ampm ]
 
         upArrowTd =
-            Html.styled td [ borderBottom3 (px 1) solid Styles.darkGray ]
+            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ]
 
         upArrows config =
-            [ tr [ css [ backgroundColor Styles.lightGray ] ]
+            [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ upArrowTd
                     [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
@@ -671,10 +672,10 @@ digitalTimePickerDialog pickerType state currentDate =
             ]
 
         downArrowTd =
-            Html.styled td [ borderTop3 (px 1) solid Styles.darkGray ]
+            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ]
 
         downArrows config =
-            [ tr [ css [ backgroundColor Styles.lightGray ] ]
+            [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ downArrowTd
                     [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
@@ -706,7 +707,7 @@ digitalTimePickerDialog pickerType state currentDate =
                                         [ width (pct 33)
                                         , Styles.cellStyle
                                         , hover
-                                            [ backgroundColor Styles.highlightedDay
+                                            [ backgroundColor Colors.gray92
                                             , Styles.highlightBorderStyle
                                             ]
                                         ]
@@ -809,20 +810,20 @@ calendar pickerType state currentDate =
                                     List.concat
                                         [ case day.monthType of
                                             DateTimePicker.DateUtils.Previous ->
-                                                [ color Styles.fadeText ]
+                                                [ color Colors.gray75 ]
 
                                             DateTimePicker.DateUtils.Current ->
                                                 []
 
                                             DateTimePicker.DateUtils.Next ->
-                                                [ color Styles.fadeText ]
+                                                [ color Colors.gray75 ]
                                         , if isInRange day then
                                             []
 
                                           else
                                             [ backgroundColor inherit
                                             , cursor default
-                                            , color Styles.darkGray
+                                            , color Colors.gray85
                                             , hover
                                                 [ backgroundColor inherit
                                                 ]
@@ -835,8 +836,7 @@ calendar pickerType state currentDate =
                                           else if matchesDay stateValue.today day then
                                             [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
                                             , Styles.highlightBorderStyle
-                                            , hover
-                                                [ backgroundColor Styles.highlightSelectedDay ]
+                                            , hover [ backgroundColor Colors.frost ]
                                             ]
 
                                           else
@@ -890,15 +890,15 @@ calendar pickerType state currentDate =
                                 , Css.Global.td
                                     [ Styles.dayStyle
                                     , hover
-                                        [ backgroundColor Styles.highlightedDay
+                                        [ backgroundColor Colors.gray92
                                         , Styles.highlightBorderStyle
                                         ]
                                     ]
                                 , Css.Global.th
                                     [ Styles.dayStyle
-                                    , backgroundColor Styles.lightGray
+                                    , backgroundColor Colors.gray96
                                     , fontWeight normal
-                                    , borderBottom3 (px 1) solid Styles.darkGray
+                                    , borderBottom3 (px 1) solid Colors.gray85
                                     ]
                                 ]
                             ]

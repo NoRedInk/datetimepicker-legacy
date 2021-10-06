@@ -13,39 +13,15 @@ Include this in your elm-css port module to be included in your project's css fi
 -}
 
 import Css exposing (..)
+import Nri.Ui.Colors.V1 as Colors
 
 
 timePickerDialog : Style
 timePickerDialog =
     Css.batch
         [ float left
-
-        -- , height calendarHeight
         , textAlign center
-        , borderLeft3 (px 1) solid darkGray
-        ]
-
-
-timeHeaderStyle : Style
-timeHeaderStyle =
-    Css.batch
-        [ padding2 (px 3) (px 10)
-        , marginTop (px 3)
-        , marginBottom (px 3)
-        , display inlineBlock
-        , cursor pointer
-        ]
-
-
-amPmStyle : Style
-amPmStyle =
-    Css.batch
-        [ fontSize (Css.em 1.2)
-        , padding2 (Css.em 1) (Css.em 0)
-        , cursor pointer
-        , margin2 (px 0) auto
-        , width (px 85)
-        , hover [ backgroundColor highlightedDay ]
+        , borderLeft3 (px 1) solid Colors.gray85
         ]
 
 
@@ -53,40 +29,10 @@ highlightStyle : Css.Style
 highlightStyle =
     Css.batch
         [ property "box-shadow" "inset 0 0 10px 3px #3276b1"
-        , backgroundColor selectedDate
-        , color (hex "#fff")
+        , backgroundColor Colors.azure
+        , color Colors.frost
         , highlightBorderStyle
         ]
-
-
-highlightSelectedDay : Css.Color
-highlightSelectedDay =
-    hex "#d5e5f3"
-
-
-selectedDate : Css.Color
-selectedDate =
-    hex "#428bca"
-
-
-fadeText : Css.Color
-fadeText =
-    hex "#a1a1a1"
-
-
-lightGray : Css.Color
-lightGray =
-    hex "#f5f5f5"
-
-
-darkGray : Css.Color
-darkGray =
-    hex "#ccc"
-
-
-highlightedDay : Css.Color
-highlightedDay =
-    hex "#ebebeb"
 
 
 dayStyle : Css.Style
@@ -132,7 +78,7 @@ headerStyle : Css.Style
 headerStyle =
     Css.batch
         [ padding2 (px 10) (px 7)
-        , backgroundColor lightGray
+        , backgroundColor Colors.gray96
         ]
 
 
@@ -154,7 +100,7 @@ tableStyle =
 activeStyle : Css.Style
 activeStyle =
     Css.batch
-        [ backgroundColor (hex "#e0e0e0")
+        [ backgroundColor Colors.gray85
         , highlightBorderStyle
         ]
 
