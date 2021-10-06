@@ -1,16 +1,6 @@
 module DateTimePicker.Styles exposing (..)
 
-{-| DateTimePicker.Css
-
-Using [rtfeldman/elm-css](http://package.elm-lang.org/packages/rtfeldman/elm-css/latest)
-Include this in your elm-css port module to be included in your project's css file.
-
-
-# Css
-
-@docs css
-
--}
+{-| -}
 
 import Css exposing (..)
 import Nri.Ui.Colors.V1 as Colors
@@ -31,7 +21,7 @@ highlightStyle =
         [ property "box-shadow" "inset 0 0 10px 3px #3276b1"
         , backgroundColor Colors.azure
         , color Colors.frost
-        , highlightBorderStyle
+        , borderRadius (px 0)
         ]
 
 
@@ -55,7 +45,7 @@ cellStyle =
 arrowStyle : Css.Style
 arrowStyle =
     Css.batch
-        [ borderBoxStyle
+        [ boxSizing borderBox
         , textAlign center
         , transform (scale 0.8)
         , position absolute
@@ -64,27 +54,12 @@ arrowStyle =
         ]
 
 
-borderBoxStyle : Css.Style
-borderBoxStyle =
-    Css.batch [ boxSizing borderBox ]
-
-
-highlightBorderStyle : Css.Style
-highlightBorderStyle =
-    Css.batch [ borderRadius (px 0) ]
-
-
 headerStyle : Css.Style
 headerStyle =
     Css.batch
         [ padding2 (px 10) (px 7)
         , backgroundColor Colors.gray96
         ]
-
-
-calendarHeight : Css.Px
-calendarHeight =
-    px 277
 
 
 tableStyle : Css.Style
@@ -101,7 +76,7 @@ activeStyle : Css.Style
 activeStyle =
     Css.batch
         [ backgroundColor Colors.gray85
-        , highlightBorderStyle
+        , borderRadius (px 0)
         ]
 
 

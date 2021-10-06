@@ -355,7 +355,7 @@ dialog pickerType state currentDate =
             , css
                 [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
                 , fontSize (px 14)
-                , Styles.borderBoxStyle
+                , boxSizing borderBox
                 , position absolute
                 , border3 (px 1) solid Colors.gray85
                 , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
@@ -401,7 +401,7 @@ datePickerDialog pickerType state currentDate =
                 [ Html.node "date-time-picker-header"
                     [ css
                         [ Styles.headerStyle
-                        , Styles.borderBoxStyle
+                        , boxSizing borderBox
                         , Styles.headerStyle
                         , display block
                         , position relative
@@ -455,7 +455,7 @@ title config state currentDate =
     in
     span
         [ css
-            [ Styles.borderBoxStyle
+            [ boxSizing borderBox
             , display inlineBlock
             , width (pct 100)
             , textAlign center
@@ -707,7 +707,7 @@ digitalTimePickerDialog pickerType state currentDate =
                                         , Styles.cellStyle
                                         , hover
                                             [ backgroundColor Colors.gray92
-                                            , Styles.highlightBorderStyle
+                                            , borderRadius (px 0)
                                             ]
                                         ]
                                     ]
@@ -834,7 +834,7 @@ calendar pickerType state currentDate =
 
                                           else if matchesDay stateValue.today day then
                                             [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
-                                            , Styles.highlightBorderStyle
+                                            , borderRadius (px 0)
                                             , hover [ backgroundColor Colors.frost ]
                                             ]
 
@@ -890,7 +890,7 @@ calendar pickerType state currentDate =
                                     [ Styles.dayStyle
                                     , hover
                                         [ backgroundColor Colors.gray92
-                                        , Styles.highlightBorderStyle
+                                        , borderRadius (px 0)
                                         ]
                                     ]
                                 , Css.Global.th
