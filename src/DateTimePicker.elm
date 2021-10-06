@@ -28,7 +28,6 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.ClockUtils
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
@@ -1341,7 +1340,6 @@ timeIndicatorHandler config stateValue currentDate timeIndicator =
         updatedState =
             { stateValue
                 | activeTimeIndicator = updatedActiveTimeIndicator
-                , currentAngle = currentAngle
             }
 
         updatedActiveTimeIndicator =
@@ -1350,17 +1348,6 @@ timeIndicatorHandler config stateValue currentDate timeIndicator =
 
             else
                 Just timeIndicator
-
-        currentAngle =
-            case ( timeIndicator, stateValue.time.hour, stateValue.time.minute ) of
-                ( DateTimePicker.Internal.HourIndicator, Just hour, _ ) ->
-                    DateTimePicker.ClockUtils.hourToAngle hour
-
-                ( DateTimePicker.Internal.MinuteIndicator, _, Just minute ) ->
-                    DateTimePicker.ClockUtils.minuteToAngle minute
-
-                ( _, _, _ ) ->
-                    Nothing
     in
     config.onChange (InternalState updatedState) currentDate
 

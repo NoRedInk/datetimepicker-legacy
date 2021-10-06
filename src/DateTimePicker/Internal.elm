@@ -1,13 +1,12 @@
-module DateTimePicker.Internal
-    exposing
-        ( InternalState(..)
-        , StateValue
-        , TimeIndicator(..)
-        , TimeSelection
-        , getStateValue
-        , initialStateValue
-        , initialStateValueWithToday
-        )
+module DateTimePicker.Internal exposing
+    ( InternalState(..)
+    , StateValue
+    , TimeIndicator(..)
+    , TimeSelection
+    , getStateValue
+    , initialStateValue
+    , initialStateValueWithToday
+    )
 
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Geometry exposing (Point)
@@ -27,7 +26,6 @@ type alias StateValue =
     , time : TimeSelection
     , hourPickerStart : Int
     , minutePickerStart : Int
-    , currentAngle : Maybe Float
     , activeTimeIndicator : Maybe TimeIndicator
     }
 
@@ -53,7 +51,6 @@ initialStateValue =
     , time = TimeSelection Nothing Nothing Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
-    , currentAngle = Nothing
     , activeTimeIndicator = Just HourIndicator
     }
 
@@ -69,7 +66,6 @@ initialStateValueWithToday today =
     , time = TimeSelection Nothing Nothing Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
-    , currentAngle = Nothing
     , activeTimeIndicator = Just HourIndicator
     }
 
