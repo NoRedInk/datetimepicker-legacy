@@ -3,7 +3,7 @@
     "name": "NoRedInk/datetimepicker-legacy",
     "summary": "Reusable date and time picker view",
     "license": "Apache-2.0",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "exposed-modules": [
         "DateTimePicker",
         "DateTimePicker.Config"
@@ -17,7 +17,7 @@
         "elm/parser": "1.1.0 <= v < 2.0.0",
         "elm/svg": "1.0.1 <= v < 2.0.0",
         "elm/time": "1.0.0 <= v < 2.0.0",
-        "rtfeldman/elm-css": "16.0.0 <= v < 17.0.0"
+        "rtfeldman/elm-css": "17.0.1 <= v < 18.0.0"
     },
     "test-dependencies": {
         "elm-explorations/test": "1.2.0 <= v < 2.0.0"
