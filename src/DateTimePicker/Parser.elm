@@ -1,14 +1,13 @@
-module DateTimePicker.Parser
-    exposing
-        ( parseDate
-        , parseDateTime
-        , parseTime
-        )
+module DateTimePicker.Parser exposing
+    ( parseDate
+    , parseDateTime
+    , parseTime
+    )
 
 import Char
-import Time
 import DateTimePicker.DateTime as DateTime
 import Parser exposing ((|.), (|=), Parser)
+import Time
 
 
 parseDate : String -> Maybe DateTime.DateTime
@@ -110,6 +109,7 @@ clamped min max previousParser =
         (\int ->
             if int > max || int < min then
                 Parser.problem "Int out of range"
+
             else
                 Parser.succeed int
         )

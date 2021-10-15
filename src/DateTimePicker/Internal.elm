@@ -1,13 +1,12 @@
-module DateTimePicker.Internal
-    exposing
-        ( InternalState(..)
-        , StateValue
-        , TimeIndicator(..)
-        , TimeSelection
-        , getStateValue
-        , initialStateValue
-        , initialStateValueWithToday
-        )
+module DateTimePicker.Internal exposing
+    ( InternalState(..)
+    , StateValue
+    , TimeIndicator(..)
+    , TimeSelection
+    , getStateValue
+    , initialStateValue
+    , initialStateValueWithToday
+    )
 
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Geometry exposing (Point)

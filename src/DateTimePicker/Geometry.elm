@@ -1,9 +1,8 @@
-module DateTimePicker.Geometry
-    exposing
-        ( Point
-        , calculateAngle
-        , calculateArrowPoint
-        )
+module DateTimePicker.Geometry exposing
+    ( Point
+    , calculateAngle
+    , calculateArrowPoint
+    )
 
 
 type alias Point =
@@ -23,10 +22,13 @@ calculateAngle p1 p2 p3 =
         quadrant =
             if p3.x >= p1.x && p3.y >= p1.y then
                 Quadrant1
+
             else if p3.x < p1.x && p3.y >= p1.y then
                 Quadrant2
+
             else if p3.x < p1.x && p3.y < p1.y then
                 Quadrant3
+
             else
                 Quadrant4
 

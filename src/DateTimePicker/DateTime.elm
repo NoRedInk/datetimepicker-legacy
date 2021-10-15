@@ -1,23 +1,22 @@
-module DateTimePicker.DateTime
-    exposing
-        ( DateTime
-        , addDays
-        , addMonths
-        , compareDays
-        , dayOfWeek
-        , daysInMonth
-        , fromDate
-        , fromParts
-        , fromTime
-        , intToMonth
-        , monthToInt
-        , setTime
-        , toFirstOfMonth
-        , validate
-        )
+module DateTimePicker.DateTime exposing
+    ( DateTime
+    , addDays
+    , addMonths
+    , compareDays
+    , dayOfWeek
+    , daysInMonth
+    , fromDate
+    , fromParts
+    , fromTime
+    , intToMonth
+    , monthToInt
+    , setTime
+    , toFirstOfMonth
+    , validate
+    )
 
-import Time
 import Task exposing (Task)
+import Time
 
 
 type alias DateTime =
@@ -131,6 +130,7 @@ dayOfWeek { year, month, day } =
         m =
             if om <= 2 then
                 om + 10
+
             else
                 om - 2
 
@@ -139,7 +139,8 @@ dayOfWeek { year, month, day } =
 
         y =
             if om <= 2 then
-                (modBy 100 year) - 1
+                modBy 100 year - 1
+
             else
                 modBy 100 year
 
@@ -202,7 +203,7 @@ addMonths n date =
             wholeMonths // 12 + 1
 
         m =
-            intToMonth ((modBy 12 wholeMonths) + 1)
+            intToMonth (modBy 12 wholeMonths + 1)
     in
     fromParts y m (min date.day (daysInMonth y m)) date.hour date.minute
 
@@ -216,6 +217,7 @@ fromPosixMinutes minutes =
         era =
             (if rawDay >= 0 then
                 rawDay
+
              else
                 rawDay - 146096
             )
@@ -244,6 +246,7 @@ fromPosixMinutes minutes =
             mp
                 + (if mp < 10 then
                     3
+
                    else
                     -9
                   )
@@ -254,6 +257,7 @@ fromPosixMinutes minutes =
         year
             + (if month <= 2 then
                 1
+
                else
                 0
               )
@@ -278,6 +282,7 @@ daysBeforeMonth year month =
         leapDays =
             if isLeapYear year then
                 1
+
             else
                 0
     in
@@ -342,6 +347,7 @@ daysInMonth year month =
         Time.Feb ->
             if isLeapYear year then
                 29
+
             else
                 28
 
@@ -365,14 +371,19 @@ validate : DateTime -> Maybe DateTime
 validate datetime =
     if datetime.hour > 23 || datetime.hour < 0 then
         Nothing
+
     else if datetime.minute > 59 || datetime.minute < 0 then
         Nothing
+
     else if datetime.year < 0 then
         Nothing
+
     else if datetime.day < 1 then
         Nothing
+
     else if datetime.day > daysInMonth datetime.year datetime.month then
         Nothing
+
     else
         Just datetime
 
