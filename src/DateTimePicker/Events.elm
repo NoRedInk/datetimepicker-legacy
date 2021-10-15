@@ -1,16 +1,15 @@
-module DateTimePicker.Events
-    exposing
-        ( MoveData
-        , onBlurWithChange
-        , onMouseDownPreventDefault
-        , onMouseMoveWithPosition
-        , onMouseUpPreventDefault
-        , onPointerMoveWithPosition
-        , onPointerUp
-        , onTouchEndPreventDefault
-        , onTouchMovePreventDefault
-        , onTouchStartPreventDefault
-        )
+module DateTimePicker.Events exposing
+    ( MoveData
+    , onBlurWithChange
+    , onMouseDownPreventDefault
+    , onMouseMoveWithPosition
+    , onMouseUpPreventDefault
+    , onPointerMoveWithPosition
+    , onPointerUp
+    , onTouchEndPreventDefault
+    , onTouchMovePreventDefault
+    , onTouchStartPreventDefault
+    )
 
 import DateTimePicker.DateTime as DateTime
 import Html.Styled as Html
@@ -55,6 +54,7 @@ onMouseUpPreventDefault msg =
             , message = msg
             }
 
+
 onTouchEndPreventDefault : msg -> Html.Attribute msg
 onTouchEndPreventDefault msg =
     HtmlEvents.custom "touchend" <|
@@ -63,6 +63,7 @@ onTouchEndPreventDefault msg =
             , stopPropagation = True
             , message = msg
             }
+
 
 onMouseMoveWithPosition : (MoveData -> Json.Decode.Decoder msg) -> Svg.Attribute msg
 onMouseMoveWithPosition decoder =

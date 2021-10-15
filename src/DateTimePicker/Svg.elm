@@ -1,12 +1,11 @@
-module DateTimePicker.Svg
-    exposing
-        ( doubleLeftArrow
-        , doubleRightArrow
-        , downArrow
-        , leftArrow
-        , rightArrow
-        , upArrow
-        )
+module DateTimePicker.Svg exposing
+    ( doubleLeftArrow
+    , doubleRightArrow
+    , downArrow
+    , leftArrow
+    , rightArrow
+    , upArrow
+    )
 
 import Svg.Styled exposing (Svg, polygon, svg)
 import Svg.Styled.Attributes exposing (height, points, style, viewBox, width)
