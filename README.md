@@ -17,8 +17,6 @@ cd demo && elm make Demo.elm && open index.html && cd ..
 
 ### Digital time picker
 
-![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/datetimepicker-digital.gif "Date Time Picker with Digital Time Picker Preview")
-
 Code:
 ```elm
 view model =
@@ -32,8 +30,6 @@ view model =
 ### Date Picker
 
 Just the date picker without the time.
-
-![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/datepicker.gif "Date Picker Preview")
 
 Code:
 ```elm
@@ -52,8 +48,6 @@ view model =
 ### Time Picker
 
 Just the time picker without the date.
-
-![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/timepicker.gif "Time Picker Preview")
 
 Code:
 ```elm
