@@ -20,7 +20,7 @@ import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Svg.V1 as Svg exposing (Svg)
 import Nri.Ui.UiIcon.V1 as UiIcon
 import Svg.Styled exposing (polygon, svg)
-import Svg.Styled.Attributes exposing (height, points, style, viewBox, width)
+import Svg.Styled.Attributes exposing (fill, height, points, style, viewBox, width)
 
 
 type DoubleOrientation
@@ -76,7 +76,7 @@ doubleArrow orientation =
                 DoubleLeft ->
                     "180"
     in
-    svg [ viewBox "0 0 32 16", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
+    svg [ viewBox "0 0 32 16", fill "currentcolor", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
         [ polygon [ points "0 0, 0 20, 16 10" ] []
         , polygon [ points "16 0, 16 20, 32 10" ] []
         ]
