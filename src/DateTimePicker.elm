@@ -28,8 +28,6 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.AnalogClock
-import DateTimePicker.ClockUtils
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
@@ -42,6 +40,7 @@ import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (attribute, css, value)
 import Html.Styled.Events exposing (onBlur, onClick, onFocus)
+import Nri.Ui.Colors.V1 as Colors
 import String
 import Task
 import Time
@@ -356,9 +355,9 @@ dialog pickerType state currentDate =
             , css
                 [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
                 , fontSize (px 14)
-                , Styles.borderBoxStyle
+                , boxSizing borderBox
                 , position absolute
-                , border3 (px 1) solid Styles.darkGray
+                , border3 (px 1) solid Colors.gray85
                 , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
                 , property "z-index" "1"
                 , displayFlex
@@ -366,12 +365,7 @@ dialog pickerType state currentDate =
             ]
 
         withTimeAttributes config timePickerType =
-            case timePickerType of
-                Analog ->
-                    (onClick <| onChangeHandler pickerType stateValue currentDate) :: attributes config
-
-                Digital ->
-                    attributes config
+            attributes config
     in
     case pickerType of
         DateType datePickerConfig ->
@@ -407,7 +401,7 @@ datePickerDialog pickerType state currentDate =
                 [ Html.node "date-time-picker-header"
                     [ css
                         [ Styles.headerStyle
-                        , Styles.borderBoxStyle
+                        , boxSizing borderBox
                         , Styles.headerStyle
                         , display block
                         , position relative
@@ -420,9 +414,9 @@ datePickerDialog pickerType state currentDate =
                     [ css
                         [ display block
                         , textAlign center
-                        , backgroundColor Styles.lightGray
+                        , backgroundColor Colors.gray96
                         , padding2 (px 7) (px 7)
-                        , borderTop3 (px 1) solid Styles.darkGray
+                        , borderTop3 (px 1) solid Colors.gray85
                         , height (px 16)
                         ]
                     ]
@@ -461,7 +455,7 @@ title config state currentDate =
     in
     span
         [ css
-            [ Styles.borderBoxStyle
+            [ boxSizing borderBox
             , display inlineBlock
             , width (pct 100)
             , textAlign center
@@ -550,12 +544,7 @@ timePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
 timePickerDialog pickerType state currentDate =
     let
         html config =
-            case config.timePickerType of
-                Digital ->
-                    digitalTimePickerDialog pickerType state currentDate
-
-                Analog ->
-                    analogTimePickerDialog pickerType state currentDate
+            digitalTimePickerDialog pickerType state currentDate
     in
     case pickerType of
         DateType _ ->
@@ -663,10 +652,10 @@ digitalTimePickerDialog pickerType state currentDate =
             td (styles :: handlers) [ text ampm ]
 
         upArrowTd =
-            Html.styled td [ borderBottom3 (px 1) solid Styles.darkGray ]
+            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ]
 
         upArrows config =
-            [ tr [ css [ backgroundColor Styles.lightGray ] ]
+            [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ upArrowTd
                     [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
@@ -682,10 +671,10 @@ digitalTimePickerDialog pickerType state currentDate =
             ]
 
         downArrowTd =
-            Html.styled td [ borderTop3 (px 1) solid Styles.darkGray ]
+            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ]
 
         downArrows config =
-            [ tr [ css [ backgroundColor Styles.lightGray ] ]
+            [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ downArrowTd
                     [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
                     , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
@@ -717,8 +706,8 @@ digitalTimePickerDialog pickerType state currentDate =
                                         [ width (pct 33)
                                         , Styles.cellStyle
                                         , hover
-                                            [ backgroundColor Styles.highlightedDay
-                                            , Styles.highlightBorderStyle
+                                            [ backgroundColor Colors.gray92
+                                            , borderRadius (px 0)
                                             ]
                                         ]
                                     ]
@@ -734,103 +723,6 @@ digitalTimePickerDialog pickerType state currentDate =
                             )
                         ]
                     ]
-                ]
-    in
-    case pickerType of
-        DateType _ ->
-            text ""
-
-        DateTimeType config ->
-            html config
-
-        TimeType config ->
-            html config
-
-
-analogTimePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-analogTimePickerDialog pickerType state currentDate =
-    let
-        stateValue =
-            getStateValue state
-
-        isActive timeIndicator =
-            if stateValue.activeTimeIndicator == Just timeIndicator then
-                [ Styles.activeStyle ]
-
-            else
-                []
-
-        html config =
-            div [ css [ Styles.timePickerDialog, width (px 230) ] ]
-                [ div [ css [ Styles.headerStyle, fontSize (Css.em 1.2) ] ]
-                    [ span
-                        [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
-                        , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.HourIndicator)
-                        , css [ Styles.timeHeaderStyle ]
-                        , css (isActive DateTimePicker.Internal.HourIndicator)
-                        ]
-                        [ text (stateValue.time.hour |> Maybe.map (String.fromInt >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
-                    , span [] [ text " : " ]
-                    , span
-                        [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
-                        , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.MinuteIndicator)
-                        , css [ Styles.timeHeaderStyle ]
-                        , css (isActive DateTimePicker.Internal.MinuteIndicator)
-                        ]
-                        [ text (stateValue.time.minute |> Maybe.map (String.fromInt >> DateTimePicker.DateUtils.padding) |> Maybe.withDefault "--") ]
-                    , span
-                        [ onMouseDownPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
-                        , onTouchStartPreventDefault (timeIndicatorHandler config stateValue currentDate DateTimePicker.Internal.AMPMIndicator)
-                        , css [ Styles.timeHeaderStyle ]
-                        , css (isActive DateTimePicker.Internal.AMPMIndicator)
-                        ]
-                        [ text (stateValue.time.amPm |> Maybe.withDefault "--") ]
-                    ]
-                , div
-                    [ css
-                        [ backgroundColor (hex "#fff")
-                        , padding2 (px 12) (px 15)
-                        , height (px 202)
-                        ]
-                    ]
-                    [ case stateValue.activeTimeIndicator of
-                        Just DateTimePicker.Internal.AMPMIndicator ->
-                            amPmPicker config
-
-                        _ ->
-                            DateTimePicker.AnalogClock.clock pickerType config.onChange state currentDate
-                    ]
-                ]
-
-        highlighted =
-            [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
-
-        amPmPicker config =
-            div [ css [ padding2 (px 40) (px 0) ] ]
-                [ div
-                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
-                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "AM"
-                    , css [ Styles.amPmStyle ]
-                    , case stateValue.time.amPm of
-                        Just "AM" ->
-                            css highlighted
-
-                        _ ->
-                            css []
-                    ]
-                    [ text "AM" ]
-                , div
-                    [ onMouseDownPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
-                    , onTouchStartPreventDefault <| amPmPickerHandler pickerType config stateValue currentDate "PM"
-                    , css [ Styles.amPmStyle ]
-                    , case stateValue.time.amPm of
-                        Just "PM" ->
-                            css highlighted
-
-                        _ ->
-                            css []
-                    ]
-                    [ text "PM" ]
                 ]
     in
     case pickerType of
@@ -917,20 +809,20 @@ calendar pickerType state currentDate =
                                     List.concat
                                         [ case day.monthType of
                                             DateTimePicker.DateUtils.Previous ->
-                                                [ color Styles.fadeText ]
+                                                [ color Colors.gray75 ]
 
                                             DateTimePicker.DateUtils.Current ->
                                                 []
 
                                             DateTimePicker.DateUtils.Next ->
-                                                [ color Styles.fadeText ]
+                                                [ color Colors.gray75 ]
                                         , if isInRange day then
                                             []
 
                                           else
                                             [ backgroundColor inherit
                                             , cursor default
-                                            , color Styles.darkGray
+                                            , color Colors.gray85
                                             , hover
                                                 [ backgroundColor inherit
                                                 ]
@@ -942,9 +834,8 @@ calendar pickerType state currentDate =
 
                                           else if matchesDay stateValue.today day then
                                             [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
-                                            , Styles.highlightBorderStyle
-                                            , hover
-                                                [ backgroundColor Styles.highlightSelectedDay ]
+                                            , borderRadius (px 0)
+                                            , hover [ backgroundColor Colors.frost ]
                                             ]
 
                                           else
@@ -998,15 +889,15 @@ calendar pickerType state currentDate =
                                 , Css.Global.td
                                     [ Styles.dayStyle
                                     , hover
-                                        [ backgroundColor Styles.highlightedDay
-                                        , Styles.highlightBorderStyle
+                                        [ backgroundColor Colors.gray92
+                                        , borderRadius (px 0)
                                         ]
                                     ]
                                 , Css.Global.th
                                     [ Styles.dayStyle
-                                    , backgroundColor Styles.lightGray
+                                    , backgroundColor Colors.gray96
                                     , fontWeight normal
-                                    , borderBottom3 (px 1) solid Styles.darkGray
+                                    , borderBottom3 (px 1) solid Colors.gray85
                                     ]
                                 ]
                             ]
@@ -1449,7 +1340,6 @@ timeIndicatorHandler config stateValue currentDate timeIndicator =
         updatedState =
             { stateValue
                 | activeTimeIndicator = updatedActiveTimeIndicator
-                , currentAngle = currentAngle
             }
 
         updatedActiveTimeIndicator =
@@ -1458,17 +1348,6 @@ timeIndicatorHandler config stateValue currentDate timeIndicator =
 
             else
                 Just timeIndicator
-
-        currentAngle =
-            case ( timeIndicator, stateValue.time.hour, stateValue.time.minute ) of
-                ( DateTimePicker.Internal.HourIndicator, Just hour, _ ) ->
-                    DateTimePicker.ClockUtils.hourToAngle hour
-
-                ( DateTimePicker.Internal.MinuteIndicator, _, Just minute ) ->
-                    DateTimePicker.ClockUtils.minuteToAngle minute
-
-                ( _, _, _ ) ->
-                    Nothing
     in
     config.onChange (InternalState updatedState) currentDate
 

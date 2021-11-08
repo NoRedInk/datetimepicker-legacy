@@ -2,28 +2,16 @@
 
 # THIS IS A FORK OF https://github.com/abadi199/datetimepicker
 
-## Demo
+# Contributing
 
-### [Live Demo](https://abadi199.github.io/datetimepicker/)
+To check that the library still compiles:
+```
+elm make --output=/dev/null
+```
 
-### Date Time Picker
-
-The date and time picker can be used in two modes:
-- Analog Time Picker
-- Digital Time Picker
-
-#### Analog time picker
-
-![alt text](https://github.com/abadi199/datetimepicker/raw/master/images/datetimepicker-analog.gif "Date Time Picker with Analog Time Picker Preview")
-
-Code:
-```elm
-view model =
-    DateTimePicker.dateTimePickerWithConfig
-        { defaultDateTimeConfig | timePickerType = DateTimePicker.Config.Analog }
-        [ class "my-datetimepicker" ]
-        model.state
-        model.value
+To re-compile and open the Demo application:
+```
+cd demo && elm make Demo.elm && open index.html && cd ..
 ```
 
 
@@ -106,53 +94,41 @@ The DateTimePicker.Config module provides some default configurations for both d
 ### Example
 Here's a snippet of typical Elm application:
 ```elm
-main = 
-    Html.program 
-        { init = init 
+main =
+    Html.program
+        { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions 
+        , subscriptions = subscriptions
         }
 
-type Msg 
+type Msg
     = DateChange DateTimePicker.State (Maybe DateTimePicker.DateTime)
 
-type alias Model = 
+type alias Model =
     { selectedDate : Maybe DateTimePicker.DateTime
-    , datePickerState : DateTimePicker.State 
+    , datePickerState : DateTimePicker.State
     }
 
-init = 
+init =
     ( { selectedDate = Nothing, datePickerState.initialState }
     , DateTimePicker.initialCmd DateChange DateTimePicker.initialState
     )
 
-view model = 
-    DateTimePicker.dateTimePickerWithConfig 
-        DateChange 
-        [ class "my-datetimepicker" ] 
-        model.datePickerState 
+view model =
+    DateTimePicker.dateTimePickerWithConfig
+        DateChange
+        [ class "my-datetimepicker" ]
+        model.datePickerState
         model.selectedDate
 
 update msg model =
     case msg of
         DateChange datePickerState selectedDate ->
-            ( { model | selectedDate = selectedDate, datePickerState = datePickerState }, Cmd.none ) 
+            ( { model | selectedDate = selectedDate, datePickerState = datePickerState }, Cmd.none )
 
 subscriptions =
     ...
 
 
 ```
-
-For a complete sample code, please see the [demo](https://github.com/abadi199/datetimepicker/tree/master/demo) folder of the source code.
-
-
-
-
-
-
-## Contributing
-- [Submit a pull request](https://github.com/abadi199/datetimepicker)! If you're missing a feature you want to have, or just found a bug, or found an error in the docs, please submit a pull request.
-- [Create an issue](https://github.com/abadi199/datetimepicker/issues)! If you found a bug or want a new feature that you think will make the library better, but don't have time to do it yourself, please submit an issue.
-- Message me on slack or [twitter](https://twitter.com/abadikurniawan) if you just want to give me a feedback or thank me. I'm [abadi199](https://elmlang.slack.com/team/abadi199) on [elm-lang](https://elmlang.herokuapp.com/) slack channel.
