@@ -45,6 +45,7 @@ import Html.Styled.Attributes exposing (attribute, css, value)
 import Html.Styled.Events exposing (onBlur, onClick, onFocus)
 import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
+import Nri.Ui.Fonts.V1 as Fonts
 import String
 import Task
 import Time
@@ -404,11 +405,13 @@ datePickerDialog pickerType state currentDate =
                 [ css [ float left ] ]
                 [ Html.node "date-time-picker-header"
                     [ css
-                        [ Styles.headerStyle
-                        , boxSizing borderBox
-                        , Styles.headerStyle
-                        , display block
-                        , position relative
+                        [ boxSizing borderBox
+                        , displayFlex
+                        , alignItems center
+                        , justifyContent spaceBetween
+                        , padding2 (px 10) (px 7)
+                        , backgroundColor Colors.gray96
+                        , Fonts.baseFont
                         ]
                     ]
                     (navigation config state currentDate)
@@ -674,7 +677,12 @@ digitalTimePickerDialog pickerType state currentDate =
 
         html config =
             div [ css [ Styles.timePickerDialog ] ]
-                [ div [ css [ Styles.headerStyle ] ]
+                [ div
+                    [ css
+                        [ padding2 (px 10) (px 7)
+                        , backgroundColor Colors.gray96
+                        ]
+                    ]
                     [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
                 , div
                     [ css

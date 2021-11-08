@@ -47,14 +47,6 @@ cellStyle =
         ]
 
 
-headerStyle : Css.Style
-headerStyle =
-    Css.batch
-        [ padding2 (px 10) (px 7)
-        , backgroundColor Colors.gray96
-        ]
-
-
 tableStyle : Css.Style
 tableStyle =
     Css.batch
