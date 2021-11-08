@@ -478,10 +478,7 @@ previousYearButton config state currentDate =
     if config.allowYearNavigation then
         ClickableSvg.button "Previous Year"
             DateTimePicker.Svg.doubleLeftArrow
-            [ ClickableSvg.custom
-                [ onMouseDownPreventDefault <| gotoPreviousYear config state currentDate
-                , onTouchStartPreventDefault <| gotoPreviousYear config state currentDate
-                ]
+            [ ClickableSvg.onClick (gotoPreviousYear config state currentDate)
             ]
 
     else
@@ -492,10 +489,7 @@ previousButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime
 previousButton config state currentDate =
     ClickableSvg.button "Previous month"
         DateTimePicker.Svg.leftArrow
-        [ ClickableSvg.custom
-            [ onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
-            , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
-            ]
+        [ ClickableSvg.onClick (gotoPreviousMonth config state currentDate)
         ]
 
 
@@ -503,10 +497,7 @@ nextButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.Dat
 nextButton config state currentDate =
     ClickableSvg.button "Next month"
         DateTimePicker.Svg.rightArrow
-        [ ClickableSvg.custom
-            [ onMouseDownPreventDefault <| gotoNextMonth config state currentDate
-            , onTouchStartPreventDefault <| gotoNextMonth config state currentDate
-            ]
+        [ ClickableSvg.onClick (gotoNextMonth config state currentDate)
         ]
 
 
@@ -515,10 +506,7 @@ nextYearButton config state currentDate =
     if config.allowYearNavigation then
         ClickableSvg.button "Next Year"
             DateTimePicker.Svg.doubleRightArrow
-            [ ClickableSvg.custom
-                [ onMouseDownPreventDefault <| gotoNextYear config state currentDate
-                , onTouchStartPreventDefault <| gotoNextYear config state currentDate
-                ]
+            [ ClickableSvg.onClick (gotoNextYear config state currentDate)
             ]
 
     else
@@ -671,19 +659,13 @@ digitalTimePickerDialog pickerType state currentDate =
                 [ downArrowTd
                     [ ClickableSvg.button "Later hours"
                         DateTimePicker.Svg.downArrow
-                        [ ClickableSvg.custom
-                            [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
-                            , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
-                            ]
+                        [ ClickableSvg.onClick (hourDownHandler config stateValue currentDate)
                         ]
                     ]
                 , downArrowTd
                     [ ClickableSvg.button "Later minutes"
                         DateTimePicker.Svg.downArrow
-                        [ ClickableSvg.custom
-                            [ onMouseDownPreventDefault <| minuteDownHandler config stateValue currentDate
-                            , onTouchStartPreventDefault <| minuteDownHandler config stateValue currentDate
-                            ]
+                        [ ClickableSvg.onClick (minuteDownHandler config stateValue currentDate)
                         ]
                     ]
                 , downArrowTd []
