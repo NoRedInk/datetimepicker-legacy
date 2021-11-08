@@ -10,19 +10,17 @@ module DateTimePicker.Svg exposing
 {-|
 
 
-# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+# This is mostly a replacement of <https://github.com/abadi199/datetimepicker/blob/master/src/DateTimePicker/Svg.elm>
 
 -}
 
-import Svg.Styled exposing (Svg, polygon, svg)
+import Css
+import Html.Styled exposing (Html)
+import Html.Styled.Attributes exposing (css)
+import Nri.Ui.Svg.V1 as Svg exposing (Svg)
+import Nri.Ui.UiIcon.V1 as UiIcon
+import Svg.Styled exposing (polygon, svg)
 import Svg.Styled.Attributes exposing (height, points, style, viewBox, width)
-
-
-type Orientation
-    = Up
-    | Down
-    | Left
-    | Right
 
 
 type DoubleOrientation
@@ -30,59 +28,45 @@ type DoubleOrientation
     | DoubleRight
 
 
-rightArrow : Svg msg
+rightArrow : Html msg
 rightArrow =
-    arrow Right
+    arrow UiIcon.arrowRight
 
 
-doubleRightArrow : Svg msg
+doubleRightArrow : Html msg
 doubleRightArrow =
     doubleArrow DoubleRight
 
 
-leftArrow : Svg msg
+leftArrow : Html msg
 leftArrow =
-    arrow Left
+    arrow UiIcon.arrowLeft
 
 
-doubleLeftArrow : Svg msg
+doubleLeftArrow : Html msg
 doubleLeftArrow =
     doubleArrow DoubleLeft
 
 
-downArrow : Svg msg
+downArrow : Html msg
 downArrow =
-    arrow Down
+    arrow UiIcon.arrowDown
 
 
-upArrow : Svg msg
+upArrow : Html msg
 upArrow =
-    arrow Up
+    arrow UiIcon.arrowTop
 
 
-arrow : Orientation -> Svg msg
-arrow orientation =
-    let
-        rotation =
-            case orientation of
-                Right ->
-                    "0"
-
-                Left ->
-                    "180"
-
-                Down ->
-                    "90"
-
-                Up ->
-                    "270"
-    in
-    svg [ width "8", height "12", viewBox "0 0 16 16", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
-        [ polygon [ points "0 0, 0 20, 16 10" ] []
-        ]
+arrow : Svg -> Html msg
+arrow icon =
+    icon
+        |> Svg.withWidth (Css.px 12)
+        |> Svg.withHeight (Css.px 12)
+        |> Svg.toHtml
 
 
-doubleArrow : DoubleOrientation -> Svg msg
+doubleArrow : DoubleOrientation -> Html msg
 doubleArrow orientation =
     let
         rotation =
