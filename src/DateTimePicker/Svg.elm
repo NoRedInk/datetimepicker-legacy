@@ -7,6 +7,13 @@ module DateTimePicker.Svg exposing
     , upArrow
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import Svg.Styled exposing (Svg, polygon, svg)
 import Svg.Styled.Attributes exposing (height, points, style, viewBox, width)
 

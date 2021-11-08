@@ -1,6 +1,11 @@
 module DateTimePicker.Styles exposing (..)
 
-{-| -}
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
 
 import Css exposing (..)
 import Nri.Ui.Colors.V1 as Colors

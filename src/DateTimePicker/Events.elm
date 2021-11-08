@@ -11,6 +11,13 @@ module DateTimePicker.Events exposing
     , onTouchStartPreventDefault
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import DateTimePicker.DateTime as DateTime
 import Html.Styled as Html
 import Html.Styled.Events as HtmlEvents exposing (targetValue)

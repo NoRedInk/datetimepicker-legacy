@@ -8,6 +8,13 @@ module DateTimePicker.Internal exposing
     , initialStateValueWithToday
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import DateTimePicker.DateTime as DateTime
 
 

@@ -10,6 +10,13 @@ module DateTimePicker.DateUtils exposing
     , toMillitary
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import DateTimePicker.DateTime as DateTime
 import String
 import Time

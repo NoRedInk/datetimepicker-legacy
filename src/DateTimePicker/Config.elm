@@ -3,7 +3,10 @@ module DateTimePicker.Config exposing
     , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
-{-| DateTimePicker configuration
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
 
 
 # Configuration
