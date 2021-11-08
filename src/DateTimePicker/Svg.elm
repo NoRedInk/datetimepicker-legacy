@@ -15,7 +15,7 @@ module DateTimePicker.Svg exposing
 -}
 
 import Css
-import Html.Styled exposing (Html)
+import Html.Styled
 import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Svg.V1 as Svg exposing (Svg)
 import Nri.Ui.UiIcon.V1 as UiIcon
@@ -28,45 +28,44 @@ type DoubleOrientation
     | DoubleRight
 
 
-rightArrow : Html msg
+rightArrow : Svg
 rightArrow =
     arrow UiIcon.arrowRight
 
 
-doubleRightArrow : Html msg
+doubleRightArrow : Svg
 doubleRightArrow =
     doubleArrow DoubleRight
 
 
-leftArrow : Html msg
+leftArrow : Svg
 leftArrow =
     arrow UiIcon.arrowLeft
 
 
-doubleLeftArrow : Html msg
+doubleLeftArrow : Svg
 doubleLeftArrow =
     doubleArrow DoubleLeft
 
 
-downArrow : Html msg
+downArrow : Svg
 downArrow =
     arrow UiIcon.arrowDown
 
 
-upArrow : Html msg
+upArrow : Svg
 upArrow =
     arrow UiIcon.arrowTop
 
 
-arrow : Svg -> Html msg
+arrow : Svg -> Svg
 arrow icon =
     icon
         |> Svg.withWidth (Css.px 12)
         |> Svg.withHeight (Css.px 12)
-        |> Svg.toHtml
 
 
-doubleArrow : DoubleOrientation -> Html msg
+doubleArrow : DoubleOrientation -> Svg
 doubleArrow orientation =
     let
         rotation =
@@ -77,7 +76,10 @@ doubleArrow orientation =
                 DoubleLeft ->
                     "180"
     in
-    svg [ width "16", height "12", viewBox "0 0 32 16", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
+    svg [ viewBox "0 0 32 16", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
         [ polygon [ points "0 0, 0 20, 16 10" ] []
         , polygon [ points "16 0, 16 20, 32 10" ] []
         ]
+        |> Svg.fromHtml
+        |> Svg.withWidth (Css.px 16)
+        |> Svg.withHeight (Css.px 12)

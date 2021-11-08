@@ -5,7 +5,10 @@ module DateTimePicker exposing
     , State
     )
 
-{-| DateTime Picker
+{-|
+
+
+# This is a heavily-modified version of <https://github.com/abadi199/datetimepicker/blob/master/src/DateTimePicker/Svg.elm>
 
 @docs DateTime, dateTime
 
@@ -40,6 +43,7 @@ import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (attribute, css, value)
 import Html.Styled.Events exposing (onBlur, onClick, onFocus)
+import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
 import String
 import Task
@@ -472,69 +476,50 @@ title config state currentDate =
 previousYearButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
 previousYearButton config state currentDate =
     if config.allowYearNavigation then
-        span
-            [ css
-                [ Styles.arrowStyle
-                , left (px 0)
+        ClickableSvg.button "Previous Year"
+            DateTimePicker.Svg.doubleLeftArrow
+            [ ClickableSvg.custom
+                [ onMouseDownPreventDefault <| gotoPreviousYear config state currentDate
+                , onTouchStartPreventDefault <| gotoPreviousYear config state currentDate
                 ]
-            , onMouseDownPreventDefault <| gotoPreviousYear config state currentDate
-            , onTouchStartPreventDefault <| gotoPreviousYear config state currentDate
             ]
-            [ DateTimePicker.Svg.doubleLeftArrow ]
 
     else
         Html.text ""
 
 
-noYearNavigationStyle : DatePickerConfig (Config config msg) -> Css.Style
-noYearNavigationStyle config =
-    if config.allowYearNavigation then
-        Css.batch []
-
-    else
-        left (px 0)
-
-
 previousButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
 previousButton config state currentDate =
-    span
-        [ css
-            [ Styles.arrowStyle
-            , left (px 22)
-            , noYearNavigationStyle config
+    ClickableSvg.button "Previous month"
+        DateTimePicker.Svg.leftArrow
+        [ ClickableSvg.custom
+            [ onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
+            , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
             ]
-        , onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
-        , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
         ]
-        [ DateTimePicker.Svg.leftArrow ]
 
 
 nextButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
 nextButton config state currentDate =
-    span
-        [ css
-            [ Styles.arrowStyle
-            , right (px 22)
-            , noYearNavigationStyle config
+    ClickableSvg.button "Next month"
+        DateTimePicker.Svg.rightArrow
+        [ ClickableSvg.custom
+            [ onMouseDownPreventDefault <| gotoNextMonth config state currentDate
+            , onTouchStartPreventDefault <| gotoNextMonth config state currentDate
             ]
-        , onMouseDownPreventDefault <| gotoNextMonth config state currentDate
-        , onTouchStartPreventDefault <| gotoNextMonth config state currentDate
         ]
-        [ DateTimePicker.Svg.rightArrow ]
 
 
 nextYearButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
 nextYearButton config state currentDate =
     if config.allowYearNavigation then
-        span
-            [ css
-                [ Styles.arrowStyle
-                , right (px 0)
+        ClickableSvg.button "Next Year"
+            DateTimePicker.Svg.doubleRightArrow
+            [ ClickableSvg.custom
+                [ onMouseDownPreventDefault <| gotoNextYear config state currentDate
+                , onTouchStartPreventDefault <| gotoNextYear config state currentDate
                 ]
-            , onMouseDownPreventDefault <| gotoNextYear config state currentDate
-            , onTouchStartPreventDefault <| gotoNextYear config state currentDate
             ]
-            [ DateTimePicker.Svg.doubleRightArrow ]
 
     else
         Html.text ""
@@ -652,40 +637,56 @@ digitalTimePickerDialog pickerType state currentDate =
             td (styles :: handlers) [ text ampm ]
 
         upArrowTd =
-            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ]
+            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ] []
 
         upArrows config =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ upArrowTd
-                    [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
+                    [ ClickableSvg.button "Earlier hours"
+                        DateTimePicker.Svg.upArrow
+                        [ ClickableSvg.custom
+                            [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
+                            , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
+                            ]
+                        ]
                     ]
-                    [ DateTimePicker.Svg.upArrow ]
                 , upArrowTd
-                    [ onMouseDownPreventDefault <| minuteUpHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| minuteUpHandler config stateValue currentDate
+                    [ ClickableSvg.button "Earlier minutes"
+                        DateTimePicker.Svg.upArrow
+                        [ ClickableSvg.custom
+                            [ onMouseDownPreventDefault <| minuteUpHandler config stateValue currentDate
+                            , onTouchStartPreventDefault <| minuteUpHandler config stateValue currentDate
+                            ]
+                        ]
                     ]
-                    [ DateTimePicker.Svg.upArrow ]
-                , upArrowTd [] []
+                , upArrowTd []
                 ]
             ]
 
         downArrowTd =
-            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ]
+            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ] []
 
         downArrows config =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ downArrowTd
-                    [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
+                    [ ClickableSvg.button "Later hours"
+                        DateTimePicker.Svg.downArrow
+                        [ ClickableSvg.custom
+                            [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
+                            , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
+                            ]
+                        ]
                     ]
-                    [ DateTimePicker.Svg.downArrow ]
                 , downArrowTd
-                    [ onMouseDownPreventDefault <| minuteDownHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| minuteDownHandler config stateValue currentDate
+                    [ ClickableSvg.button "Later minutes"
+                        DateTimePicker.Svg.downArrow
+                        [ ClickableSvg.custom
+                            [ onMouseDownPreventDefault <| minuteDownHandler config stateValue currentDate
+                            , onTouchStartPreventDefault <| minuteDownHandler config stateValue currentDate
+                            ]
+                        ]
                     ]
-                    [ DateTimePicker.Svg.downArrow ]
-                , downArrowTd [] []
+                , downArrowTd []
                 ]
             ]
 

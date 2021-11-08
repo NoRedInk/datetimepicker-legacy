@@ -47,18 +47,6 @@ cellStyle =
         ]
 
 
-arrowStyle : Css.Style
-arrowStyle =
-    Css.batch
-        [ boxSizing borderBox
-        , textAlign center
-        , transform (scale 0.8)
-        , position absolute
-        , padding2 (px 0) (px 8)
-        , cursor pointer
-        ]
-
-
 headerStyle : Css.Style
 headerStyle =
     Css.batch
