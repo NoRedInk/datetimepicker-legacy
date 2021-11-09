@@ -1,5 +1,5 @@
 module DateTimePicker.Config exposing
-    ( Config, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType(..), Type(..)
+    ( Config, DatePickerConfig, TimePickerConfig, NameOfDays, Type(..)
     , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
@@ -11,7 +11,7 @@ module DateTimePicker.Config exposing
 
 # Configuration
 
-@docs Config, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType, Type
+@docs Config, DatePickerConfig, TimePickerConfig, NameOfDays, Type
 
 
 # Default Configuration
@@ -76,20 +76,9 @@ type alias DatePickerConfig otherConfig =
 
 
 {-| Configuration for TimePicker
-
-  - `timePickerType` is the type of the time picker, either Analog or Digital
-
 -}
 type alias TimePickerConfig =
-    { timePickerType : TimePickerType
-    }
-
-
-{-| The type of time picker, can be either Digital or Analog
--}
-type TimePickerType
-    = Digital
-    | Analog
+    {}
 
 
 {-| Default configuration for DatePicker
@@ -124,14 +113,12 @@ defaultDatePickerConfig onChange =
   - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
   - `autoClose` Default: False
   - `timeFormatter` Default: `"%I:%M %p"`
-  - `timePickerType` Default: Analog
 
 -}
 defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config TimePickerConfig msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
-    , timePickerType = Analog
     , usePicker = True
     , attributes = []
     , fromInput = Parser.parseTime
@@ -150,7 +137,6 @@ defaultTimePickerConfig onChange =
   - `titleFormatter` Default: `"%B %Y"`
   - `fullDateFormatter` Default: `"%A, %B %d, %Y"`
   - `timeFormatter` Default: `"%I:%M %p"`
-  - `timePickerType` Default: Analog
   - `allowYearNavigation` Default : True
   - `earliestDate` Default : Nothing
 
@@ -161,7 +147,6 @@ defaultDateTimePickerConfig onChange =
     , autoClose = False
     , nameOfDays = defaultNameOfDays
     , firstDayOfWeek = Time.Sun
-    , timePickerType = Analog
     , allowYearNavigation = True
     , usePicker = True
     , attributes = []

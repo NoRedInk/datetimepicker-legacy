@@ -20,7 +20,7 @@ main =
 
 type DemoPicker
     = DatePicker
-    | DigitalDateTimePicker
+    | DateTimePicker
     | TimePicker
 
 
@@ -46,44 +46,29 @@ subscriptions model =
     Sub.none
 
 
-timePickerConfig : Config TimePickerConfig Msg
-timePickerConfig =
-    defaultTimePickerConfig (DatePickerChanged TimePicker)
-
-
-digitalDateTimePickerConfig : Config (DatePickerConfig TimePickerConfig) Msg
-digitalDateTimePickerConfig =
-    let
-        defaultDateTimeConfig =
-            defaultDateTimePickerConfig (DatePickerChanged DigitalDateTimePicker)
-    in
-    { defaultDateTimeConfig
-        | timePickerType = DateTimePicker.Config.Digital
-    }
-
-
-digitalTimePickerConfig : Config TimePickerConfig Msg
-digitalTimePickerConfig =
-    let
-        defaultDateTimeConfig =
-            defaultTimePickerConfig (DatePickerChanged TimePicker)
-    in
-    { defaultDateTimeConfig
-        | timePickerType = DateTimePicker.Config.Digital
-    }
-
-
 viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateTime -> DateTimePicker.State -> Html Msg
 viewPicker which now date state =
     case which of
         DatePicker ->
-            DateTimePicker.datePickerWithConfig "Date Picker" (defaultDatePickerConfig (DatePickerChanged which)) [] state date
+            DateTimePicker.datePickerWithConfig "Date Picker"
+                (defaultDatePickerConfig (DatePickerChanged which))
+                []
+                state
+                date
 
-        DigitalDateTimePicker ->
-            DateTimePicker.dateTimePickerWithConfig "Date and Time Picker" digitalDateTimePickerConfig [] state date
+        DateTimePicker ->
+            DateTimePicker.dateTimePickerWithConfig "Date and Time Picker"
+                (defaultDateTimePickerConfig (DatePickerChanged DateTimePicker))
+                []
+                state
+                date
 
         TimePicker ->
-            DateTimePicker.timePickerWithConfig "Time Picker" digitalTimePickerConfig [] state date
+            DateTimePicker.timePickerWithConfig "Time Picker"
+                (defaultTimePickerConfig (DatePickerChanged TimePicker))
+                []
+                state
+                date
 
 
 view : Model -> Html Msg
@@ -91,7 +76,7 @@ view model =
     let
         allPickers =
             [ DatePicker
-            , DigitalDateTimePicker
+            , DateTimePicker
             , TimePicker
             ]
     in

@@ -31,7 +31,7 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
+import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
@@ -317,7 +317,7 @@ dialog pickerType state currentDate =
                 ]
             ]
 
-        withTimeAttributes config timePickerType =
+        withTimeAttributes config =
             attributes config
     in
     case pickerType of
@@ -325,10 +325,10 @@ dialog pickerType state currentDate =
             dialogNode (attributes datePickerConfig) [ datePickerDialog pickerType state currentDate ]
 
         TimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig timePickerConfig.timePickerType) [ timePickerDialog pickerType state currentDate ]
+            dialogNode (withTimeAttributes timePickerConfig) [ timePickerDialog pickerType state currentDate ]
 
         DateTimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig timePickerConfig.timePickerType)
+            dialogNode (withTimeAttributes timePickerConfig)
                 [ datePickerDialog pickerType state currentDate
                 , timePickerDialog pickerType state currentDate
                 ]
