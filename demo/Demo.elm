@@ -2,7 +2,7 @@ module Demo exposing (main)
 
 import Browser
 import DateTimePicker
-import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
+import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import Dict exposing (Dict)
 import Html.Styled as Html exposing (Html, div, h3, li, p, text, ul)
 import Time

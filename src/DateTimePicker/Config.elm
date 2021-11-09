@@ -1,5 +1,5 @@
 module DateTimePicker.Config exposing
-    ( Config, DatePickerConfig, TimePickerConfig, NameOfDays, Type(..)
+    ( Config, DatePickerConfig, NameOfDays, Type(..)
     , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
@@ -11,7 +11,7 @@ module DateTimePicker.Config exposing
 
 # Configuration
 
-@docs Config, DatePickerConfig, TimePickerConfig, NameOfDays, Type
+@docs Config, DatePickerConfig, NameOfDays, Type
 
 
 # Default Configuration
@@ -36,8 +36,8 @@ type alias State =
 -}
 type Type msg
     = DateType (Config (DatePickerConfig {}) msg)
-    | DateTimeType (Config (DatePickerConfig TimePickerConfig) msg)
-    | TimeType (Config TimePickerConfig msg)
+    | DateTimeType (Config (DatePickerConfig {}) msg)
+    | TimeType (Config {} msg)
 
 
 {-| Configuration
@@ -75,12 +75,6 @@ type alias DatePickerConfig otherConfig =
     }
 
 
-{-| Configuration for TimePicker
--}
-type alias TimePickerConfig =
-    {}
-
-
 {-| Default configuration for DatePicker
 
   - `onChange` No Default
@@ -115,7 +109,7 @@ defaultDatePickerConfig onChange =
   - `timeFormatter` Default: `"%I:%M %p"`
 
 -}
-defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config TimePickerConfig msg
+defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config {} msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
@@ -141,7 +135,7 @@ defaultTimePickerConfig onChange =
   - `earliestDate` Default : Nothing
 
 -}
-defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig TimePickerConfig) msg
+defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig {}) msg
 defaultDateTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False

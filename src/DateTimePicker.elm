@@ -31,7 +31,7 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
+import DateTimePicker.Config exposing (Config, DatePickerConfig, Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
@@ -205,7 +205,7 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
             model.value
 
 -}
-dateTimePickerWithConfig : String -> Config (DatePickerConfig TimePickerConfig) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+dateTimePickerWithConfig : String -> Config (DatePickerConfig {}) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
 dateTimePickerWithConfig label config =
     view label (DateTimeType config)
 
@@ -234,7 +234,7 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
             model.value
 
 -}
-timePickerWithConfig : String -> Config TimePickerConfig msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+timePickerWithConfig : String -> Config {} msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
 timePickerWithConfig label config =
     view label (TimeType config)
 
