@@ -175,7 +175,7 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
             model.value
 
 -}
-datePickerWithConfig : String -> Config DatePickerConfig msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+datePickerWithConfig : String -> Config DatePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
 datePickerWithConfig label config =
     view label (DateType config)
 
@@ -205,7 +205,7 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
             model.value
 
 -}
-dateTimePickerWithConfig : String -> Config DatePickerConfig msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+dateTimePickerWithConfig : String -> Config DatePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
 dateTimePickerWithConfig label config =
     view label (DateTimeType config)
 
@@ -234,12 +234,12 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
             model.value
 
 -}
-timePickerWithConfig : String -> Config {} msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+timePickerWithConfig : String -> Config {} msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
 timePickerWithConfig label config =
     view label (TimeType config)
 
 
-view : String -> Type msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+view : String -> Type msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
 view label pickerType attributes state currentDate =
     let
         stateValue =
@@ -273,24 +273,25 @@ view label pickerType attributes state currentDate =
             html config
 
 
-viewInput : String -> Type msg -> List (Html.Attribute Never) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
+viewInput : String -> Type msg -> List (TextInput.Attribute String msg) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
 viewInput label pickerType attributes config stateValue currentDate =
     TextInput.view label
-        [ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
-        , TextInput.onBlur (inputChangeHandler config stateValue currentDate currentDate)
-        , TextInput.text
+        ([ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
+         , TextInput.onBlur (inputChangeHandler config stateValue currentDate currentDate)
+         , TextInput.text
             (\newValue ->
                 inputChangeHandler config
                     stateValue
                     currentDate
                     (config.fromInput newValue)
             )
-        , currentDate
+         , currentDate
             |> Maybe.map config.toInput
             |> Maybe.withDefault ""
             |> TextInput.value
-        , TextInput.custom attributes
-        ]
+         ]
+            ++ attributes
+        )
 
 
 
