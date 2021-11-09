@@ -35,8 +35,8 @@ type alias State =
 {-| The type of picker (for Internal Use)
 -}
 type Type msg
-    = DateType (Config (DatePickerConfig {}) msg)
-    | DateTimeType (Config (DatePickerConfig {}) msg)
+    = DateType (Config DatePickerConfig msg)
+    | DateTimeType (Config DatePickerConfig msg)
     | TimeType (Config {} msg)
 
 
@@ -66,12 +66,11 @@ type alias Config otherConfig msg =
   - `earliestDate` if given, dates before this cannot be selected
 
 -}
-type alias DatePickerConfig otherConfig =
-    { otherConfig
-        | nameOfDays : NameOfDays
-        , firstDayOfWeek : Time.Weekday
-        , allowYearNavigation : Bool
-        , earliestDate : Maybe DateTime.DateTime
+type alias DatePickerConfig =
+    { nameOfDays : NameOfDays
+    , firstDayOfWeek : Time.Weekday
+    , allowYearNavigation : Bool
+    , earliestDate : Maybe DateTime.DateTime
     }
 
 
@@ -85,7 +84,7 @@ type alias DatePickerConfig otherConfig =
   - `earliestDate` Default : Nothing
 
 -}
-defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig {}) msg
+defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
 defaultDatePickerConfig onChange =
     { onChange = onChange
     , autoClose = True
@@ -135,7 +134,7 @@ defaultTimePickerConfig onChange =
   - `earliestDate` Default : Nothing
 
 -}
-defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig {}) msg
+defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
 defaultDateTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False

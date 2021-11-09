@@ -21,7 +21,7 @@ import Time
 -}
 type TestResult
     = TestResult
-        { config : Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe DateTime.DateTime )
+        { config : Config DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
         , state : DateTimePicker.State
         , date : Maybe DateTime.DateTime
         }
@@ -46,7 +46,7 @@ init now =
 NOTE: You must not alter the `onChange` field of the config.
 
 -}
-withConfig : (Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe DateTime.DateTime ) -> Config (DatePickerConfig {}) ( DateTimePicker.State, Maybe DateTime.DateTime )) -> TestResult -> TestResult
+withConfig : (Config DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime ) -> Config DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )) -> TestResult -> TestResult
 withConfig fn (TestResult t) =
     let
         newConfig =

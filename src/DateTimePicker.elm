@@ -175,7 +175,7 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
             model.value
 
 -}
-datePickerWithConfig : String -> Config (DatePickerConfig {}) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+datePickerWithConfig : String -> Config DatePickerConfig msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
 datePickerWithConfig label config =
     view label (DateType config)
 
@@ -205,7 +205,7 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
             model.value
 
 -}
-dateTimePickerWithConfig : String -> Config (DatePickerConfig {}) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+dateTimePickerWithConfig : String -> Config DatePickerConfig msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
 dateTimePickerWithConfig label config =
     view label (DateTimeType config)
 
@@ -389,7 +389,7 @@ datePickerDialog pickerType state currentDate =
             text ""
 
 
-navigation : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> List (Html msg)
+navigation : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> List (Html msg)
 navigation config state currentDate =
     [ previousYearButton config state currentDate
     , previousButton config state currentDate
@@ -399,7 +399,7 @@ navigation config state currentDate =
     ]
 
 
-title : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+title : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 title config state currentDate =
     let
         stateValue =
@@ -424,7 +424,7 @@ title config state currentDate =
         ]
 
 
-previousYearButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+previousYearButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 previousYearButton config state currentDate =
     if config.allowYearNavigation then
         ClickableSvg.button "Previous Year"
@@ -436,7 +436,7 @@ previousYearButton config state currentDate =
         Html.text ""
 
 
-previousButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+previousButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 previousButton config state currentDate =
     ClickableSvg.button "Previous month"
         DateTimePicker.Svg.leftArrow
@@ -444,7 +444,7 @@ previousButton config state currentDate =
         ]
 
 
-nextButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+nextButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 nextButton config state currentDate =
     ClickableSvg.button "Next month"
         DateTimePicker.Svg.rightArrow
@@ -452,7 +452,7 @@ nextButton config state currentDate =
         ]
 
 
-nextYearButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+nextYearButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 nextYearButton config state currentDate =
     if config.allowYearNavigation then
         ClickableSvg.button "Next Year"
@@ -681,7 +681,7 @@ calendar pickerType state currentDate =
         stateValue =
             getStateValue state
 
-        html : Config (DatePickerConfig a) msg -> Html msg
+        html : Config DatePickerConfig msg -> Html msg
         html config =
             case stateValue.titleDate of
                 Nothing ->
@@ -856,7 +856,7 @@ calendar pickerType state currentDate =
             text ""
 
 
-dayNames : Config (DatePickerConfig a) msg -> List (Html msg)
+dayNames : Config DatePickerConfig msg -> List (Html msg)
 dayNames config =
     let
         days =
