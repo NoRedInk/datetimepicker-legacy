@@ -4,7 +4,7 @@ import Browser
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import Dict exposing (Dict)
-import Html.Styled as Html exposing (Html, div, form, h3, label, li, p, text, ul)
+import Html.Styled as Html exposing (Html, div, h3, li, p, text, ul)
 import Time
 
 
@@ -75,21 +75,15 @@ digitalTimePickerConfig =
 
 viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateTime -> DateTimePicker.State -> Html Msg
 viewPicker which now date state =
-    p []
-        [ label []
-            [ text (Debug.toString which)
-            , text ":"
-            , case which of
-                DatePicker ->
-                    DateTimePicker.datePicker (DatePickerChanged which) [] state date
+    case which of
+        DatePicker ->
+            DateTimePicker.datePicker "Date Picker" (DatePickerChanged which) [] state date
 
-                DigitalDateTimePicker ->
-                    DateTimePicker.dateTimePickerWithConfig digitalDateTimePickerConfig [] state date
+        DigitalDateTimePicker ->
+            DateTimePicker.dateTimePickerWithConfig "Date and Time Picker" digitalDateTimePickerConfig [] state date
 
-                TimePicker ->
-                    DateTimePicker.timePickerWithConfig digitalTimePickerConfig [] state date
-            ]
-        ]
+        TimePicker ->
+            DateTimePicker.timePickerWithConfig "Time Picker" digitalTimePickerConfig [] state date
 
 
 view : Model -> Html Msg
@@ -101,7 +95,7 @@ view model =
             , TimePicker
             ]
     in
-    form []
+    div []
         [ allPickers
             |> List.map
                 (\which ->

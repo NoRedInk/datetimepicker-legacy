@@ -101,7 +101,7 @@ render (TestResult t) =
             , onChange = makeResult
             }
     in
-    DateTimePicker.datePickerWithConfig
+    DateTimePicker.datePickerWithConfig "Label"
         config
         []
         t.state

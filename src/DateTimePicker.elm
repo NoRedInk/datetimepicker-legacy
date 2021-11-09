@@ -34,7 +34,7 @@ import Css.Global exposing (Snippet, children, descendants, withClass)
 import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
-import DateTimePicker.Events exposing (onBlurWithChange, onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
+import DateTimePicker.Events exposing (onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValue, initialStateValueWithToday)
@@ -46,6 +46,7 @@ import Html.Styled.Events exposing (onBlur, onClick, onFocus)
 import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
 import Nri.Ui.Fonts.V1 as Fonts
+import Nri.Ui.TextInput.V7 as TextInput
 import String
 import Task
 import Time
@@ -156,16 +157,16 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
         = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
 
     view =
-        DateTimePicker.datePicker
+        DateTimePicker.datePicker "Date Picker"
             DatePickerChanged
             [ class "my-datepicker" ]
             model.datePickerState
             model.value
 
 -}
-datePicker : (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-datePicker onChange =
-    datePickerWithConfig (defaultDatePickerConfig onChange)
+datePicker : String -> (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+datePicker label onChange =
+    datePickerWithConfig label (defaultDatePickerConfig onChange)
 
 
 {-| Date Picker view function with custom configuration.
@@ -187,7 +188,7 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
         }
 
     view =
-        DateTimePicker.datePickerWithConfig
+        DateTimePicker.datePickerWithConfig "Date and Time Picker"
             customConfig
             DateTimePicker.defaultDatePickerConfig
             [ class "my-datepicker" ]
@@ -195,9 +196,9 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
             model.value
 
 -}
-datePickerWithConfig : Config (DatePickerConfig {}) msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-datePickerWithConfig config =
-    view (DateType config)
+datePickerWithConfig : String -> Config (DatePickerConfig {}) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+datePickerWithConfig label config =
+    view label (DateType config)
 
 
 {-| Date and Time Picker view with default configuration
@@ -208,16 +209,16 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
         = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
 
     view =
-        DateTimePicker.dateTimePicker
+        DateTimePicker.dateTimePicker "Date and Time Picker"
             DatePickerChanged
             [ class "my-datetimepicker" ]
             model.dateTimePickerState
             model.value
 
 -}
-dateTimePicker : (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-dateTimePicker onChange =
-    dateTimePickerWithConfig (defaultDateTimePickerConfig onChange)
+dateTimePicker : String -> (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+dateTimePicker label onChange =
+    dateTimePickerWithConfig label (defaultDateTimePickerConfig onChange)
 
 
 {-| Time Picker view with default configuration
@@ -228,16 +229,16 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
         = TimePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
 
     view =
-        DateTimePicker.timePicker
+        DateTimePicker.timePicker "Time Picker"
             TimePickerChanged
             [ class "my-timepicker" ]
             model.timePickerState
             model.value
 
 -}
-timePicker : (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-timePicker onChange =
-    timePickerWithConfig (defaultTimePickerConfig onChange)
+timePicker : String -> (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+timePicker label onChange =
+    timePickerWithConfig label (defaultTimePickerConfig onChange)
 
 
 {-| Date and Time Picker view with custom configuration
@@ -258,16 +259,16 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
         }
 
     view =
-        DateTimePicker.dateTimePickerWithConfig
+        DateTimePicker.dateTimePickerWithConfig "Date and Time Picker"
             customConfig
             [ class "my-datetimepicker" ]
             model.dateTimePickerState
             model.value
 
 -}
-dateTimePickerWithConfig : Config (DatePickerConfig TimePickerConfig) msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-dateTimePickerWithConfig config =
-    view (DateTimeType config)
+dateTimePickerWithConfig : String -> Config (DatePickerConfig TimePickerConfig) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+dateTimePickerWithConfig label config =
+    view label (DateTimeType config)
 
 
 {-| Time Picker view with custom configuration
@@ -287,20 +288,20 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
         }
 
     view =
-        DateTimePicker.timePickerWithConfig
+        DateTimePicker.timePickerWithConfig "Time picker"
             customConfig
             [ class "my-datetimepicker" ]
             model.timePickerState
             model.value
 
 -}
-timePickerWithConfig : Config TimePickerConfig msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-timePickerWithConfig config =
-    view (TimeType config)
+timePickerWithConfig : String -> Config TimePickerConfig msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+timePickerWithConfig label config =
+    view label (TimeType config)
 
 
-view : Type msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-view pickerType attributes state currentDate =
+view : String -> Type msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
+view label pickerType attributes state currentDate =
     let
         stateValue =
             getStateValue state
@@ -308,25 +309,13 @@ view pickerType attributes state currentDate =
         timeFormatter dateTimePickerConfig =
             dateTimePickerConfig.timeFormatter
 
-        inputAttributes config =
-            attributes
-                ++ [ onFocus (datePickerFocused pickerType config stateValue currentDate)
-                   , onBlurWithChange
-                        config.fromInput
-                        (inputChangeHandler config stateValue currentDate)
-                   , currentDate
-                        |> Maybe.map config.toInput
-                        |> Maybe.withDefault ""
-                        |> value
-                   ]
-
         shouldForceClose config =
             config.autoClose && stateValue.forceClose
 
         html config =
             Html.node "date-time-picker"
                 (css [ position relative ] :: config.attributes)
-                [ input (inputAttributes config) []
+                [ viewInput label pickerType attributes config stateValue currentDate
                 , if config.usePicker && stateValue.inputFocused && not (shouldForceClose config) then
                     dialog pickerType state currentDate
 
@@ -343,6 +332,26 @@ view pickerType attributes state currentDate =
 
         TimeType config ->
             html config
+
+
+viewInput : String -> Type msg -> List (Html.Attribute Never) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
+viewInput label pickerType attributes config stateValue currentDate =
+    TextInput.view label
+        [ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
+        , TextInput.onBlur (inputChangeHandler config stateValue currentDate currentDate)
+        , TextInput.text
+            (\newValue ->
+                inputChangeHandler config
+                    stateValue
+                    currentDate
+                    (config.fromInput newValue)
+            )
+        , currentDate
+            |> Maybe.map config.toInput
+            |> Maybe.withDefault ""
+            |> TextInput.value
+        , TextInput.custom attributes
+        ]
 
 
 
