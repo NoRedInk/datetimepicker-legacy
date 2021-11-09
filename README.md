@@ -20,8 +20,7 @@ cd demo && elm make Demo.elm && open index.html && cd ..
 Code:
 ```elm
 view model =
-    DateTimePicker.dateTimePickerWithConfig
-        { defaultDateTimeConfig | timePickerType = DateTimePicker.Config.Digital }
+    DateTimePicker.dateTimePickerWithConfig defaultDateTimeConfig
         [ class "my-datetimepicker" ]
         model.state
         model.value

@@ -1,6 +1,6 @@
 module DateTimePicker exposing
     ( DateTime, dateTime
-    , datePicker, datePickerWithConfig, dateTimePicker, dateTimePickerWithConfig, timePicker, timePickerWithConfig
+    , datePickerWithConfig, dateTimePickerWithConfig, timePickerWithConfig
     , initialStateWithToday
     , State
     )
@@ -15,7 +15,7 @@ module DateTimePicker exposing
 
 # View
 
-@docs datePicker, datePickerWithConfig, dateTimePicker, dateTimePickerWithConfig, timePicker, timePickerWithConfig
+@docs datePickerWithConfig, dateTimePickerWithConfig, timePickerWithConfig
 
 
 # Initial
@@ -148,27 +148,6 @@ gotoPreviousYear config state =
 -- VIEWS
 
 
-{-| Date Picker view function with default configuration.
-
-Example:
-type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateTime.DateTime }
-
-    type Msg
-        = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    view =
-        DateTimePicker.datePicker "Date Picker"
-            DatePickerChanged
-            [ class "my-datepicker" ]
-            model.datePickerState
-            model.value
-
--}
-datePicker : String -> (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
-datePicker label onChange =
-    datePickerWithConfig label (defaultDatePickerConfig onChange)
-
-
 {-| Date Picker view function with custom configuration.
 
 Example:
@@ -199,46 +178,6 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
 datePickerWithConfig : String -> Config (DatePickerConfig {}) msg -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
 datePickerWithConfig label config =
     view label (DateType config)
-
-
-{-| Date and Time Picker view with default configuration
-Example:
-type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe DateType }
-
-    type Msg
-        = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    view =
-        DateTimePicker.dateTimePicker "Date and Time Picker"
-            DatePickerChanged
-            [ class "my-datetimepicker" ]
-            model.dateTimePickerState
-            model.value
-
--}
-dateTimePicker : String -> (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
-dateTimePicker label onChange =
-    dateTimePickerWithConfig label (defaultDateTimePickerConfig onChange)
-
-
-{-| Time Picker view with default configuration
-Example:
-type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateType }
-
-    type Msg
-        = TimePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    view =
-        DateTimePicker.timePicker "Time Picker"
-            TimePickerChanged
-            [ class "my-timepicker" ]
-            model.timePickerState
-            model.value
-
--}
-timePicker : String -> (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute Never) -> State -> Maybe DateTime.DateTime -> Html msg
-timePicker label onChange =
-    timePickerWithConfig label (defaultTimePickerConfig onChange)
 
 
 {-| Date and Time Picker view with custom configuration

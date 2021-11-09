@@ -77,7 +77,7 @@ viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateT
 viewPicker which now date state =
     case which of
         DatePicker ->
-            DateTimePicker.datePicker "Date Picker" (DatePickerChanged which) [] state date
+            DateTimePicker.datePickerWithConfig "Date Picker" (defaultDatePickerConfig (DatePickerChanged which)) [] state date
 
         DigitalDateTimePicker ->
             DateTimePicker.dateTimePickerWithConfig "Date and Time Picker" digitalDateTimePickerConfig [] state date
