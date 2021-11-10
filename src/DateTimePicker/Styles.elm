@@ -1,6 +1,11 @@
 module DateTimePicker.Styles exposing (..)
 
-{-| -}
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
 
 import Css exposing (..)
 import Nri.Ui.Colors.V1 as Colors
@@ -39,26 +44,6 @@ cellStyle =
         [ padding4 (px 7) (px 7) (px 7) (px 9)
         , border (px 0)
         , cursor pointer
-        ]
-
-
-arrowStyle : Css.Style
-arrowStyle =
-    Css.batch
-        [ boxSizing borderBox
-        , textAlign center
-        , transform (scale 0.8)
-        , position absolute
-        , padding2 (px 0) (px 8)
-        , cursor pointer
-        ]
-
-
-headerStyle : Css.Style
-headerStyle =
-    Css.batch
-        [ padding2 (px 10) (px 7)
-        , backgroundColor Colors.gray96
         ]
 
 

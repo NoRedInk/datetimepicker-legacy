@@ -15,6 +15,13 @@ module DateTimePicker.DateTime exposing
     , validate
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import Task exposing (Task)
 import Time
 

@@ -1,14 +1,17 @@
 module DateTimePicker.Config exposing
-    ( Config, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType(..), Type(..)
+    ( Config, DatePickerConfig, NameOfDays, Type(..)
     , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
-{-| DateTimePicker configuration
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
 
 
 # Configuration
 
-@docs Config, DatePickerConfig, TimePickerConfig, NameOfDays, TimePickerType, Type
+@docs Config, DatePickerConfig, NameOfDays, Type
 
 
 # Default Configuration
@@ -32,9 +35,9 @@ type alias State =
 {-| The type of picker (for Internal Use)
 -}
 type Type msg
-    = DateType (Config (DatePickerConfig {}) msg)
-    | DateTimeType (Config (DatePickerConfig TimePickerConfig) msg)
-    | TimeType (Config TimePickerConfig msg)
+    = DateType (Config DatePickerConfig msg)
+    | DateTimeType (Config DatePickerConfig msg)
+    | TimeType (Config {} msg)
 
 
 {-| Configuration
@@ -63,30 +66,12 @@ type alias Config otherConfig msg =
   - `earliestDate` if given, dates before this cannot be selected
 
 -}
-type alias DatePickerConfig otherConfig =
-    { otherConfig
-        | nameOfDays : NameOfDays
-        , firstDayOfWeek : Time.Weekday
-        , allowYearNavigation : Bool
-        , earliestDate : Maybe DateTime.DateTime
+type alias DatePickerConfig =
+    { nameOfDays : NameOfDays
+    , firstDayOfWeek : Time.Weekday
+    , allowYearNavigation : Bool
+    , earliestDate : Maybe DateTime.DateTime
     }
-
-
-{-| Configuration for TimePicker
-
-  - `timePickerType` is the type of the time picker, either Analog or Digital
-
--}
-type alias TimePickerConfig =
-    { timePickerType : TimePickerType
-    }
-
-
-{-| The type of time picker, can be either Digital or Analog
--}
-type TimePickerType
-    = Digital
-    | Analog
 
 
 {-| Default configuration for DatePicker
@@ -99,7 +84,7 @@ type TimePickerType
   - `earliestDate` Default : Nothing
 
 -}
-defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig {}) msg
+defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
 defaultDatePickerConfig onChange =
     { onChange = onChange
     , autoClose = True
@@ -121,14 +106,12 @@ defaultDatePickerConfig onChange =
   - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
   - `autoClose` Default: False
   - `timeFormatter` Default: `"%I:%M %p"`
-  - `timePickerType` Default: Analog
 
 -}
-defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config TimePickerConfig msg
+defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config {} msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
-    , timePickerType = Analog
     , usePicker = True
     , attributes = []
     , fromInput = Parser.parseTime
@@ -147,18 +130,16 @@ defaultTimePickerConfig onChange =
   - `titleFormatter` Default: `"%B %Y"`
   - `fullDateFormatter` Default: `"%A, %B %d, %Y"`
   - `timeFormatter` Default: `"%I:%M %p"`
-  - `timePickerType` Default: Analog
   - `allowYearNavigation` Default : True
   - `earliestDate` Default : Nothing
 
 -}
-defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config (DatePickerConfig TimePickerConfig) msg
+defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
 defaultDateTimePickerConfig onChange =
     { onChange = onChange
     , autoClose = False
     , nameOfDays = defaultNameOfDays
     , firstDayOfWeek = Time.Sun
-    , timePickerType = Analog
     , allowYearNavigation = True
     , usePicker = True
     , attributes = []

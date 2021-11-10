@@ -7,15 +7,20 @@ module DateTimePicker.Svg exposing
     , upArrow
     )
 
-import Svg.Styled exposing (Svg, polygon, svg)
-import Svg.Styled.Attributes exposing (height, points, style, viewBox, width)
+{-|
 
 
-type Orientation
-    = Up
-    | Down
-    | Left
-    | Right
+# This is mostly a replacement of <https://github.com/abadi199/datetimepicker/blob/master/src/DateTimePicker/Svg.elm>
+
+-}
+
+import Css
+import Html.Styled
+import Html.Styled.Attributes exposing (css)
+import Nri.Ui.Svg.V1 as Svg exposing (Svg)
+import Nri.Ui.UiIcon.V1 as UiIcon
+import Svg.Styled exposing (polygon, svg)
+import Svg.Styled.Attributes exposing (fill, height, points, style, viewBox, width)
 
 
 type DoubleOrientation
@@ -23,59 +28,44 @@ type DoubleOrientation
     | DoubleRight
 
 
-rightArrow : Svg msg
+rightArrow : Svg
 rightArrow =
-    arrow Right
+    arrow UiIcon.arrowRight
 
 
-doubleRightArrow : Svg msg
+doubleRightArrow : Svg
 doubleRightArrow =
     doubleArrow DoubleRight
 
 
-leftArrow : Svg msg
+leftArrow : Svg
 leftArrow =
-    arrow Left
+    arrow UiIcon.arrowLeft
 
 
-doubleLeftArrow : Svg msg
+doubleLeftArrow : Svg
 doubleLeftArrow =
     doubleArrow DoubleLeft
 
 
-downArrow : Svg msg
+downArrow : Svg
 downArrow =
-    arrow Down
+    arrow UiIcon.arrowDown
 
 
-upArrow : Svg msg
+upArrow : Svg
 upArrow =
-    arrow Up
+    arrow UiIcon.arrowTop
 
 
-arrow : Orientation -> Svg msg
-arrow orientation =
-    let
-        rotation =
-            case orientation of
-                Right ->
-                    "0"
-
-                Left ->
-                    "180"
-
-                Down ->
-                    "90"
-
-                Up ->
-                    "270"
-    in
-    svg [ width "8", height "12", viewBox "0 0 16 16", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
-        [ polygon [ points "0 0, 0 20, 16 10" ] []
-        ]
+arrow : Svg -> Svg
+arrow icon =
+    icon
+        |> Svg.withWidth (Css.px 12)
+        |> Svg.withHeight (Css.px 12)
 
 
-doubleArrow : DoubleOrientation -> Svg msg
+doubleArrow : DoubleOrientation -> Svg
 doubleArrow orientation =
     let
         rotation =
@@ -86,7 +76,10 @@ doubleArrow orientation =
                 DoubleLeft ->
                     "180"
     in
-    svg [ width "16", height "12", viewBox "0 0 32 16", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
+    svg [ viewBox "0 0 32 16", fill "currentcolor", style <| "transform: rotate(" ++ rotation ++ "deg);" ]
         [ polygon [ points "0 0, 0 20, 16 10" ] []
         , polygon [ points "16 0, 16 20, 32 10" ] []
         ]
+        |> Svg.fromHtml
+        |> Svg.withWidth (Css.px 16)
+        |> Svg.withHeight (Css.px 12)

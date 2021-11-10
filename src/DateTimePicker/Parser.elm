@@ -4,6 +4,13 @@ module DateTimePicker.Parser exposing
     , parseTime
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import Char
 import DateTimePicker.DateTime as DateTime
 import Parser exposing ((|.), (|=), Parser)

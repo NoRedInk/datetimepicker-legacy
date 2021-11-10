@@ -1,18 +1,21 @@
 module DateTimePicker exposing
     ( DateTime, dateTime
-    , datePicker, datePickerWithConfig, dateTimePicker, dateTimePickerWithConfig, timePicker, timePickerWithConfig
+    , datePickerWithConfig, dateTimePickerWithConfig, timePickerWithConfig
     , initialStateWithToday
     , State
     )
 
-{-| DateTime Picker
+{-|
+
+
+# This is a heavily-modified version of <https://github.com/abadi199/datetimepicker/blob/master/src/DateTimePicker/Svg.elm>
 
 @docs DateTime, dateTime
 
 
 # View
 
-@docs datePicker, datePickerWithConfig, dateTimePicker, dateTimePickerWithConfig, timePicker, timePickerWithConfig
+@docs datePickerWithConfig, dateTimePickerWithConfig, timePickerWithConfig
 
 
 # Initial
@@ -28,10 +31,10 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.Config exposing (Config, DatePickerConfig, TimePickerConfig, TimePickerType(..), Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
+import DateTimePicker.Config exposing (Config, DatePickerConfig, Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
-import DateTimePicker.Events exposing (onBlurWithChange, onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
+import DateTimePicker.Events exposing (onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValue, initialStateValueWithToday)
@@ -40,7 +43,10 @@ import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (attribute, css, value)
 import Html.Styled.Events exposing (onBlur, onClick, onFocus)
+import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
+import Nri.Ui.Fonts.V1 as Fonts
+import Nri.Ui.TextInput.V7 as TextInput
 import String
 import Task
 import Time
@@ -142,27 +148,6 @@ gotoPreviousYear config state =
 -- VIEWS
 
 
-{-| Date Picker view function with default configuration.
-
-Example:
-type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateTime.DateTime }
-
-    type Msg
-        = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    view =
-        DateTimePicker.datePicker
-            DatePickerChanged
-            [ class "my-datepicker" ]
-            model.datePickerState
-            model.value
-
--}
-datePicker : (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-datePicker onChange =
-    datePickerWithConfig (defaultDatePickerConfig onChange)
-
-
 {-| Date Picker view function with custom configuration.
 
 Example:
@@ -182,7 +167,7 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
         }
 
     view =
-        DateTimePicker.datePickerWithConfig
+        DateTimePicker.datePickerWithConfig "Date and Time Picker"
             customConfig
             DateTimePicker.defaultDatePickerConfig
             [ class "my-datepicker" ]
@@ -190,49 +175,9 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
             model.value
 
 -}
-datePickerWithConfig : Config (DatePickerConfig {}) msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-datePickerWithConfig config =
-    view (DateType config)
-
-
-{-| Date and Time Picker view with default configuration
-Example:
-type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe DateType }
-
-    type Msg
-        = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    view =
-        DateTimePicker.dateTimePicker
-            DatePickerChanged
-            [ class "my-datetimepicker" ]
-            model.dateTimePickerState
-            model.value
-
--}
-dateTimePicker : (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-dateTimePicker onChange =
-    dateTimePickerWithConfig (defaultDateTimePickerConfig onChange)
-
-
-{-| Time Picker view with default configuration
-Example:
-type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateType }
-
-    type Msg
-        = TimePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    view =
-        DateTimePicker.timePicker
-            TimePickerChanged
-            [ class "my-timepicker" ]
-            model.timePickerState
-            model.value
-
--}
-timePicker : (State -> Maybe DateTime.DateTime -> msg) -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-timePicker onChange =
-    timePickerWithConfig (defaultTimePickerConfig onChange)
+datePickerWithConfig : String -> Config DatePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
+datePickerWithConfig label config =
+    view label (DateType config)
 
 
 {-| Date and Time Picker view with custom configuration
@@ -253,16 +198,16 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
         }
 
     view =
-        DateTimePicker.dateTimePickerWithConfig
+        DateTimePicker.dateTimePickerWithConfig "Date and Time Picker"
             customConfig
             [ class "my-datetimepicker" ]
             model.dateTimePickerState
             model.value
 
 -}
-dateTimePickerWithConfig : Config (DatePickerConfig TimePickerConfig) msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-dateTimePickerWithConfig config =
-    view (DateTimeType config)
+dateTimePickerWithConfig : String -> Config DatePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
+dateTimePickerWithConfig label config =
+    view label (DateTimeType config)
 
 
 {-| Time Picker view with custom configuration
@@ -282,20 +227,20 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
         }
 
     view =
-        DateTimePicker.timePickerWithConfig
+        DateTimePicker.timePickerWithConfig "Time picker"
             customConfig
             [ class "my-datetimepicker" ]
             model.timePickerState
             model.value
 
 -}
-timePickerWithConfig : Config TimePickerConfig msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-timePickerWithConfig config =
-    view (TimeType config)
+timePickerWithConfig : String -> Config {} msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
+timePickerWithConfig label config =
+    view label (TimeType config)
 
 
-view : Type msg -> List (Html.Attribute msg) -> State -> Maybe DateTime.DateTime -> Html msg
-view pickerType attributes state currentDate =
+view : String -> Type msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
+view label pickerType attributes state currentDate =
     let
         stateValue =
             getStateValue state
@@ -303,25 +248,13 @@ view pickerType attributes state currentDate =
         timeFormatter dateTimePickerConfig =
             dateTimePickerConfig.timeFormatter
 
-        inputAttributes config =
-            attributes
-                ++ [ onFocus (datePickerFocused pickerType config stateValue currentDate)
-                   , onBlurWithChange
-                        config.fromInput
-                        (inputChangeHandler config stateValue currentDate)
-                   , currentDate
-                        |> Maybe.map config.toInput
-                        |> Maybe.withDefault ""
-                        |> value
-                   ]
-
         shouldForceClose config =
             config.autoClose && stateValue.forceClose
 
         html config =
             Html.node "date-time-picker"
                 (css [ position relative ] :: config.attributes)
-                [ input (inputAttributes config) []
+                [ viewInput label pickerType attributes config stateValue currentDate
                 , if config.usePicker && stateValue.inputFocused && not (shouldForceClose config) then
                     dialog pickerType state currentDate
 
@@ -338,6 +271,27 @@ view pickerType attributes state currentDate =
 
         TimeType config ->
             html config
+
+
+viewInput : String -> Type msg -> List (TextInput.Attribute String msg) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
+viewInput label pickerType attributes config stateValue currentDate =
+    TextInput.view label
+        ([ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
+         , TextInput.onBlur (inputChangeHandler config stateValue currentDate currentDate)
+         , TextInput.text
+            (\newValue ->
+                inputChangeHandler config
+                    stateValue
+                    currentDate
+                    (config.fromInput newValue)
+            )
+         , currentDate
+            |> Maybe.map config.toInput
+            |> Maybe.withDefault ""
+            |> TextInput.value
+         ]
+            ++ attributes
+        )
 
 
 
@@ -364,7 +318,7 @@ dialog pickerType state currentDate =
                 ]
             ]
 
-        withTimeAttributes config timePickerType =
+        withTimeAttributes config =
             attributes config
     in
     case pickerType of
@@ -372,10 +326,10 @@ dialog pickerType state currentDate =
             dialogNode (attributes datePickerConfig) [ datePickerDialog pickerType state currentDate ]
 
         TimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig timePickerConfig.timePickerType) [ timePickerDialog pickerType state currentDate ]
+            dialogNode (withTimeAttributes timePickerConfig) [ timePickerDialog pickerType state currentDate ]
 
         DateTimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig timePickerConfig.timePickerType)
+            dialogNode (withTimeAttributes timePickerConfig)
                 [ datePickerDialog pickerType state currentDate
                 , timePickerDialog pickerType state currentDate
                 ]
@@ -400,11 +354,13 @@ datePickerDialog pickerType state currentDate =
                 [ css [ float left ] ]
                 [ Html.node "date-time-picker-header"
                     [ css
-                        [ Styles.headerStyle
-                        , boxSizing borderBox
-                        , Styles.headerStyle
-                        , display block
-                        , position relative
+                        [ boxSizing borderBox
+                        , displayFlex
+                        , alignItems center
+                        , justifyContent spaceBetween
+                        , padding2 (px 10) (px 7)
+                        , backgroundColor Colors.gray96
+                        , Fonts.baseFont
                         ]
                     ]
                     (navigation config state currentDate)
@@ -434,7 +390,7 @@ datePickerDialog pickerType state currentDate =
             text ""
 
 
-navigation : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> List (Html msg)
+navigation : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> List (Html msg)
 navigation config state currentDate =
     [ previousYearButton config state currentDate
     , previousButton config state currentDate
@@ -444,7 +400,7 @@ navigation config state currentDate =
     ]
 
 
-title : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+title : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 title config state currentDate =
     let
         stateValue =
@@ -469,72 +425,41 @@ title config state currentDate =
         ]
 
 
-previousYearButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+previousYearButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 previousYearButton config state currentDate =
     if config.allowYearNavigation then
-        span
-            [ css
-                [ Styles.arrowStyle
-                , left (px 0)
-                ]
-            , onMouseDownPreventDefault <| gotoPreviousYear config state currentDate
-            , onTouchStartPreventDefault <| gotoPreviousYear config state currentDate
+        ClickableSvg.button "Previous Year"
+            DateTimePicker.Svg.doubleLeftArrow
+            [ ClickableSvg.onClick (gotoPreviousYear config state currentDate)
             ]
-            [ DateTimePicker.Svg.doubleLeftArrow ]
 
     else
         Html.text ""
 
 
-noYearNavigationStyle : DatePickerConfig (Config config msg) -> Css.Style
-noYearNavigationStyle config =
-    if config.allowYearNavigation then
-        Css.batch []
-
-    else
-        left (px 0)
-
-
-previousButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+previousButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 previousButton config state currentDate =
-    span
-        [ css
-            [ Styles.arrowStyle
-            , left (px 22)
-            , noYearNavigationStyle config
-            ]
-        , onMouseDownPreventDefault <| gotoPreviousMonth config state currentDate
-        , onTouchStartPreventDefault <| gotoPreviousMonth config state currentDate
+    ClickableSvg.button "Previous month"
+        DateTimePicker.Svg.leftArrow
+        [ ClickableSvg.onClick (gotoPreviousMonth config state currentDate)
         ]
-        [ DateTimePicker.Svg.leftArrow ]
 
 
-nextButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+nextButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 nextButton config state currentDate =
-    span
-        [ css
-            [ Styles.arrowStyle
-            , right (px 22)
-            , noYearNavigationStyle config
-            ]
-        , onMouseDownPreventDefault <| gotoNextMonth config state currentDate
-        , onTouchStartPreventDefault <| gotoNextMonth config state currentDate
+    ClickableSvg.button "Next month"
+        DateTimePicker.Svg.rightArrow
+        [ ClickableSvg.onClick (gotoNextMonth config state currentDate)
         ]
-        [ DateTimePicker.Svg.rightArrow ]
 
 
-nextYearButton : DatePickerConfig (Config config msg) -> State -> Maybe DateTime.DateTime -> Html msg
+nextYearButton : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
 nextYearButton config state currentDate =
     if config.allowYearNavigation then
-        span
-            [ css
-                [ Styles.arrowStyle
-                , right (px 0)
-                ]
-            , onMouseDownPreventDefault <| gotoNextYear config state currentDate
-            , onTouchStartPreventDefault <| gotoNextYear config state currentDate
+        ClickableSvg.button "Next Year"
+            DateTimePicker.Svg.doubleRightArrow
+            [ ClickableSvg.onClick (gotoNextYear config state currentDate)
             ]
-            [ DateTimePicker.Svg.doubleRightArrow ]
 
     else
         Html.text ""
@@ -652,46 +577,61 @@ digitalTimePickerDialog pickerType state currentDate =
             td (styles :: handlers) [ text ampm ]
 
         upArrowTd =
-            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ]
+            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ] []
 
         upArrows config =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ upArrowTd
-                    [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
+                    [ ClickableSvg.button "Earlier hours"
+                        DateTimePicker.Svg.upArrow
+                        [ ClickableSvg.custom
+                            [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
+                            , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
+                            ]
+                        ]
                     ]
-                    [ DateTimePicker.Svg.upArrow ]
                 , upArrowTd
-                    [ onMouseDownPreventDefault <| minuteUpHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| minuteUpHandler config stateValue currentDate
+                    [ ClickableSvg.button "Earlier minutes"
+                        DateTimePicker.Svg.upArrow
+                        [ ClickableSvg.custom
+                            [ onMouseDownPreventDefault <| minuteUpHandler config stateValue currentDate
+                            , onTouchStartPreventDefault <| minuteUpHandler config stateValue currentDate
+                            ]
+                        ]
                     ]
-                    [ DateTimePicker.Svg.upArrow ]
-                , upArrowTd [] []
+                , upArrowTd []
                 ]
             ]
 
         downArrowTd =
-            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ]
+            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ] []
 
         downArrows config =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ downArrowTd
-                    [ onMouseDownPreventDefault <| hourDownHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| hourDownHandler config stateValue currentDate
+                    [ ClickableSvg.button "Later hours"
+                        DateTimePicker.Svg.downArrow
+                        [ ClickableSvg.onClick (hourDownHandler config stateValue currentDate)
+                        ]
                     ]
-                    [ DateTimePicker.Svg.downArrow ]
                 , downArrowTd
-                    [ onMouseDownPreventDefault <| minuteDownHandler config stateValue currentDate
-                    , onTouchStartPreventDefault <| minuteDownHandler config stateValue currentDate
+                    [ ClickableSvg.button "Later minutes"
+                        DateTimePicker.Svg.downArrow
+                        [ ClickableSvg.onClick (minuteDownHandler config stateValue currentDate)
+                        ]
                     ]
-                    [ DateTimePicker.Svg.downArrow ]
-                , downArrowTd [] []
+                , downArrowTd []
                 ]
             ]
 
         html config =
             div [ css [ Styles.timePickerDialog ] ]
-                [ div [ css [ Styles.headerStyle ] ]
+                [ div
+                    [ css
+                        [ padding2 (px 10) (px 7)
+                        , backgroundColor Colors.gray96
+                        ]
+                    ]
                     [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
                 , div
                     [ css
@@ -742,7 +682,7 @@ calendar pickerType state currentDate =
         stateValue =
             getStateValue state
 
-        html : Config (DatePickerConfig a) msg -> Html msg
+        html : Config DatePickerConfig msg -> Html msg
         html config =
             case stateValue.titleDate of
                 Nothing ->
@@ -917,7 +857,7 @@ calendar pickerType state currentDate =
             text ""
 
 
-dayNames : Config (DatePickerConfig a) msg -> List (Html msg)
+dayNames : Config DatePickerConfig msg -> List (Html msg)
 dayNames config =
     let
         days =

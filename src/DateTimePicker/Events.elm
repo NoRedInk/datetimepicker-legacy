@@ -1,6 +1,5 @@
 module DateTimePicker.Events exposing
     ( MoveData
-    , onBlurWithChange
     , onMouseDownPreventDefault
     , onMouseMoveWithPosition
     , onMouseUpPreventDefault
@@ -11,18 +10,19 @@ module DateTimePicker.Events exposing
     , onTouchStartPreventDefault
     )
 
+{-|
+
+
+# THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
+
+-}
+
 import DateTimePicker.DateTime as DateTime
 import Html.Styled as Html
 import Html.Styled.Events as HtmlEvents exposing (targetValue)
 import Json.Decode
 import Svg.Styled as Svg
 import Svg.Styled.Events as SvgEvents
-
-
-onBlurWithChange : (String -> Maybe DateTime.DateTime) -> (Maybe DateTime.DateTime -> msg) -> Html.Attribute msg
-onBlurWithChange parser tagger =
-    HtmlEvents.on "blur"
-        (Json.Decode.map (parser >> tagger) targetValue)
 
 
 onMouseDownPreventDefault : msg -> Html.Attribute msg
