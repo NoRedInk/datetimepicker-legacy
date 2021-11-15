@@ -269,6 +269,7 @@ viewInput label pickerType attributes config stateValue currentDate =
     TextInput.view label
         ([ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
          , TextInput.onBlur (blurInputHandler config stateValue currentDate)
+         , TextInput.onEnter (blurInputHandler config stateValue currentDate)
          , TextInput.text
             (\newValue ->
                 config.onChange (setTextInput newValue stateValue)
