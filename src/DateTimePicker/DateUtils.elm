@@ -3,11 +3,11 @@ module DateTimePicker.DateUtils exposing
     , MonthType(..)
     , dayToDateTime
     , dayToInt
-    , fromMillitaryAmPm
-    , fromMillitaryHour
+    , fromMilitaryAmPm
+    , fromMilitaryHour
     , generateCalendar
     , padding
-    , toMillitary
+    , toMilitary
     )
 
 {-|
@@ -178,8 +178,8 @@ padding str =
         str
 
 
-fromMillitaryHour : Int -> Int
-fromMillitaryHour hour =
+fromMilitaryHour : Int -> Int
+fromMilitaryHour hour =
     case hour of
         12 ->
             12
@@ -191,8 +191,8 @@ fromMillitaryHour hour =
             modBy 12 hour
 
 
-fromMillitaryAmPm : Int -> String
-fromMillitaryAmPm hour =
+fromMilitaryAmPm : Int -> String
+fromMilitaryAmPm hour =
     case hour of
         12 ->
             "PM"
@@ -208,8 +208,8 @@ fromMillitaryAmPm hour =
                 "AM"
 
 
-toMillitary : Int -> String -> Int
-toMillitary hour amPm =
+toMilitary : Int -> String -> Int
+toMilitary hour amPm =
     case ( hour, amPm ) of
         ( 12, "AM" ) ->
             0
