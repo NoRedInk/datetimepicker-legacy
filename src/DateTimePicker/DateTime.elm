@@ -407,7 +407,7 @@ fromParts year month day hour minute =
 
 fromTime : Int -> Int -> String -> DateTime
 fromTime hour minute amPm =
-    fromParts 0 Time.Jan 1 (toMillitary hour amPm) minute
+    fromParts 0 Time.Jan 1 (toMilitary hour amPm) minute
 
 
 fromDate : Int -> Time.Month -> Int -> DateTime
@@ -422,11 +422,11 @@ toFirstOfMonth { month, year, hour, minute } =
 
 setTime : Int -> Int -> String -> DateTime -> DateTime
 setTime hour minute amPm dateTime =
-    { dateTime | hour = toMillitary hour amPm, minute = minute }
+    { dateTime | hour = toMilitary hour amPm, minute = minute }
 
 
-toMillitary : Int -> String -> Int
-toMillitary hour amPm =
+toMilitary : Int -> String -> Int
+toMilitary hour amPm =
     case ( hour, amPm ) of
         ( 12, "AM" ) ->
             0

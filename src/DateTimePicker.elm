@@ -892,9 +892,9 @@ inputChangeHandler config stateValue currentDate maybeDate =
             let
                 updateTime time =
                     { time
-                        | hour = date.hour |> DateTimePicker.DateUtils.fromMillitaryHour |> Just
+                        | hour = date.hour |> DateTimePicker.DateUtils.fromMilitaryHour |> Just
                         , minute = Just date.minute
-                        , amPm = date.hour |> DateTimePicker.DateUtils.fromMillitaryAmPm |> Just
+                        , amPm = date.hour |> DateTimePicker.DateUtils.fromMilitaryAmPm |> Just
                     }
 
                 updatedValue =
@@ -1171,9 +1171,9 @@ datePickerFocused pickerType config stateValue currentDate =
 
         updateTime time =
             { time
-                | hour = currentDate |> Maybe.map (.hour >> DateTimePicker.DateUtils.fromMillitaryHour)
+                | hour = currentDate |> Maybe.map (.hour >> DateTimePicker.DateUtils.fromMilitaryHour)
                 , minute = currentDate |> Maybe.map .minute
-                , amPm = currentDate |> Maybe.map (.hour >> DateTimePicker.DateUtils.fromMillitaryAmPm)
+                , amPm = currentDate |> Maybe.map (.hour >> DateTimePicker.DateUtils.fromMilitaryAmPm)
             }
     in
     config.onChange

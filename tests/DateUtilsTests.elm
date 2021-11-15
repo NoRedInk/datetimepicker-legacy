@@ -1,4 +1,4 @@
-module DateUtilsTests exposing (all, dayToIntTest, expectDaysAndShape, fromMillitaryAmPmTest, fromMillitaryHourTest, generateCalendarTest, paddingTest, toMillitaryTest)
+module DateUtilsTests exposing (all, dayToIntTest, expectDaysAndShape, fromMilitaryAmPmTest, fromMilitaryHourTest, generateCalendarTest, paddingTest, toMilitaryTest)
 
 import DateTimePicker.DateUtils as DateUtils
 import Expect
@@ -16,9 +16,9 @@ all =
         [ dayToIntTest
         , generateCalendarTest
         , paddingTest
-        , fromMillitaryHourTest
-        , fromMillitaryAmPmTest
-        , toMillitaryTest
+        , fromMilitaryHourTest
+        , fromMilitaryAmPmTest
+        , toMilitaryTest
         ]
 
 
@@ -98,71 +98,71 @@ paddingTest =
         ]
 
 
-fromMillitaryHourTest : Test
-fromMillitaryHourTest =
-    describe "DateUtils.fromMillitaryHour"
-        [ test "fromMillitaryHour 12 will return 12" <|
+fromMilitaryHourTest : Test
+fromMilitaryHourTest =
+    describe "DateUtils.fromMilitaryHour"
+        [ test "fromMilitaryHour 12 will return 12" <|
             \() ->
-                DateUtils.fromMillitaryHour 12
+                DateUtils.fromMilitaryHour 12
                     |> Expect.equal 12
-        , test "fromMillitaryHour 13 will return 1" <|
+        , test "fromMilitaryHour 13 will return 1" <|
             \() ->
-                DateUtils.fromMillitaryHour 13
+                DateUtils.fromMilitaryHour 13
                     |> Expect.equal 1
-        , test "fromMillitaryHour 24 will return 12" <|
+        , test "fromMilitaryHour 24 will return 12" <|
             \() ->
-                DateUtils.fromMillitaryHour 0
+                DateUtils.fromMilitaryHour 0
                     |> Expect.equal 12
-        , test "fromMillitaryHour 23 will return 11" <|
+        , test "fromMilitaryHour 23 will return 11" <|
             \() ->
-                DateUtils.fromMillitaryHour 23
+                DateUtils.fromMilitaryHour 23
                     |> Expect.equal 11
         ]
 
 
-fromMillitaryAmPmTest : Test
-fromMillitaryAmPmTest =
-    describe "DateUtils.fromMillitaryAmPm"
-        [ test "fromMillitaryAmPm 12 will return PM" <|
+fromMilitaryAmPmTest : Test
+fromMilitaryAmPmTest =
+    describe "DateUtils.fromMilitaryAmPm"
+        [ test "fromMilitaryAmPm 12 will return PM" <|
             \() ->
-                DateUtils.fromMillitaryAmPm 12
+                DateUtils.fromMilitaryAmPm 12
                     |> Expect.equal "PM"
-        , test "fromMillitaryAmPm 0 will return AM" <|
+        , test "fromMilitaryAmPm 0 will return AM" <|
             \() ->
-                DateUtils.fromMillitaryAmPm 0
+                DateUtils.fromMilitaryAmPm 0
                     |> Expect.equal "AM"
-        , test "fromMillitaryAmPm 13 will return PM" <|
+        , test "fromMilitaryAmPm 13 will return PM" <|
             \() ->
-                DateUtils.fromMillitaryAmPm 13
+                DateUtils.fromMilitaryAmPm 13
                     |> Expect.equal "PM"
-        , test "fromMillitaryAmPm 1 will return AM" <|
+        , test "fromMilitaryAmPm 1 will return AM" <|
             \() ->
-                DateUtils.fromMillitaryAmPm 1
+                DateUtils.fromMilitaryAmPm 1
                     |> Expect.equal "AM"
-        , test "fromMillitaryAmPm 23 will return PM" <|
+        , test "fromMilitaryAmPm 23 will return PM" <|
             \() ->
-                DateUtils.fromMillitaryAmPm 23
+                DateUtils.fromMilitaryAmPm 23
                     |> Expect.equal "PM"
         ]
 
 
-toMillitaryTest : Test
-toMillitaryTest =
-    describe "DateUtils.toMillitary"
-        [ test "toMillitary 12 AM will return 0" <|
+toMilitaryTest : Test
+toMilitaryTest =
+    describe "DateUtils.toMilitary"
+        [ test "toMilitary 12 AM will return 0" <|
             \() ->
-                DateUtils.toMillitary 12 "AM"
+                DateUtils.toMilitary 12 "AM"
                     |> Expect.equal 0
-        , test "toMillitary 12 PM will return 12" <|
+        , test "toMilitary 12 PM will return 12" <|
             \() ->
-                DateUtils.toMillitary 12 "PM"
+                DateUtils.toMilitary 12 "PM"
                     |> Expect.equal 12
-        , test "toMillitary 9 AM will return 9" <|
+        , test "toMilitary 9 AM will return 9" <|
             \() ->
-                DateUtils.toMillitary 9 "AM"
+                DateUtils.toMilitary 9 "AM"
                     |> Expect.equal 9
-        , test "toMillitary 2 PM will return 14" <|
+        , test "toMilitary 2 PM will return 14" <|
             \() ->
-                DateUtils.toMillitary 2 "PM"
+                DateUtils.toMilitary 2 "PM"
                     |> Expect.equal 14
         ]
