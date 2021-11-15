@@ -32,6 +32,7 @@ type alias StateValue =
     , hourPickerStart : Int
     , minutePickerStart : Int
     , activeTimeIndicator : Maybe TimeIndicator
+    , textInputValue : String
     }
 
 
@@ -56,6 +57,7 @@ initialStateValue =
     , hourPickerStart = 1
     , minutePickerStart = 0
     , activeTimeIndicator = Just HourIndicator
+    , textInputValue = ""
     }
 
 
@@ -70,6 +72,7 @@ initialStateValueWithToday today =
     , hourPickerStart = 1
     , minutePickerStart = 0
     , activeTimeIndicator = Just HourIndicator
+    , textInputValue = ""
     }
 
 

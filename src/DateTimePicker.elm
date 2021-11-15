@@ -268,18 +268,13 @@ viewInput : String -> Type msg -> List (TextInput.Attribute String msg) -> Confi
 viewInput label pickerType attributes config stateValue currentDate =
     TextInput.view label
         ([ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
-         , TextInput.onBlur (inputChangeHandler config stateValue currentDate currentDate)
+         , TextInput.onBlur (blurInputHandler config stateValue currentDate)
          , TextInput.text
             (\newValue ->
-                inputChangeHandler config
-                    stateValue
+                config.onChange (setTextInput newValue stateValue)
                     currentDate
-                    (config.fromInput newValue)
             )
-         , currentDate
-            |> Maybe.map config.toInput
-            |> Maybe.withDefault ""
-            |> TextInput.value
+         , TextInput.value stateValue.textInputValue
          ]
             ++ attributes
         )
@@ -872,9 +867,9 @@ rotate n xs =
 -- EVENT HANDLERS
 
 
-inputChangeHandler : Config a msg -> StateValue -> Maybe DateTime.DateTime -> Maybe DateTime.DateTime -> msg
-inputChangeHandler config stateValue currentDate maybeDate =
-    case maybeDate of
+blurInputHandler : Config a msg -> StateValue -> Maybe DateTime.DateTime -> msg
+blurInputHandler config stateValue currentDate =
+    case config.fromInput stateValue.textInputValue of
         Just date ->
             let
                 updateTime time =
@@ -891,7 +886,7 @@ inputChangeHandler config stateValue currentDate maybeDate =
                         , inputFocused = False
                     }
             in
-            config.onChange (InternalState updatedValue) maybeDate
+            config.onChange (updateTextInputFromDate config updatedValue) (Just date)
 
         Nothing ->
             let
@@ -919,7 +914,9 @@ inputChangeHandler config stateValue currentDate maybeDate =
                         , activeTimeIndicator = updatedActiveTimeIndicator
                     }
             in
-            config.onChange (InternalState updatedValue) maybeDate
+            config.onChange
+                (setTextInput "" updatedValue)
+                Nothing
 
 
 hourClickHandler : Type msg -> StateValue -> Int -> msg
@@ -952,10 +949,10 @@ hourClickHandler pickerType stateValue hour =
                     ( Nothing, False )
 
         withDateHandler config =
-            config.onChange (InternalState { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
+            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
 
         justTimeHandler config =
-            config.onChange (InternalState { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
+            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
     in
     case pickerType of
         DateType config ->
@@ -998,10 +995,10 @@ minuteClickHandler pickerType stateValue minute =
                     ( Nothing, False )
 
         withDateHandler config =
-            config.onChange (InternalState { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
+            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
 
         justTimeHandler config =
-            config.onChange (InternalState { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
+            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
     in
     case pickerType of
         DateType config ->
@@ -1054,10 +1051,10 @@ amPmClickHandler pickerType stateValue amPm =
                     ( Nothing, False )
 
         withDateHandler config =
-            config.onChange (InternalState { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
+            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
 
         justTimeHandler config =
-            config.onChange (InternalState { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
+            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
     in
     case pickerType of
         DateType config ->
@@ -1123,13 +1120,13 @@ dateClickHandler pickerType stateValue year month day =
         handler config =
             case day.monthType of
                 DateTimePicker.DateUtils.Previous ->
-                    gotoPreviousMonth config (InternalState updatedStateValue) updatedDate
+                    gotoPreviousMonth config (updateTextInputFromDate config updatedStateValue) updatedDate
 
                 DateTimePicker.DateUtils.Next ->
-                    gotoNextMonth config (InternalState updatedStateValue) updatedDate
+                    gotoNextMonth config (updateTextInputFromDate config updatedStateValue) updatedDate
 
                 DateTimePicker.DateUtils.Current ->
-                    config.onChange (InternalState updatedStateValue) updatedDate
+                    config.onChange (updateTextInputFromDate config updatedStateValue) updatedDate
     in
     case pickerType of
         DateType config ->
@@ -1161,7 +1158,7 @@ datePickerFocused pickerType config stateValue currentDate =
             }
     in
     config.onChange
-        (InternalState
+        (updateTextInputFromDate config
             { stateValue
                 | inputFocused = True
                 , titleDate = updatedTitleDate
@@ -1189,10 +1186,10 @@ onChangeHandler pickerType stateValue currentDate =
         withTimeHandler config =
             case ( ( stateValue.date, stateValue.time.hour ), ( stateValue.time.minute, stateValue.time.amPm ) ) of
                 ( ( Just date, Just hour ), ( Just minute, Just amPm ) ) ->
-                    config.onChange (InternalState stateValue) <| Just <| DateTime.setTime hour minute amPm date
+                    config.onChange (updateTextInputFromDate config stateValue) <| Just <| DateTime.setTime hour minute amPm date
 
                 _ ->
-                    config.onChange (InternalState stateValue) Nothing
+                    config.onChange (updateTextInputFromDate config stateValue) Nothing
     in
     case pickerType of
         DateType config ->
@@ -1215,7 +1212,7 @@ hourUpHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (InternalState updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
 hourDownHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
@@ -1228,7 +1225,7 @@ hourDownHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (InternalState updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
 minuteUpHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
@@ -1241,7 +1238,7 @@ minuteUpHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (InternalState updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
 minuteDownHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
@@ -1254,7 +1251,7 @@ minuteDownHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (InternalState updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
 timeIndicatorHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> DateTimePicker.Internal.TimeIndicator -> msg
@@ -1272,7 +1269,7 @@ timeIndicatorHandler config stateValue currentDate timeIndicator =
             else
                 Just timeIndicator
     in
-    config.onChange (InternalState updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
 amPmIndicatorHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
@@ -1295,7 +1292,7 @@ amPmIndicatorHandler config stateValue currentDate =
                 , time = updateTime stateValue.time
             }
     in
-    config.onChange (InternalState updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
 amPmPickerHandler : Type msg -> Config config msg -> StateValue -> Maybe DateTime.DateTime -> String -> msg
@@ -1312,5 +1309,26 @@ amPmPickerHandler pickerType config stateValue currentDate amPm =
                 |> updateTimeIndicator
     in
     config.onChange
-        (InternalState updatedState)
+        (updateTextInputFromDate config updatedState)
         (updateCurrentDate pickerType updatedState)
+
+
+setTextInput : String -> StateValue -> State
+setTextInput value state =
+    InternalState
+        { state
+            | textInputValue = value
+        }
+
+
+updateTextInputFromDate :
+    { config | toInput : DateTime.DateTime -> String }
+    -> StateValue
+    -> State
+updateTextInputFromDate config state =
+    InternalState
+        { state
+            | textInputValue =
+                Maybe.map config.toInput state.date
+                    |> Maybe.withDefault state.textInputValue
+        }
