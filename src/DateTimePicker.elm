@@ -87,15 +87,6 @@ initialStateWithToday today =
 -- ACTIONS
 
 
-switchMode : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
-switchMode config state =
-    let
-        stateValue =
-            getStateValue state
-    in
-    config.onChange <| InternalState { stateValue | event = "title" }
-
-
 gotoNextMonth : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
 gotoNextMonth config state =
     let
@@ -105,7 +96,7 @@ gotoNextMonth config state =
         updatedTitleDate =
             Maybe.map (DateTime.addMonths 1) stateValue.titleDate
     in
-    config.onChange <| InternalState { stateValue | event = "next", titleDate = updatedTitleDate }
+    config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
 gotoNextYear : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
@@ -117,7 +108,7 @@ gotoNextYear config state =
         updatedTitleDate =
             Maybe.map (DateTime.addMonths 12) stateValue.titleDate
     in
-    config.onChange <| InternalState { stateValue | event = "nextYear", titleDate = updatedTitleDate }
+    config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
 gotoPreviousMonth : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
@@ -129,7 +120,7 @@ gotoPreviousMonth config state =
         updatedTitleDate =
             Maybe.map (DateTime.addMonths -1) stateValue.titleDate
     in
-    config.onChange <| InternalState { stateValue | event = "previous", titleDate = updatedTitleDate }
+    config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
 gotoPreviousYear : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
@@ -141,7 +132,7 @@ gotoPreviousYear config state =
         updatedTitleDate =
             Maybe.map (DateTime.addMonths -12) stateValue.titleDate
     in
-    config.onChange <| InternalState { stateValue | event = "previousYear", titleDate = updatedTitleDate }
+    config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
 
@@ -301,11 +292,8 @@ viewInput label pickerType attributes config stateValue currentDate =
 dialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
 dialog pickerType state currentDate =
     let
-        stateValue =
-            getStateValue state
-
         attributes config =
-            [ onMouseDownPreventDefault <| config.onChange (InternalState { stateValue | event = "dialog.onMouseDownPreventDefault" }) currentDate
+            [ onMouseDownPreventDefault <| config.onChange state currentDate
             , css
                 [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
                 , fontSize (px 14)
@@ -416,7 +404,6 @@ title config state currentDate =
             , width (pct 100)
             , textAlign center
             ]
-        , onMouseDownPreventDefault <| switchMode config state currentDate
         ]
         [ date
             |> Maybe.map DateTimePicker.Formatter.titleFormatter
@@ -902,7 +889,6 @@ inputChangeHandler config stateValue currentDate maybeDate =
                         | date = Just date
                         , time = updateTime stateValue.time
                         , inputFocused = False
-                        , event = "inputChangeHandler"
                     }
             in
             config.onChange (InternalState updatedValue) maybeDate
@@ -930,7 +916,6 @@ inputChangeHandler config stateValue currentDate maybeDate =
                         , hourPickerStart = initialStateValue.hourPickerStart
                         , minutePickerStart = initialStateValue.minutePickerStart
                         , inputFocused = False
-                        , event = "inputChangeHandler"
                         , activeTimeIndicator = updatedActiveTimeIndicator
                     }
             in
@@ -944,7 +929,7 @@ hourClickHandler pickerType stateValue hour =
             stateValue.time
 
         updatedStateValue =
-            { stateValue | time = { time | hour = Just hour }, event = "hourClickHandler" }
+            { stateValue | time = { time | hour = Just hour } }
 
         ( updatedDate, forceCloseWithDate ) =
             case ( stateValue.time.minute, stateValue.time.amPm, stateValue.date ) of
@@ -990,7 +975,7 @@ minuteClickHandler pickerType stateValue minute =
             stateValue.time
 
         updatedStateValue =
-            { stateValue | time = { time | minute = Just minute }, event = "minuteClickHandler" }
+            { stateValue | time = { time | minute = Just minute } }
 
         ( updatedDate, forceCloseWithDate ) =
             case ( stateValue.time.hour, stateValue.time.amPm, stateValue.date ) of
@@ -1046,7 +1031,6 @@ amPmClickHandler pickerType stateValue amPm =
                             else
                                 Just amPm
                     }
-                , event = "amPmClickHandler"
             }
 
         ( updatedDate, forceCloseWithDate ) =
@@ -1180,7 +1164,6 @@ datePickerFocused pickerType config stateValue currentDate =
         (InternalState
             { stateValue
                 | inputFocused = True
-                , event = "onFocus"
                 , titleDate = updatedTitleDate
                 , date = currentDate
                 , forceClose = False

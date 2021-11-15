@@ -25,7 +25,6 @@ type InternalState
 type alias StateValue =
     { inputFocused : Bool
     , forceClose : Bool
-    , event : String
     , today : Maybe DateTime.DateTime
     , titleDate : Maybe DateTime.DateTime
     , date : Maybe DateTime.DateTime
@@ -50,7 +49,6 @@ initialStateValue : StateValue
 initialStateValue =
     { inputFocused = False
     , forceClose = False
-    , event = ""
     , today = Nothing
     , titleDate = Nothing
     , date = Nothing
@@ -65,7 +63,6 @@ initialStateValueWithToday : DateTime.DateTime -> StateValue
 initialStateValueWithToday today =
     { inputFocused = False
     , forceClose = False
-    , event = ""
     , today = Just today
     , titleDate = Just <| DateTime.toFirstOfMonth today
     , date = Nothing
