@@ -23,10 +23,13 @@ timePickerDialog =
 highlightStyle : Css.Style
 highlightStyle =
     Css.batch
-        [ property "box-shadow" "inset 0 0 10px 3px #3276b1"
-        , backgroundColor Colors.azure
-        , color Colors.frost
+        [ backgroundColor Colors.azure
+        , color Colors.white
         , borderRadius (px 0)
+        , hover
+            [ backgroundColor Colors.azureDark |> Css.important
+            , color Colors.white
+            ]
         ]
 
 
@@ -54,14 +57,6 @@ tableStyle =
         , property "border-width" "0"
         , property "table-layout" "fixed"
         , margin (px 0)
-        ]
-
-
-activeStyle : Css.Style
-activeStyle =
-    Css.batch
-        [ backgroundColor Colors.gray85
-        , borderRadius (px 0)
         ]
 
 

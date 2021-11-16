@@ -290,7 +290,6 @@ dialog pickerType state currentDate =
                 , boxSizing borderBox
                 , position absolute
                 , border3 (px 1) solid Colors.gray85
-                , boxShadow4 (px 0) (px 5) (px 10) (rgba 0 0 0 0.2)
                 , property "z-index" "1"
                 , displayFlex
                 ]
@@ -487,7 +486,7 @@ digitalTimePickerDialog pickerType state currentDate =
                 , case stateValue.time.hour of
                     Just stateHour ->
                         if stateHour == hour then
-                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                            css [ Styles.highlightStyle ]
 
                         else
                             css []
@@ -504,7 +503,7 @@ digitalTimePickerDialog pickerType state currentDate =
                 , case stateValue.time.minute of
                     Just stateMinute ->
                         if stateMinute == minute then
-                            css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                            css [ Styles.highlightStyle ]
 
                         else
                             css []
@@ -527,7 +526,7 @@ digitalTimePickerDialog pickerType state currentDate =
                     case stateValue.time.amPm of
                         Just stateAmPm ->
                             if stateAmPm == ampm then
-                                css [ Styles.highlightStyle, hover [ Styles.highlightStyle ] ]
+                                css [ Styles.highlightStyle ]
 
                             else
                                 defaultStyles
@@ -605,7 +604,7 @@ digitalTimePickerDialog pickerType state currentDate =
                     [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
                 , div
                     [ css
-                        [ backgroundColor (hex "#fff")
+                        [ backgroundColor Colors.white
                         , descendants
                             [ Css.Global.table
                                 [ Styles.tableStyle
@@ -615,10 +614,6 @@ digitalTimePickerDialog pickerType state currentDate =
                                     , Css.Global.td
                                         [ width (pct 33)
                                         , Styles.cellStyle
-                                        , hover
-                                            [ backgroundColor Colors.gray92
-                                            , borderRadius (px 0)
-                                            ]
                                         ]
                                     ]
                                 ]
@@ -728,17 +723,14 @@ calendar pickerType state =
                                             [ backgroundColor inherit
                                             , cursor default
                                             , color Colors.gray85
-                                            , hover
-                                                [ backgroundColor inherit
-                                                ]
+                                            , hover [ backgroundColor inherit ]
                                             ]
                                         , if matchesDay stateValue.date day then
                                             [ Styles.highlightStyle
-                                            , hover [ Styles.highlightStyle ]
                                             ]
 
                                           else if matchesDay stateValue.today day then
-                                            [ property "box-shadow" "inset 0 0 7px 0 #76abd9"
+                                            [ boxShadow6 inset zero zero (Css.px 5) zero Colors.azure
                                             , borderRadius (px 0)
                                             , hover [ backgroundColor Colors.frost ]
                                             ]
@@ -784,7 +776,7 @@ calendar pickerType state =
                     in
                     Html.table
                         [ css
-                            [ backgroundColor (hex "#ffffff")
+                            [ backgroundColor Colors.white
                             , Styles.tableStyle
                             , width auto
                             , margin (px 0)
@@ -793,10 +785,7 @@ calendar pickerType state =
                                     []
                                 , Css.Global.td
                                     [ Styles.dayStyle
-                                    , hover
-                                        [ backgroundColor Colors.gray92
-                                        , borderRadius (px 0)
-                                        ]
+                                    , hover [ backgroundColor Colors.glacier ]
                                     ]
                                 , Css.Global.th
                                     [ Styles.dayStyle
