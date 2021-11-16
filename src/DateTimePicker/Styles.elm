@@ -36,7 +36,8 @@ highlightStyle =
 dayStyle : Css.Style
 dayStyle =
     Css.batch
-        [ cellStyle
+        [ padding4 (px 7) (px 7) (px 7) (px 9)
+        , border (px 0)
         , textAlign right
         ]
 
@@ -47,6 +48,7 @@ cellStyle =
         [ padding4 (px 7) (px 7) (px 7) (px 9)
         , border (px 0)
         , cursor pointer
+        , hover [ backgroundColor Colors.glacier ]
         ]
 
 

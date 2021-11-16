@@ -39,7 +39,7 @@ import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
-import Html.Styled as Html exposing (Html, div, span, tbody, td, text, th, thead, tr)
+import Html.Styled as Html exposing (Html, div, span, tbody, td, text, tfoot, th, thead, tr)
 import Html.Styled.Attributes exposing (attribute, css)
 import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
@@ -300,10 +300,12 @@ dialog pickerType state currentDate =
     in
     case pickerType of
         DateType datePickerConfig ->
-            dialogNode (attributes datePickerConfig) [ datePickerDialog pickerType state currentDate ]
+            dialogNode (attributes datePickerConfig)
+                [ datePickerDialog pickerType state currentDate ]
 
         TimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig) [ timePickerDialog pickerType state currentDate ]
+            dialogNode (withTimeAttributes timePickerConfig)
+                [ timePickerDialog pickerType state currentDate ]
 
         DateTimeType timePickerConfig ->
             dialogNode (withTimeAttributes timePickerConfig)
@@ -546,26 +548,26 @@ digitalTimePickerDialog pickerType state currentDate =
             td (styles :: handlers) [ text ampm ]
 
         upArrowTd =
-            Html.styled td [ borderBottom3 (px 1) solid Colors.gray85 ] []
+            Html.styled td
+                [ borderBottom3 (px 1) solid Colors.gray85
+                , height (Css.px 18)
+                ]
+                []
 
         upArrows config =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ upArrowTd
                     [ ClickableSvg.button "Earlier hours"
                         DateTimePicker.Svg.upArrow
-                        [ ClickableSvg.custom
-                            [ onMouseDownPreventDefault <| hourUpHandler config stateValue currentDate
-                            , onTouchStartPreventDefault <| hourUpHandler config stateValue currentDate
-                            ]
+                        [ ClickableSvg.onClick (hourUpHandler config stateValue currentDate)
+                        , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , upArrowTd
                     [ ClickableSvg.button "Earlier minutes"
                         DateTimePicker.Svg.upArrow
-                        [ ClickableSvg.custom
-                            [ onMouseDownPreventDefault <| minuteUpHandler config stateValue currentDate
-                            , onTouchStartPreventDefault <| minuteUpHandler config stateValue currentDate
-                            ]
+                        [ ClickableSvg.onClick (minuteUpHandler config stateValue currentDate)
+                        , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , upArrowTd []
@@ -573,7 +575,11 @@ digitalTimePickerDialog pickerType state currentDate =
             ]
 
         downArrowTd =
-            Html.styled td [ borderTop3 (px 1) solid Colors.gray85 ] []
+            Html.styled td
+                [ borderTop3 (px 1) solid Colors.gray85
+                , height (Css.px 18)
+                ]
+                []
 
         downArrows config =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
@@ -581,12 +587,14 @@ digitalTimePickerDialog pickerType state currentDate =
                     [ ClickableSvg.button "Later hours"
                         DateTimePicker.Svg.downArrow
                         [ ClickableSvg.onClick (hourDownHandler config stateValue currentDate)
+                        , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , downArrowTd
                     [ ClickableSvg.button "Later minutes"
                         DateTimePicker.Svg.downArrow
                         [ ClickableSvg.onClick (minuteDownHandler config stateValue currentDate)
+                        , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , downArrowTd []
@@ -598,10 +606,17 @@ digitalTimePickerDialog pickerType state currentDate =
                 [ div
                     [ css
                         [ padding2 (px 10) (px 7)
+                        , displayFlex
+                        , justifyContent center
+                        , alignItems center
                         , backgroundColor Colors.gray96
+                        , height (Css.px 37)
                         ]
                     ]
-                    [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate |> Maybe.withDefault "-- : --" |> text ]
+                    [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate
+                        |> Maybe.withDefault "-- : --"
+                        |> text
+                    ]
                 , div
                     [ css
                         [ backgroundColor Colors.white
@@ -609,11 +624,15 @@ digitalTimePickerDialog pickerType state currentDate =
                             [ Css.Global.table
                                 [ Styles.tableStyle
                                 , width (px 120)
+                                , descendants [ Css.Global.tr [ verticalAlign top ] ]
                                 , descendants
-                                    [ Css.Global.tr [ verticalAlign top ]
-                                    , Css.Global.td
-                                        [ width (pct 33)
-                                        , Styles.cellStyle
+                                    [ Css.Global.tbody
+                                        [ descendants
+                                            [ Css.Global.td
+                                                [ width (pct 33)
+                                                , Styles.cellStyle
+                                                ]
+                                            ]
                                         ]
                                     ]
                                 ]
@@ -621,11 +640,9 @@ digitalTimePickerDialog pickerType state currentDate =
                         ]
                     ]
                     [ Html.table []
-                        [ tbody []
-                            (upArrows config
-                                ++ timeSelector
-                                ++ downArrows config
-                            )
+                        [ thead [] (upArrows config)
+                        , tbody [] timeSelector
+                        , tfoot [] (downArrows config)
                         ]
                     ]
                 ]
@@ -784,8 +801,8 @@ calendar pickerType state =
                                 [ Css.Global.thead
                                     []
                                 , Css.Global.td
-                                    [ Styles.dayStyle
-                                    , hover [ backgroundColor Colors.glacier ]
+                                    [ Styles.cellStyle
+                                    , textAlign right
                                     ]
                                 , Css.Global.th
                                     [ Styles.dayStyle
