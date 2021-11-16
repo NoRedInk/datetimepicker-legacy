@@ -342,7 +342,7 @@ datePickerDialog pickerType state currentDate =
                         ]
                     ]
                     (navigation config state currentDate)
-                , calendar pickerType state currentDate
+                , calendar pickerType state
                 , -- Footer
                   Html.node "date-time-picker-footer"
                     [ css
@@ -372,14 +372,14 @@ navigation : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> 
 navigation config state currentDate =
     [ previousYearButton config state currentDate
     , previousButton config state currentDate
-    , title config state currentDate
+    , title state
     , nextButton config state currentDate
     , nextYearButton config state currentDate
     ]
 
 
-title : Config DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
-title config state currentDate =
+title : State -> Html msg
+title state =
     let
         stateValue =
             getStateValue state
@@ -444,19 +444,15 @@ nextYearButton config state currentDate =
 
 timePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
 timePickerDialog pickerType state currentDate =
-    let
-        html config =
-            digitalTimePickerDialog pickerType state currentDate
-    in
     case pickerType of
         DateType _ ->
             text ""
 
-        DateTimeType config ->
-            html config
+        DateTimeType _ ->
+            digitalTimePickerDialog pickerType state currentDate
 
-        TimeType config ->
-            html config
+        TimeType _ ->
+            digitalTimePickerDialog pickerType state currentDate
 
 
 digitalTimePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
@@ -650,8 +646,8 @@ digitalTimePickerDialog pickerType state currentDate =
             html config
 
 
-calendar : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-calendar pickerType state currentDate =
+calendar : Type msg -> State -> Html msg
+calendar pickerType state =
     let
         stateValue =
             getStateValue state
