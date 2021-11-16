@@ -14,7 +14,6 @@ module DateTimePicker.Parser exposing
 import Char
 import DateTimePicker.DateTime as DateTime
 import Parser exposing ((|.), (|=), Parser)
-import Time
 
 
 parseDate : String -> Maybe DateTime.DateTime
@@ -121,12 +120,6 @@ clamped min max previousParser =
                 Parser.succeed int
         )
         previousParser
-
-
-makeDateTime : Time.Month -> Int -> Int -> Int -> Int -> String -> DateTime.DateTime
-makeDateTime month day year hour minute amPm_ =
-    DateTime.fromDate year month day
-        |> DateTime.setTime hour minute amPm_
 
 
 {-| Parse the exact format "%m/%d/%Y"

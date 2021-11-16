@@ -1,4 +1,4 @@
-module DateUtilsTests exposing (all, dayToIntTest, expectDaysAndShape, fromMilitaryAmPmTest, fromMilitaryHourTest, generateCalendarTest, paddingTest, toMilitaryTest)
+module DateUtilsTests exposing (all, dayToIntTest, fromMilitaryAmPmTest, fromMilitaryHourTest, generateCalendarTest, paddingTest, toMilitaryTest)
 
 import DateTimePicker.DateUtils as DateUtils
 import Expect

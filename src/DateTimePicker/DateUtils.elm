@@ -220,5 +220,5 @@ toMilitary hour amPm =
         ( _, "PM" ) ->
             hour + 12
 
-        ( _, _ ) ->
+        _ ->
             hour

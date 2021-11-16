@@ -1,4 +1,4 @@
-module FormatterTests exposing (accessibilityDateFormatterTest, date, dateFormatterTest, dateTimeFormatterTest, footerFormatterTest, timeFormatterTest, titleFormatterTest)
+module FormatterTests exposing (accessibilityDateFormatterTest, dateFormatterTest, dateTimeFormatterTest, footerFormatterTest, timeFormatterTest, titleFormatterTest)
 
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter as Formatter
