@@ -30,25 +30,22 @@ module DateTimePicker exposing
 -}
 
 import Css exposing (..)
-import Css.Global exposing (Snippet, children, descendants, withClass)
-import DateTimePicker.Config exposing (Config, DatePickerConfig, Type(..), defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
+import Css.Global exposing (descendants)
+import DateTimePicker.Config exposing (Config, DatePickerConfig, Type(..))
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
-import DateTimePicker.Events exposing (onMouseDownPreventDefault, onMouseUpPreventDefault, onTouchEndPreventDefault, onTouchStartPreventDefault)
+import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
-import DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
-import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValue, initialStateValueWithToday)
+import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
-import Html.Styled as Html exposing (Html, button, div, input, li, span, table, tbody, td, text, th, thead, tr, ul)
-import Html.Styled.Attributes exposing (attribute, css, value)
-import Html.Styled.Events exposing (onBlur, onClick, onFocus)
+import Html.Styled as Html exposing (Html, div, span, tbody, td, text, th, thead, tr)
+import Html.Styled.Attributes exposing (attribute, css)
 import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
 import Nri.Ui.Fonts.V1 as Fonts
 import Nri.Ui.TextInput.V7 as TextInput
 import String
-import Task
 import Time
 
 
@@ -235,9 +232,6 @@ view label pickerType attributes state currentDate =
     let
         stateValue =
             getStateValue state
-
-        timeFormatter dateTimePickerConfig =
-            dateTimePickerConfig.timeFormatter
 
         shouldForceClose config =
             config.autoClose && stateValue.forceClose
@@ -471,9 +465,6 @@ digitalTimePickerDialog pickerType state currentDate =
         stateValue =
             getStateValue state
 
-        toListItem str =
-            li [] [ text str ]
-
         hours =
             List.range stateValue.hourPickerStart (stateValue.hourPickerStart + 6)
 
@@ -673,11 +664,6 @@ calendar pickerType state currentDate =
 
                 Just titleDate ->
                     let
-                        firstDay =
-                            DateTime.toFirstOfMonth titleDate
-                                |> DateTime.dayOfWeek
-                                |> DateTimePicker.DateUtils.dayToInt config.firstDayOfWeek
-
                         month =
                             titleDate.month
 
@@ -836,7 +822,7 @@ calendar pickerType state currentDate =
         DateTimeType config ->
             html config
 
-        TimeType config ->
+        TimeType _ ->
             text ""
 
 
@@ -1178,31 +1164,6 @@ datePickerFocused pickerType config stateValue currentDate =
         currentDate
 
 
-onChangeHandler : Type msg -> StateValue -> Maybe DateTime.DateTime -> msg
-onChangeHandler pickerType stateValue currentDate =
-    let
-        justDateHandler config =
-            config.onChange (InternalState stateValue) stateValue.date
-
-        withTimeHandler config =
-            case ( ( stateValue.date, stateValue.time.hour ), ( stateValue.time.minute, stateValue.time.amPm ) ) of
-                ( ( Just date, Just hour ), ( Just minute, Just amPm ) ) ->
-                    config.onChange (updateTextInputFromDate config stateValue) <| Just <| DateTime.setTime hour minute amPm date
-
-                _ ->
-                    config.onChange (updateTextInputFromDate config stateValue) Nothing
-    in
-    case pickerType of
-        DateType config ->
-            justDateHandler config
-
-        DateTimeType config ->
-            withTimeHandler config
-
-        TimeType config ->
-            withTimeHandler config
-
-
 hourUpHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
 hourUpHandler config stateValue currentDate =
     let
@@ -1253,65 +1214,6 @@ minuteDownHandler config stateValue currentDate =
                 stateValue
     in
     config.onChange (updateTextInputFromDate config updatedState) currentDate
-
-
-timeIndicatorHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> DateTimePicker.Internal.TimeIndicator -> msg
-timeIndicatorHandler config stateValue currentDate timeIndicator =
-    let
-        updatedState =
-            { stateValue
-                | activeTimeIndicator = updatedActiveTimeIndicator
-            }
-
-        updatedActiveTimeIndicator =
-            if stateValue.activeTimeIndicator == Just timeIndicator then
-                Nothing
-
-            else
-                Just timeIndicator
-    in
-    config.onChange (updateTextInputFromDate config updatedState) currentDate
-
-
-amPmIndicatorHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
-amPmIndicatorHandler config stateValue currentDate =
-    let
-        updateTime time =
-            case time.amPm of
-                Just "AM" ->
-                    { time | amPm = Just "PM" }
-
-                Just "PM" ->
-                    { time | amPm = Just "AM" }
-
-                _ ->
-                    { time | amPm = Just "AM" }
-
-        updatedState =
-            { stateValue
-                | activeTimeIndicator = Just DateTimePicker.Internal.AMPMIndicator
-                , time = updateTime stateValue.time
-            }
-    in
-    config.onChange (updateTextInputFromDate config updatedState) currentDate
-
-
-amPmPickerHandler : Type msg -> Config config msg -> StateValue -> Maybe DateTime.DateTime -> String -> msg
-amPmPickerHandler pickerType config stateValue currentDate amPm =
-    let
-        time =
-            stateValue.time
-
-        updatedTime =
-            { time | amPm = Just amPm }
-
-        updatedState =
-            { stateValue | time = updatedTime }
-                |> updateTimeIndicator
-    in
-    config.onChange
-        (updateTextInputFromDate config updatedState)
-        (updateCurrentDate pickerType updatedState)
 
 
 setTextInput : String -> StateValue -> State

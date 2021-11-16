@@ -22,7 +22,6 @@ module DateTimePicker.DateTime exposing
 
 -}
 
-import Task exposing (Task)
 import Time
 
 
@@ -437,5 +436,5 @@ toMilitary hour amPm =
         ( _, "PM" ) ->
             hour + 12
 
-        ( _, _ ) ->
+        _ ->
             hour

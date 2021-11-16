@@ -1,14 +1,11 @@
 module DatePickerTests exposing (all)
 
 import DateTimePicker.DateTime as DateTime
-import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Expect
-import Html.Attributes
 import Json.Encode
 import Test exposing (..)
-import Test.Html.Event as Event
 import Test.Html.Selector exposing (..)
-import TestHelper exposing (clickDate, init, open, render, selection, simulate, withConfig)
+import TestHelper exposing (clickDate, init, open, selection, simulate, withConfig)
 import Time
 
 

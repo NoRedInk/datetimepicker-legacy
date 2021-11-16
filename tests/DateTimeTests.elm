@@ -1,7 +1,7 @@
 module DateTimeTests exposing (addDaysTest, addMonthsTest, dayOfWeekTest, firstOfMonthTest, setTimeTest, validateTest)
 
 import DateTimePicker.DateTime as DateTime
-import Expect exposing (Expectation)
+import Expect
 import Test exposing (..)
 import Time
 

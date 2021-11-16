@@ -1,4 +1,4 @@
-module DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
+module DateTimePicker.Helpers exposing (updateTimeIndicator)
 
 {-|
 
@@ -7,42 +7,7 @@ module DateTimePicker.Helpers exposing (updateCurrentDate, updateTimeIndicator)
 
 -}
 
-import DateTimePicker.Config exposing (Type(..))
-import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Internal exposing (StateValue, TimeIndicator(..))
-
-
-updateCurrentDate : Type msg -> StateValue -> Maybe DateTime.DateTime
-updateCurrentDate pickerType stateValue =
-    let
-        updatedDate =
-            stateValue.date
-
-        updatedDateTime =
-            case ( ( stateValue.date, stateValue.time.hour ), ( stateValue.time.minute, stateValue.time.amPm ) ) of
-                ( ( Just date, Just hour ), ( Just minute, Just amPm ) ) ->
-                    Just (DateTime.setTime hour minute amPm date)
-
-                _ ->
-                    Nothing
-
-        updatedTime =
-            case ( stateValue.time.hour, stateValue.time.minute, stateValue.time.amPm ) of
-                ( Just hour, Just minute, Just amPm ) ->
-                    Just (DateTime.fromTime hour minute amPm)
-
-                _ ->
-                    Nothing
-    in
-    case pickerType of
-        DateType _ ->
-            updatedDate
-
-        DateTimeType _ ->
-            updatedDateTime
-
-        TimeType _ ->
-            updatedTime
 
 
 updateTimeIndicator : StateValue -> StateValue
@@ -66,7 +31,7 @@ updateTimeIndicator stateValue =
         ( ( Just MinuteIndicator, Just _ ), ( _, Just _ ) ) ->
             { stateValue | activeTimeIndicator = Nothing }
 
-        ( ( Just AMPMIndicator, Nothing ), ( _, _ ) ) ->
+        ( ( Just AMPMIndicator, Nothing ), _ ) ->
             { stateValue | activeTimeIndicator = Just HourIndicator }
 
         ( ( Just AMPMIndicator, Just _ ), ( Nothing, _ ) ) ->
@@ -75,7 +40,7 @@ updateTimeIndicator stateValue =
         ( ( Just AMPMIndicator, Just _ ), ( Just _, _ ) ) ->
             { stateValue | activeTimeIndicator = Nothing }
 
-        ( ( Nothing, Nothing ), ( _, _ ) ) ->
+        ( ( Nothing, Nothing ), _ ) ->
             { stateValue | activeTimeIndicator = Just HourIndicator }
 
         ( ( Nothing, Just _ ), ( Nothing, _ ) ) ->

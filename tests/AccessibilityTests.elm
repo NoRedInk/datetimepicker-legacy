@@ -1,4 +1,4 @@
-module AccessibilityTests exposing (attribute, datePickerTests, now)
+module AccessibilityTests exposing (datePickerTests)
 
 import DateTimePicker.DateTime as DateTime
 import Html.Attributes
