@@ -56,6 +56,8 @@ amPm =
                 , Parser.symbol "am"
                 , Parser.symbol "aM"
                 , Parser.symbol "Am"
+                , Parser.symbol "a.m."
+                , Parser.symbol "A.M."
                 ]
         , Parser.map (\_ -> "PM") <|
             Parser.oneOf
@@ -63,6 +65,8 @@ amPm =
                 , Parser.symbol "pm"
                 , Parser.symbol "pM"
                 , Parser.symbol "Pm"
+                , Parser.symbol "p.m."
+                , Parser.symbol "P.M."
                 ]
         ]
 
