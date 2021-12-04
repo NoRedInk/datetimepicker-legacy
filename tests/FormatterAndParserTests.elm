@@ -1,11 +1,32 @@
 module FormatterAndParserTests exposing (..)
 
 import DateTimePicker.DateTime as DateTime
-import DateTimePicker.Formatter as Formatter
-import DateTimePicker.Parser as Parser
+import DateTimePicker.Formatter as Formatter exposing (dateFormatter, dateTimeFormatter, timeFormatter)
+import DateTimePicker.Parser as Parser exposing (parseDate, parseDateTime, parseTime)
 import Expect
 import Test exposing (..)
 import Time
+
+
+formatParsesTo :
+    String
+    -> (DateTime.DateTime -> String)
+    -> (String -> Maybe DateTime.DateTime)
+    -> List ( String, DateTime.DateTime, DateTime.DateTime )
+    -> List Test
+formatParsesTo formatName format parse examples =
+    List.concatMap
+        (\( expectedStr, date_, finalDate ) ->
+            [ test ("Format " ++ formatName ++ " follows expected format for " ++ expectedStr) <|
+                \() ->
+                    Expect.equal expectedStr (format date_)
+            , test ("Format " ++ formatName ++ " can be parsed for " ++ expectedStr) <|
+                \() ->
+                    parse (format date_)
+                        |> Expect.equal (Just finalDate)
+            ]
+        )
+        examples
 
 
 date : DateTime.DateTime
@@ -13,13 +34,41 @@ date =
     DateTime.fromParts 2018 Time.Sep 10 13 15
 
 
-titleFormatterTest : Test
-titleFormatterTest =
-    test "titleFormatter" <|
-        \() ->
-            date
-                |> Formatter.titleFormatter
-                |> Expect.equal "September 2018"
+tests : Test
+tests =
+    [ formatParsesTo "dateFormatter" dateFormatter parseDate <|
+        [ ( "01/01/2018"
+          , DateTime.fromParts 2018 Time.Jan 1 10 15
+          , DateTime.fromParts 2018 Time.Jan 1 0 0
+          )
+        , ( "09/10/2018"
+          , DateTime.fromParts 2018 Time.Sep 10 1 3
+          , DateTime.fromParts 2018 Time.Sep 10 0 0
+          )
+        ]
+    , formatParsesTo "timeFormatter" timeFormatter parseTime <|
+        [ ( "01:15 p.m."
+          , DateTime.fromParts 2018 Time.Sep 10 13 15
+          , DateTime.fromParts 0 Time.Jan 1 13 15
+          )
+        , ( "12:00 a.m."
+          , DateTime.fromParts 2018 Time.Sep 10 0 0
+          , DateTime.fromParts 0 Time.Jan 1 0 0
+          )
+        ]
+    , formatParsesTo "dateTimeFormatter" dateTimeFormatter parseDateTime <|
+        [ ( "09/10/2018 01:15 p.m."
+          , DateTime.fromParts 2018 Time.Sep 10 13 15
+          , DateTime.fromParts 2018 Time.Sep 10 13 15
+          )
+        , ( "01/10/2018 12:00 a.m."
+          , DateTime.fromParts 2018 Time.Jan 10 0 0
+          , DateTime.fromParts 2018 Time.Jan 10 0 0
+          )
+        ]
+    ]
+        |> List.concat
+        |> describe "Formatters and Parsers work"
 
 
 accessibilityDateFormatterTest : Test
@@ -29,44 +78,6 @@ accessibilityDateFormatterTest =
             date
                 |> Formatter.accessibilityDateFormatter
                 |> Expect.equal "10, Monday September 2018"
-
-
-dateFormatterTest : Test
-dateFormatterTest =
-    describe "dateFormatter"
-        [ test "formats" <|
-            \() ->
-                date
-                    |> Formatter.dateFormatter
-                    |> Expect.equal "09/10/2018"
-        ]
-
-
-footerFormatterTest : Test
-footerFormatterTest =
-    test "footerFormatter" <|
-        \() ->
-            date
-                |> Formatter.footerFormatter
-                |> Expect.equal "Monday, September 10, 2018"
-
-
-dateTimeFormatterTest : Test
-dateTimeFormatterTest =
-    test "dateTimeFormatter" <|
-        \() ->
-            date
-                |> Formatter.dateTimeFormatter
-                |> Expect.equal "09/10/2018 01:15 p.m."
-
-
-timeFormatterTest : Test
-timeFormatterTest =
-    test "timeFormatter" <|
-        \() ->
-            date
-                |> Formatter.timeFormatter
-                |> Expect.equal "01:15 p.m."
 
 
 parseDateTest : Test
