@@ -21,25 +21,37 @@ setTimeTest : Test
 setTimeTest =
     let
         date =
-            DateTime.fromParts 2018 Time.Sep 6 10 49
+            DateTime.fromParts 2018 Time.Sep 6 10 0
     in
-    describe "DateTime.setTime"
-        [ test "setTime for 12:00 AM should return the right time" <|
+    describe "DateTime.setHour"
+        [ test "setHour for 12 AM should return the right time" <|
             \() ->
-                DateTime.setTime 12 0 "AM" date
+                DateTime.setHour 12 (Just "AM") date
                     |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 0 0)
-        , test "setTime for 12:00 PM should return the right time" <|
+        , test "setHour for 12 PM should return the right time" <|
             \() ->
-                DateTime.setTime 12 0 "PM" date
+                DateTime.setHour 12 (Just "PM") date
                     |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 12 0)
-        , test "setTime for 3:15 PM should return the right time" <|
+        , test "setHour for 12 should return the right time" <|
             \() ->
-                DateTime.setTime 3 15 "PM" date
-                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 15 15)
-        , test "setTime for 3:15 AM should return the right time" <|
+                DateTime.setHour 12 Nothing date
+                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 12 0)
+        , test "setHour for 3 PM should return the right time" <|
             \() ->
-                DateTime.setTime 3 15 "AM" date
-                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 3 15)
+                DateTime.setHour 3 (Just "PM") date
+                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 15 0)
+        , test "setHour for 3 AM should return the right time" <|
+            \() ->
+                DateTime.setHour 3 (Just "AM") date
+                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 3 0)
+        , test "setHour for 3  should return the right time" <|
+            \() ->
+                DateTime.setHour 3 Nothing date
+                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 3 0)
+        , test "setHour for 15 should return the right time" <|
+            \() ->
+                DateTime.setHour 15 Nothing date
+                    |> Expect.equal (DateTime.fromParts 2018 Time.Sep 6 15 0)
         ]
 
 

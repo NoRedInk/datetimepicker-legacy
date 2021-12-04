@@ -10,7 +10,8 @@ module DateTimePicker.DateTime exposing
     , fromTime
     , intToMonth
     , monthToInt
-    , setTime
+    , setHour
+    , setMinute
     , toFirstOfMonth
     , validate
     )
@@ -419,9 +420,14 @@ toFirstOfMonth { month, year, hour, minute } =
     { month = month, year = year, day = 1, hour = hour, minute = minute }
 
 
-setTime : Int -> Int -> String -> DateTime -> DateTime
-setTime hour minute amPm dateTime =
-    { dateTime | hour = toMilitary hour amPm, minute = minute }
+setHour : Int -> Maybe String -> DateTime -> DateTime
+setHour hour amPm dateTime =
+    { dateTime | hour = toMilitary hour (Maybe.withDefault "" amPm) }
+
+
+setMinute : Int -> DateTime -> DateTime
+setMinute minute dateTime =
+    { dateTime | minute = minute }
 
 
 toMilitary : Int -> String -> Int

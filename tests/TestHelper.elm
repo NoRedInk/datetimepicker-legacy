@@ -89,8 +89,7 @@ render (TestResult t) =
                 }
 
         config =
-            { autoClose = origConfig.autoClose
-            , usePicker = origConfig.usePicker
+            { usePicker = origConfig.usePicker
             , fromInput = origConfig.fromInput
             , toInput = origConfig.toInput
             , nameOfDays = origConfig.nameOfDays

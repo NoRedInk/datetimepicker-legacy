@@ -36,7 +36,7 @@ import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
-import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue, initialStateValue, initialStateValueWithToday)
+import DateTimePicker.Internal exposing (DateSelection, InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, div, span, tbody, td, text, tfoot, th, thead, tr)
@@ -149,10 +149,7 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
             default =
                 DateTimePicker.defaultConfig DatePickerChanged
         in
-        { default
-            | firstDayOfWeek = Date.Mon
-            , autoClose = True
-        }
+        { default | firstDayOfWeek = Date.Mon }
 
     view =
         DateTimePicker.datePickerWithConfig "Date and Time Picker"
@@ -180,10 +177,7 @@ type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe D
             default =
                 DateTimePicker.defaultDateTimePickerConfig DatePickerChanged
         in
-        { default
-            | firstDayOfWeek = Date.Mon
-            , autoClose = True
-        }
+        { default | firstDayOfWeek = Date.Mon }
 
     view =
         DateTimePicker.dateTimePickerWithConfig "Date and Time Picker"
@@ -206,13 +200,7 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
         = TimePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
 
     customConfig =
-        let
-            default =
-                DateTimePicker.defaultTimePickerConfig TimePickerChanged
-        in
-        { default
-            | autoClose = True
-        }
+        DateTimePicker.defaultTimePickerConfig TimePickerChanged
 
     view =
         DateTimePicker.timePickerWithConfig "Time picker"
@@ -233,14 +221,11 @@ view label pickerType attributes state currentDate =
         stateValue =
             getStateValue state
 
-        shouldForceClose config =
-            config.autoClose && stateValue.forceClose
-
         html config =
             Html.node "date-time-picker"
                 (css [ position relative ] :: config.attributes)
                 [ viewInput label pickerType attributes config stateValue currentDate
-                , if config.usePicker && stateValue.inputFocused && not (shouldForceClose config) then
+                , if config.usePicker && stateValue.inputFocused then
                     dialog pickerType state currentDate
 
                   else
@@ -445,19 +430,29 @@ nextYearButton config state currentDate =
 
 timePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
 timePickerDialog pickerType state currentDate =
+    let
+        stateValue =
+            getStateValue state
+    in
     case pickerType of
         DateType _ ->
             text ""
 
-        DateTimeType _ ->
-            digitalTimePickerDialog pickerType state currentDate
+        DateTimeType { fromInput } ->
+            digitalTimePickerDialog pickerType
+                state
+                currentDate
+                (timeFromTextInputString fromInput stateValue.textInputValue)
 
-        TimeType _ ->
-            digitalTimePickerDialog pickerType state currentDate
+        TimeType { fromInput } ->
+            digitalTimePickerDialog pickerType
+                state
+                currentDate
+                (timeFromTextInputString fromInput stateValue.textInputValue)
 
 
-digitalTimePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-digitalTimePickerDialog pickerType state currentDate =
+digitalTimePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> TimeSelection -> Html msg
+digitalTimePickerDialog pickerType state currentDate time =
     let
         stateValue =
             getStateValue state
@@ -481,11 +476,18 @@ digitalTimePickerDialog pickerType state currentDate =
                 , amPmCell ampm
                 ]
 
+        timeCellClick =
+            cellClickHandler pickerType stateValue Nothing
+
         hourCell hour =
+            let
+                hourClickHandler =
+                    timeCellClick { time | hour = Just hour }
+            in
             td
-                [ onMouseDownPreventDefault <| hourClickHandler pickerType stateValue hour
-                , onTouchStartPreventDefault <| hourClickHandler pickerType stateValue hour
-                , case stateValue.time.hour of
+                [ onMouseDownPreventDefault hourClickHandler
+                , onTouchStartPreventDefault hourClickHandler
+                , case time.hour of
                     Just stateHour ->
                         if stateHour == hour then
                             css [ Styles.highlightStyle ]
@@ -499,10 +501,14 @@ digitalTimePickerDialog pickerType state currentDate =
                 [ text <| (String.fromInt >> DateTimePicker.DateUtils.padding) hour ]
 
         minuteCell minute =
+            let
+                minuteClickHandler =
+                    timeCellClick { time | minute = Just minute }
+            in
             td
-                [ onMouseDownPreventDefault <| minuteClickHandler pickerType stateValue minute
-                , onTouchStartPreventDefault <| minuteClickHandler pickerType stateValue minute
-                , case stateValue.time.minute of
+                [ onMouseDownPreventDefault minuteClickHandler
+                , onTouchStartPreventDefault minuteClickHandler
+                , case time.minute of
                     Just stateMinute ->
                         if stateMinute == minute then
                             css [ Styles.highlightStyle ]
@@ -525,7 +531,7 @@ digitalTimePickerDialog pickerType state currentDate =
                         css []
 
                 styles =
-                    case stateValue.time.amPm of
+                    case time.amPm of
                         Just stateAmPm ->
                             if stateAmPm == ampm then
                                 css [ Styles.highlightStyle ]
@@ -536,13 +542,16 @@ digitalTimePickerDialog pickerType state currentDate =
                         Nothing ->
                             defaultStyles
 
+                amPmClickHandler =
+                    timeCellClick { time | amPm = Just ampm }
+
                 handlers =
                     if String.isEmpty ampm then
                         []
 
                     else
-                        [ onMouseDownPreventDefault <| amPmClickHandler pickerType stateValue ampm
-                        , onTouchStartPreventDefault <| amPmClickHandler pickerType stateValue ampm
+                        [ onMouseDownPreventDefault amPmClickHandler
+                        , onTouchStartPreventDefault amPmClickHandler
                         ]
             in
             td (styles :: handlers) [ text ampm ]
@@ -757,7 +766,13 @@ calendar pickerType state =
                                         ]
 
                                 handler =
-                                    dateClickHandler pickerType stateValue year month day
+                                    cellClickHandler pickerType
+                                        stateValue
+                                        (Just { year = year, month = month, day = day })
+                                        { hour = Nothing
+                                        , minute = Nothing
+                                        , amPm = Nothing
+                                        }
 
                                 handlers =
                                     if isInRange day then
@@ -861,17 +876,9 @@ blurInputHandler config stateValue currentDate =
     case config.fromInput stateValue.textInputValue of
         Just date ->
             let
-                updateTime time =
-                    { time
-                        | hour = date.hour |> DateTimePicker.DateUtils.fromMilitaryHour |> Just
-                        , minute = Just date.minute
-                        , amPm = date.hour |> DateTimePicker.DateUtils.fromMilitaryAmPm |> Just
-                    }
-
                 updatedValue =
                     { stateValue
                         | date = Just date
-                        , time = updateTime stateValue.time
                         , inputFocused = False
                     }
             in
@@ -879,243 +886,105 @@ blurInputHandler config stateValue currentDate =
 
         Nothing ->
             let
-                ( updatedTime, updatedActiveTimeIndicator, updatedDate ) =
+                updatedDate =
                     case currentDate of
                         Just _ ->
-                            ( { hour = Nothing, minute = Nothing, amPm = Nothing }
-                            , Just DateTimePicker.Internal.HourIndicator
-                            , Nothing
-                            )
+                            Nothing
 
                         Nothing ->
-                            ( stateValue.time
-                            , stateValue.activeTimeIndicator
-                            , stateValue.date
-                            )
+                            stateValue.date
 
                 updatedValue =
                     { stateValue
                         | date = updatedDate
-                        , time = updatedTime
                         , hourPickerStart = initialStateValue.hourPickerStart
                         , minutePickerStart = initialStateValue.minutePickerStart
                         , inputFocused = False
-                        , activeTimeIndicator = updatedActiveTimeIndicator
                     }
             in
-            config.onChange
-                (setTextInput "" updatedValue)
-                Nothing
+            config.onChange (setTextInput "" updatedValue) Nothing
 
 
-hourClickHandler : Type msg -> StateValue -> Int -> msg
-hourClickHandler pickerType stateValue hour =
+cellClickHandler :
+    Type msg
+    -> StateValue
+    -> Maybe DateSelection
+    -> TimeSelection
+    -> msg
+cellClickHandler pickerType stateValue date timeSelection =
     let
-        time =
-            stateValue.time
+        setHour datetime =
+            case timeSelection.hour of
+                Just hour ->
+                    DateTime.setHour hour timeSelection.amPm datetime
 
-        updatedStateValue =
-            { stateValue | time = { time | hour = Just hour } }
+                Nothing ->
+                    datetime
 
-        ( updatedDate, forceCloseWithDate ) =
-            case ( stateValue.time.minute, stateValue.time.amPm, stateValue.date ) of
-                ( Just minute, Just amPm, Just date ) ->
-                    ( Just <| DateTime.setTime hour minute amPm date
-                    , True
-                    )
+        setMinute datetime =
+            case timeSelection.minute of
+                Just minute ->
+                    DateTime.setMinute minute datetime
 
-                _ ->
-                    ( Nothing, False )
+                Nothing ->
+                    datetime
 
-        ( updatedTime, forceCloseTimeOnly ) =
-            case ( updatedStateValue.time.minute, updatedStateValue.time.amPm ) of
-                ( Just minute, Just amPm ) ->
-                    ( Just <| DateTime.fromTime hour minute amPm
-                    , True
-                    )
-
-                _ ->
-                    ( Nothing, False )
-
-        withDateHandler config =
-            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
-
-        justTimeHandler config =
-            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
-    in
-    case pickerType of
-        DateType config ->
-            withDateHandler config
-
-        DateTimeType config ->
-            withDateHandler config
-
-        TimeType config ->
-            justTimeHandler config
-
-
-minuteClickHandler : Type msg -> StateValue -> Int -> msg
-minuteClickHandler pickerType stateValue minute =
-    let
-        time =
-            stateValue.time
-
-        updatedStateValue =
-            { stateValue | time = { time | minute = Just minute } }
-
-        ( updatedDate, forceCloseWithDate ) =
-            case ( stateValue.time.hour, stateValue.time.amPm, stateValue.date ) of
-                ( Just hour, Just amPm, Just date ) ->
-                    ( Just <| DateTime.setTime hour minute amPm date
-                    , True
-                    )
-
-                _ ->
-                    ( Nothing, False )
-
-        ( updatedTime, forceCloseTimeOnly ) =
-            case ( updatedStateValue.time.hour, updatedStateValue.time.amPm ) of
-                ( Just hour, Just amPm ) ->
-                    ( Just <| DateTime.fromTime hour minute amPm
-                    , True
-                    )
-
-                _ ->
-                    ( Nothing, False )
-
-        withDateHandler config =
-            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
-
-        justTimeHandler config =
-            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
-    in
-    case pickerType of
-        DateType config ->
-            withDateHandler config
-
-        DateTimeType config ->
-            withDateHandler config
-
-        TimeType config ->
-            justTimeHandler config
-
-
-amPmClickHandler : Type msg -> StateValue -> String -> msg
-amPmClickHandler pickerType stateValue amPm =
-    let
-        time =
-            stateValue.time
-
-        updatedStateValue =
-            { stateValue
-                | time =
-                    { time
-                        | amPm =
-                            if String.isEmpty amPm then
-                                Nothing
-
-                            else
-                                Just amPm
-                    }
-            }
-
-        ( updatedDate, forceCloseWithDate ) =
-            case ( stateValue.time.hour, stateValue.time.minute, stateValue.date ) of
-                ( Just hour, Just minute, Just date ) ->
-                    ( Just <| DateTime.setTime hour minute amPm date
-                    , True
-                    )
-
-                _ ->
-                    ( Nothing, False )
-
-        ( updatedTime, forceCloseTimeOnly ) =
-            case ( updatedStateValue.time.hour, updatedStateValue.time.minute ) of
-                ( Just hour, Just minute ) ->
-                    ( Just <| DateTime.fromTime hour minute amPm
-                    , True
-                    )
-
-                _ ->
-                    ( Nothing, False )
-
-        withDateHandler config =
-            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseWithDate }) updatedDate
-
-        justTimeHandler config =
-            config.onChange (updateTextInputFromDate config { updatedStateValue | forceClose = forceCloseTimeOnly }) updatedTime
-    in
-    case pickerType of
-        DateType config ->
-            withDateHandler config
-
-        DateTimeType config ->
-            withDateHandler config
-
-        TimeType config ->
-            justTimeHandler config
-
-
-dateClickHandler : Type msg -> StateValue -> Int -> Time.Month -> DateTimePicker.DateUtils.Day -> msg
-dateClickHandler pickerType stateValue year month day =
-    let
         selectedDate =
-            DateTime.fromDate year month day.day
+            case ( date, stateValue.date ) of
+                ( Just { year, month, day }, Just currentDate ) ->
+                    DateTime.fromParts year
+                        month
+                        day.day
+                        currentDate.hour
+                        currentDate.minute
+
+                ( Just { year, month, day }, Nothing ) ->
+                    DateTime.fromDate year month day.day
+                        |> setHour
+                        |> setMinute
+
+                ( Nothing, Just currentDate ) ->
+                    currentDate
+                        |> setHour
+                        |> setMinute
+
+                ( Nothing, Nothing ) ->
+                    DateTime.fromDate 0 Time.Jan 1
+                        |> setHour
+                        |> setMinute
 
         adjustedSelectedDate =
-            case day.monthType of
-                DateTimePicker.DateUtils.Previous ->
+            case Maybe.map (.day >> .monthType) date of
+                Just DateTimePicker.DateUtils.Previous ->
                     DateTime.addMonths -1 selectedDate
 
-                DateTimePicker.DateUtils.Current ->
+                Just DateTimePicker.DateUtils.Next ->
+                    DateTime.addMonths 1 selectedDate
+
+                Just DateTimePicker.DateUtils.Current ->
                     selectedDate
 
-                DateTimePicker.DateUtils.Next ->
-                    DateTime.addMonths 1 selectedDate
+                Nothing ->
+                    selectedDate
 
         updatedStateValue =
             { stateValue
                 | date = Just <| adjustedSelectedDate
-                , forceClose = forceClose
-                , activeTimeIndicator =
-                    if stateValue.time.hour == Nothing then
-                        Just DateTimePicker.Internal.HourIndicator
-
-                    else if stateValue.time.minute == Nothing then
-                        Just DateTimePicker.Internal.MinuteIndicator
-
-                    else if stateValue.time.amPm == Nothing then
-                        Just DateTimePicker.Internal.AMPMIndicator
-
-                    else
-                        Nothing
             }
 
-        ( updatedDate, forceClose ) =
-            case ( ( pickerType, stateValue.time.hour ), ( stateValue.time.minute, stateValue.time.amPm ) ) of
-                ( ( DateTimeType _, Just hour ), ( Just minute, Just amPm ) ) ->
-                    ( Just <| DateTime.setTime hour minute amPm adjustedSelectedDate
-                    , True
-                    )
-
-                ( ( DateType _, _ ), _ ) ->
-                    ( Just adjustedSelectedDate
-                    , True
-                    )
-
-                _ ->
-                    ( Nothing, False )
-
         handler config =
-            case day.monthType of
-                DateTimePicker.DateUtils.Previous ->
-                    gotoPreviousMonth config (updateTextInputFromDate config updatedStateValue) updatedDate
+            case Maybe.map (.day >> .monthType) date of
+                Just DateTimePicker.DateUtils.Previous ->
+                    gotoPreviousMonth config (updateTextInputFromDate config updatedStateValue) (Just adjustedSelectedDate)
 
-                DateTimePicker.DateUtils.Next ->
-                    gotoNextMonth config (updateTextInputFromDate config updatedStateValue) updatedDate
+                Just DateTimePicker.DateUtils.Next ->
+                    gotoNextMonth config (updateTextInputFromDate config updatedStateValue) (Just adjustedSelectedDate)
 
-                DateTimePicker.DateUtils.Current ->
-                    config.onChange (updateTextInputFromDate config updatedStateValue) updatedDate
+                Just DateTimePicker.DateUtils.Current ->
+                    config.onChange (updateTextInputFromDate config updatedStateValue) (Just adjustedSelectedDate)
+
+                Nothing ->
+                    config.onChange (updateTextInputFromDate config updatedStateValue) (Just adjustedSelectedDate)
     in
     case pickerType of
         DateType config ->
@@ -1138,13 +1007,6 @@ datePickerFocused pickerType config stateValue currentDate =
 
                 Just _ ->
                     currentDate
-
-        updateTime time =
-            { time
-                | hour = currentDate |> Maybe.map (.hour >> DateTimePicker.DateUtils.fromMilitaryHour)
-                , minute = currentDate |> Maybe.map .minute
-                , amPm = currentDate |> Maybe.map (.hour >> DateTimePicker.DateUtils.fromMilitaryAmPm)
-            }
     in
     config.onChange
         (updateTextInputFromDate config
@@ -1152,15 +1014,6 @@ datePickerFocused pickerType config stateValue currentDate =
                 | inputFocused = True
                 , titleDate = updatedTitleDate
                 , date = currentDate
-                , forceClose = False
-                , time = updateTime stateValue.time
-                , activeTimeIndicator =
-                    case pickerType of
-                        TimeType _ ->
-                            Just DateTimePicker.Internal.HourIndicator
-
-                        _ ->
-                            Nothing
             }
         )
         currentDate
@@ -1218,12 +1071,25 @@ minuteDownHandler config stateValue currentDate =
     config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
+timeFromTextInputString : (String -> Maybe DateTime.DateTime) -> String -> TimeSelection
+timeFromTextInputString fromInput textInputValue =
+    case fromInput textInputValue of
+        Just date ->
+            { hour = date.hour |> DateTimePicker.DateUtils.fromMilitaryHour |> Just
+            , minute = Just date.minute
+            , amPm = date.hour |> DateTimePicker.DateUtils.fromMilitaryAmPm |> Just
+            }
+
+        Nothing ->
+            { hour = Nothing
+            , minute = Nothing
+            , amPm = Nothing
+            }
+
+
 setTextInput : String -> StateValue -> State
 setTextInput value state =
-    InternalState
-        { state
-            | textInputValue = value
-        }
+    InternalState { state | textInputValue = value }
 
 
 updateTextInputFromDate :
