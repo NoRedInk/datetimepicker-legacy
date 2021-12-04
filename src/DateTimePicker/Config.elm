@@ -43,14 +43,12 @@ type Type msg
 {-| Configuration
 
   - `onChange` is the message for when the selected value and internal `State` in the date picker has changed.
-  - `autoClose` is a flag to indicate whether the dialog should be automatically closed when a date and/or time is selected.
   - `parseInput` accepts a user string from the input element and attempts to convert it to a DateTime
 
 -}
 type alias Config otherConfig msg =
     { otherConfig
         | onChange : State -> Maybe DateTime.DateTime -> msg
-        , autoClose : Bool
         , usePicker : Bool
         , attributes : List (Html.Attribute msg)
         , fromInput : String -> Maybe DateTime.DateTime
@@ -77,7 +75,6 @@ type alias DatePickerConfig =
 {-| Default configuration for DatePicker
 
   - `onChange` No Default
-  - `autoClose` Default: True
   - `nameOfDays` see `NameOfDays` for the default values.
   - `firstDayOfWeek` Default: Sunday.
   - `allowYearNavigation` Default : True
@@ -87,7 +84,6 @@ type alias DatePickerConfig =
 defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
 defaultDatePickerConfig onChange =
     { onChange = onChange
-    , autoClose = True
     , nameOfDays = defaultNameOfDays
     , firstDayOfWeek = Time.Sun
     , allowYearNavigation = True
@@ -104,14 +100,12 @@ defaultDatePickerConfig onChange =
   - `onChange` No Default
   - `dateFormatter` Default: `"%m/%d/%Y"`
   - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
-  - `autoClose` Default: False
   - `timeFormatter` Default: `"%I:%M %p"`
 
 -}
 defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config {} msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
-    , autoClose = False
     , usePicker = True
     , attributes = []
     , fromInput = Parser.parseTime
@@ -124,7 +118,6 @@ defaultTimePickerConfig onChange =
   - `onChange` No Default
   - `dateFormatter` Default: `"%m/%d/%Y"`
   - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
-  - `autoClose` Default: False
   - `nameOfDays` see `NameOfDays` for the default values.
   - `firstDayOfWeek` Default: Sunday.
   - `titleFormatter` Default: `"%B %Y"`
@@ -137,7 +130,6 @@ defaultTimePickerConfig onChange =
 defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
 defaultDateTimePickerConfig onChange =
     { onChange = onChange
-    , autoClose = False
     , nameOfDays = defaultNameOfDays
     , firstDayOfWeek = Time.Sun
     , allowYearNavigation = True

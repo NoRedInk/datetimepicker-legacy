@@ -1,5 +1,6 @@
 module DateTimePicker.Internal exposing
-    ( InternalState(..)
+    ( DateSelection
+    , InternalState(..)
     , StateValue
     , TimeIndicator(..)
     , TimeSelection
@@ -16,6 +17,8 @@ module DateTimePicker.Internal exposing
 -}
 
 import DateTimePicker.DateTime as DateTime
+import DateTimePicker.DateUtils
+import Time
 
 
 type InternalState
@@ -24,14 +27,11 @@ type InternalState
 
 type alias StateValue =
     { inputFocused : Bool
-    , forceClose : Bool
     , today : Maybe DateTime.DateTime
     , titleDate : Maybe DateTime.DateTime
     , date : Maybe DateTime.DateTime
-    , time : TimeSelection
     , hourPickerStart : Int
     , minutePickerStart : Int
-    , activeTimeIndicator : Maybe TimeIndicator
     , textInputValue : String
     }
 
@@ -42,21 +42,28 @@ type TimeIndicator
     | AMPMIndicator
 
 
+type alias DateSelection =
+    { year : Int
+    , month : Time.Month
+    , day : DateTimePicker.DateUtils.Day
+    }
+
+
 type alias TimeSelection =
-    { hour : Maybe Int, minute : Maybe Int, amPm : Maybe String }
+    { hour : Maybe Int
+    , minute : Maybe Int
+    , amPm : Maybe String
+    }
 
 
 initialStateValue : StateValue
 initialStateValue =
     { inputFocused = False
-    , forceClose = False
     , today = Nothing
     , titleDate = Nothing
     , date = Nothing
-    , time = TimeSelection Nothing Nothing Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
-    , activeTimeIndicator = Just HourIndicator
     , textInputValue = ""
     }
 
@@ -64,14 +71,11 @@ initialStateValue =
 initialStateValueWithToday : DateTime.DateTime -> StateValue
 initialStateValueWithToday today =
     { inputFocused = False
-    , forceClose = False
     , today = Just today
     , titleDate = Just <| DateTime.toFirstOfMonth today
     , date = Nothing
-    , time = TimeSelection Nothing Nothing Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
-    , activeTimeIndicator = Just HourIndicator
     , textInputValue = ""
     }
 

@@ -1,10 +1,14 @@
 module Demo exposing (main)
 
 import Browser
+import Css
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
 import Dict exposing (Dict)
-import Html.Styled as Html exposing (Html, div, h3, li, p, text, ul)
+import Html.Styled as Html exposing (..)
+import Html.Styled.Attributes exposing (css)
+import Nri.Ui.Container.V2 as Container
+import Nri.Ui.Heading.V2 as Heading
 import Time
 
 
@@ -80,24 +84,29 @@ view model =
             , TimePicker
             ]
     in
-    div []
-        [ allPickers
-            |> List.map
-                (\which ->
-                    viewPicker which
-                        model.now
-                        (Dict.get (Debug.toString which) model.dates)
-                        (Dict.get (Debug.toString which) model.datePickerState |> Maybe.withDefault (DateTimePicker.initialStateWithToday model.now))
-                )
-            |> div []
-        , h3 [] [ text "Selected values" ]
-        , p []
-            [ allPickers
-                |> List.map
-                    (\which ->
-                        li [] [ text (Debug.toString which), text ": ", text <| Debug.toString <| Dict.get (Debug.toString which) model.dates ]
+    div
+        [ css
+            [ Css.displayFlex
+            , Css.property "gap" "20px"
+            ]
+        ]
+        (List.map (viewPickerSection model) allPickers)
+
+
+viewPickerSection : Model -> DemoPicker -> Html Msg
+viewPickerSection model which =
+    Container.view
+        [ Container.html
+            [ Heading.h1 [ Heading.style Heading.Small ] [ text (Debug.toString which) ]
+            , div [ css [ Css.displayFlex ] ]
+                [ viewPicker which
+                    model.now
+                    (Dict.get (Debug.toString which) model.dates)
+                    (Dict.get (Debug.toString which) model.datePickerState
+                        |> Maybe.withDefault (DateTimePicker.initialStateWithToday model.now)
                     )
-                |> ul []
+                , text <| Debug.toString <| Dict.get (Debug.toString which) model.dates
+                ]
             ]
         ]
 
