@@ -1,5 +1,5 @@
 module DateTimePicker exposing
-    ( DateTime, dateTime
+    ( DateTime
     , datePickerWithConfig, timePickerWithConfig
     , initialStateWithToday
     , State
@@ -10,7 +10,7 @@ module DateTimePicker exposing
 
 # This is a heavily-modified version of <https://github.com/abadi199/datetimepicker/blob/master/src/DateTimePicker/Svg.elm>
 
-@docs DateTime, dateTime
+@docs DateTime
 
 
 # View
@@ -62,13 +62,6 @@ type alias State =
 {-| The representation of a date and time in the picker
 -}
 type alias DateTime =
-    DateTime.DateTime
-
-
-{-| Construct a DateTime
--}
-dateTime : Int -> Time.Month -> Int -> Int -> Int -> DateTime.DateTime
-dateTime =
     DateTime.DateTime
 
 
