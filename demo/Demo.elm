@@ -2,13 +2,16 @@ module Demo exposing (main)
 
 import Browser
 import Css
+import Css.Media
 import DateTimePicker
 import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig, defaultDateTimePickerConfig, defaultTimePickerConfig)
-import Dict exposing (Dict)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Container.V2 as Container
 import Nri.Ui.Heading.V2 as Heading
+import Nri.Ui.MediaQuery.V1 exposing (mobile)
+import Sort exposing (Sorter)
+import Sort.Dict as Dict exposing (Dict)
 import Time
 
 
@@ -28,17 +31,43 @@ type DemoPicker
     | TimePicker
 
 
+allPickers : List DemoPicker
+allPickers =
+    [ DatePicker
+    , DateTimePicker
+    , TimePicker
+    ]
+
+
+demoPickerToString : DemoPicker -> String
+demoPickerToString picker =
+    case picker of
+        DatePicker ->
+            "Date picker"
+
+        DateTimePicker ->
+            "Date & Time picker"
+
+        TimePicker ->
+            "Time picker"
+
+
+demoPickerSorter : Sorter DemoPicker
+demoPickerSorter =
+    Sort.by demoPickerToString Sort.alphabetical
+
+
 type alias Model =
-    { dates : Dict String DateTimePicker.DateTime -- The key is actually a DemoPicker
-    , datePickerState : Dict String DateTimePicker.State -- The key is actually a DemoPicker
+    { dates : Dict DemoPicker DateTimePicker.DateTime
+    , datePickerState : Dict DemoPicker DateTimePicker.State
     , now : DateTimePicker.DateTime
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { dates = Dict.empty
-      , datePickerState = Dict.empty
+    ( { dates = Dict.empty demoPickerSorter
+      , datePickerState = Dict.empty demoPickerSorter
       , now = { year = 2018, month = Time.Sep, day = 7, hour = 4, minute = 49 }
       }
     , Cmd.none
@@ -52,23 +81,27 @@ subscriptions model =
 
 viewPicker : DemoPicker -> DateTimePicker.DateTime -> Maybe DateTimePicker.DateTime -> DateTimePicker.State -> Html Msg
 viewPicker which now date state =
+    let
+        pickerName =
+            demoPickerToString which
+    in
     case which of
         DatePicker ->
-            DateTimePicker.datePickerWithConfig "Date Picker"
+            DateTimePicker.datePickerWithConfig pickerName
                 (defaultDatePickerConfig (DatePickerChanged which))
                 []
                 state
                 date
 
         DateTimePicker ->
-            DateTimePicker.dateTimePickerWithConfig "Date and Time Picker"
+            DateTimePicker.dateTimePickerWithConfig pickerName
                 (defaultDateTimePickerConfig (DatePickerChanged DateTimePicker))
                 []
                 state
                 date
 
         TimePicker ->
-            DateTimePicker.timePickerWithConfig "Time Picker"
+            DateTimePicker.timePickerWithConfig pickerName
                 (defaultTimePickerConfig (DatePickerChanged TimePicker))
                 []
                 state
@@ -77,17 +110,13 @@ viewPicker which now date state =
 
 view : Model -> Html Msg
 view model =
-    let
-        allPickers =
-            [ DatePicker
-            , DateTimePicker
-            , TimePicker
-            ]
-    in
-    div
+    main_
         [ css
             [ Css.displayFlex
             , Css.property "gap" "20px"
+            , Css.flexDirection Css.column
+            , Css.margin Css.auto
+            , Css.maxWidth (Css.px 1000)
             ]
         ]
         (List.map (viewPickerSection model) allPickers)
@@ -97,16 +126,14 @@ viewPickerSection : Model -> DemoPicker -> Html Msg
 viewPickerSection model which =
     Container.view
         [ Container.html
-            [ Heading.h1 [ Heading.style Heading.Small ] [ text (Debug.toString which) ]
-            , div [ css [ Css.displayFlex ] ]
-                [ viewPicker which
-                    model.now
-                    (Dict.get (Debug.toString which) model.dates)
-                    (Dict.get (Debug.toString which) model.datePickerState
-                        |> Maybe.withDefault (DateTimePicker.initialStateWithToday model.now)
-                    )
-                , text <| Debug.toString <| Dict.get (Debug.toString which) model.dates
-                ]
+            [ Heading.h1 [ Heading.style Heading.Subhead ] [ text (demoPickerToString which) ]
+            , p [] [ text <| Debug.toString <| Dict.get which model.dates ]
+            , viewPicker which
+                model.now
+                (Dict.get which model.dates)
+                (Dict.get which model.datePickerState
+                    |> Maybe.withDefault (DateTimePicker.initialStateWithToday model.now)
+                )
             ]
         ]
 
@@ -123,11 +150,11 @@ update msg model =
                 | dates =
                     case value of
                         Nothing ->
-                            Dict.remove (Debug.toString which) model.dates
+                            Dict.remove which model.dates
 
                         Just date ->
-                            Dict.insert (Debug.toString which) date model.dates
-                , datePickerState = Dict.insert (Debug.toString which) state model.datePickerState
+                            Dict.insert which date model.dates
+                , datePickerState = Dict.insert which state model.datePickerState
               }
             , Cmd.none
             )
