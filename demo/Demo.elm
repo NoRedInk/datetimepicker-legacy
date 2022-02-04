@@ -65,6 +65,8 @@ view model =
             , Css.flexDirection Css.column
             , Css.margin Css.auto
             , Css.maxWidth (Css.px 1000)
+            , -- make sure the bottom example doesn't get cut off on small viewports
+              Css.marginBottom (Css.px 300)
             ]
         ]
         [ example "Native date picker"
