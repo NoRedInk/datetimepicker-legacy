@@ -11,7 +11,6 @@ import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, initialStateValue)
 import Html.Styled exposing (Html)
-import Nri.Ui.TextInput.V7 as TextInput
 
 
 type alias State =
@@ -20,38 +19,6 @@ type alias State =
 
 type alias DateTime =
     DateTime.DateTime
-
-
-
--- VIEWS
-
-
-viewInput :
-    String
-    -> List (TextInput.Attribute String msg)
-    ->
-        { config
-            | onChange : State -> Maybe DateTime.DateTime -> msg
-            , fromInput : String -> Maybe DateTime.DateTime
-            , toInput : DateTime.DateTime -> String
-        }
-    -> StateValue
-    -> Maybe DateTime.DateTime
-    -> Html msg
-viewInput label attributes config stateValue currentDate =
-    TextInput.view label
-        ([ TextInput.onFocus (datePickerFocused config stateValue currentDate)
-         , TextInput.onBlur (blurInputHandler config stateValue currentDate)
-         , TextInput.onEnter (blurInputHandler config stateValue currentDate)
-         , TextInput.text
-            (\newValue ->
-                config.onChange (setTextInput newValue stateValue)
-                    currentDate
-            )
-         , TextInput.value stateValue.textInputValue
-         ]
-            ++ attributes
-        )
 
 
 

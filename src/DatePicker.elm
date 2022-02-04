@@ -49,7 +49,19 @@ view : String -> DatePickerConfig msg -> List (TextInput.Attribute String msg) -
 view label config attributes ((InternalState stateValue) as state) currentDate =
     Html.node "date-picker"
         (css [ position relative ] :: config.attributes)
-        [ viewInput label attributes config stateValue currentDate
+        [ TextInput.view label
+            ([ TextInput.onFocus (datePickerFocused config stateValue currentDate)
+             , TextInput.onBlur (blurInputHandler config stateValue currentDate)
+             , TextInput.onEnter (blurInputHandler config stateValue currentDate)
+             , TextInput.text
+                (\newValue ->
+                    config.onChange (setTextInput newValue stateValue)
+                        currentDate
+                )
+             , TextInput.value stateValue.textInputValue
+             ]
+                ++ attributes
+            )
         , if config.usePicker && stateValue.inputFocused then
             Html.node "date-picker-dialog"
                 [ onMouseDownPreventDefault (config.onChange state currentDate)
