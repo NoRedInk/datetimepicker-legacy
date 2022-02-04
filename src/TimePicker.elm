@@ -80,7 +80,6 @@ type alias TimeSelection =
 type alias TimePickerConfig msg =
     { onChange : Model -> Maybe Time -> msg
     , usePicker : Bool
-    , attributes : List (Html.Attribute msg)
     }
 
 
@@ -94,7 +93,6 @@ defaultTimePickerConfig : (Model -> Maybe Time -> msg) -> TimePickerConfig msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , usePicker = True
-    , attributes = []
     }
 
 
@@ -108,7 +106,7 @@ view :
     -> Html msg
 view label config attributes ((InternalState stateValue) as state) currentTime =
     Html.node "time-picker"
-        (css [ position relative ] :: config.attributes)
+        [ css [ position relative ] ]
         [ TextInput.view label
             ([ TextInput.onFocus (timePickerFocused config stateValue currentTime)
              , TextInput.onBlur (blurInputHandler config stateValue currentTime)
