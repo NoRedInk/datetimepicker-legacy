@@ -31,7 +31,7 @@ module DateTimePicker exposing
 
 import Css exposing (..)
 import Css.Global exposing (descendants)
-import DateTimePicker.Config exposing (DatePickerConfig, TimePickerConfig, Type(..))
+import DateTimePicker.Config exposing (DatePickerConfig, TimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)

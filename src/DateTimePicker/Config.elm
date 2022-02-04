@@ -1,5 +1,5 @@
 module DateTimePicker.Config exposing
-    ( TimePickerConfig, DatePickerConfig, NameOfDays, Type(..)
+    ( TimePickerConfig, DatePickerConfig, NameOfDays
     , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
@@ -11,7 +11,7 @@ module DateTimePicker.Config exposing
 
 # Configuration
 
-@docs TimePickerConfig, DatePickerConfig, NameOfDays, Type
+@docs TimePickerConfig, DatePickerConfig, NameOfDays
 
 
 # Default Configuration
@@ -30,13 +30,6 @@ import Time
 
 type alias State =
     InternalState
-
-
-{-| The type of picker (for Internal Use)
--}
-type Type msg
-    = DateType (DatePickerConfig msg)
-    | TimeType (TimePickerConfig msg)
 
 
 {-| Configuration for the DatePicker
