@@ -44,7 +44,7 @@ init =
 
 
 type alias StateValue =
-    { inputFocused : Bool
+    { popupOpen : Bool
     , selectedTime : Maybe Time
     , hourPickerStart : Int
     , minutePickerStart : Int
@@ -54,7 +54,7 @@ type alias StateValue =
 
 initialStateValue : StateValue
 initialStateValue =
-    { inputFocused = False
+    { popupOpen = False
     , selectedTime = Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
@@ -109,7 +109,7 @@ view config =
              ]
                 ++ config.inputAttributes
             )
-        , if stateValue.inputFocused then
+        , if stateValue.popupOpen then
             Html.node "time-picker-dialog"
                 [ onMouseDownPreventDefault (config.onChange config.state config.value)
                 , css [ display block, Styles.dialog ]
@@ -453,7 +453,7 @@ blurInputHandler config stateValue currentTime =
                 updatedValue =
                     { stateValue
                         | selectedTime = Just selectedTime
-                        , inputFocused = False
+                        , popupOpen = False
                     }
             in
             config.onChange (updateTextInputFromDate updatedValue) (Just selectedTime)
@@ -473,7 +473,7 @@ blurInputHandler config stateValue currentTime =
                         | selectedTime = updatedDate
                         , hourPickerStart = initialStateValue.hourPickerStart
                         , minutePickerStart = initialStateValue.minutePickerStart
-                        , inputFocused = False
+                        , popupOpen = False
                     }
             in
             config.onChange (setTextInput "" updatedValue) Nothing
@@ -488,7 +488,7 @@ timePickerFocused config stateValue currentTime =
     config.onChange
         (updateTextInputFromDate
             { stateValue
-                | inputFocused = True
+                | popupOpen = True
                 , selectedTime = currentTime
             }
         )
