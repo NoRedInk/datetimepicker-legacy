@@ -78,34 +78,43 @@ type alias TimeSelection =
 
 {-| -}
 view :
-    String
-    -> { onChange : Model -> Maybe Time -> msg }
-    -> List (TextInput.Attribute String msg)
-    -> Model
-    -> Maybe Time
+    { label : String
+    , onChange : Model -> Maybe Time -> msg
+    , inputAttributes : List (TextInput.Attribute String msg)
+    , state : Model
+    , value : Maybe Time
+    }
     -> Html msg
-view label config attributes ((InternalState stateValue) as state) currentTime =
+view config =
+    let
+        stateValue =
+            case config.state of
+                InternalState s ->
+                    s
+    in
     Html.node "time-picker"
         [ css [ position relative ] ]
-        [ TextInput.view label
-            ([ TextInput.onFocus (timePickerFocused config stateValue currentTime)
-             , TextInput.onBlur (blurInputHandler config stateValue currentTime)
-             , TextInput.onEnter (blurInputHandler config stateValue currentTime)
+        [ TextInput.view config.label
+            ([ TextInput.onFocus (timePickerFocused config stateValue config.value)
+             , TextInput.onBlur (blurInputHandler config stateValue config.value)
+             , TextInput.onEnter (blurInputHandler config stateValue config.value)
              , TextInput.text
                 (\newValue ->
                     config.onChange (setTextInput newValue stateValue)
-                        currentTime
+                        config.value
                 )
-             , TextInput.value stateValue.textInputValue
+             , Maybe.map toString config.value
+                |> Maybe.withDefault ""
+                |> TextInput.value
              ]
-                ++ attributes
+                ++ config.inputAttributes
             )
         , if stateValue.inputFocused then
             Html.node "time-picker-dialog"
-                [ onMouseDownPreventDefault (config.onChange state currentTime)
+                [ onMouseDownPreventDefault (config.onChange config.state config.value)
                 , css [ display block, Styles.dialog ]
                 ]
-                [ timePickerDialog config state currentTime ]
+                [ timePickerDialog config config.state config.value ]
 
           else
             Html.text ""

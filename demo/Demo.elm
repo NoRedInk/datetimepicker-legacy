@@ -89,11 +89,13 @@ view model =
             ]
         , example "Time picker"
             [ p [] [ text <| Debug.toString model.time ]
-            , TimePicker.view "Time picker"
-                { onChange = TimePickerChanged }
-                []
-                model.timePickerState
-                model.time
+            , TimePicker.view
+                { label = "Time picker"
+                , onChange = TimePickerChanged
+                , inputAttributes = []
+                , state = model.timePickerState
+                , value = model.time
+                }
             ]
         ]
 
