@@ -254,38 +254,35 @@ datePickerDialog config state currentDate =
     let
         stateValue =
             getStateValue state
-
-        html =
-            div
-                [ css [ float left ] ]
-                [ Html.node "date-time-picker-header"
-                    [ css
-                        [ boxSizing borderBox
-                        , displayFlex
-                        , alignItems center
-                        , justifyContent spaceBetween
-                        , padding2 (px 10) (px 7)
-                        , backgroundColor Colors.gray96
-                        , Fonts.baseFont
-                        ]
-                    ]
-                    (navigation config state currentDate)
-                , calendar config state
-                , -- Footer
-                  Html.node "date-time-picker-footer"
-                    [ css
-                        [ display block
-                        , textAlign center
-                        , backgroundColor Colors.gray96
-                        , padding2 (px 7) (px 7)
-                        , borderTop3 (px 1) solid Colors.gray85
-                        , height (px 16)
-                        ]
-                    ]
-                    [ stateValue.date |> Maybe.map DateTimePicker.Formatter.footerFormatter |> Maybe.withDefault "--" |> text ]
-                ]
     in
-    html
+    div
+        [ css [ float left ] ]
+        [ Html.node "date-time-picker-header"
+            [ css
+                [ boxSizing borderBox
+                , displayFlex
+                , alignItems center
+                , justifyContent spaceBetween
+                , padding2 (px 10) (px 7)
+                , backgroundColor Colors.gray96
+                , Fonts.baseFont
+                ]
+            ]
+            (navigation config state currentDate)
+        , calendar config state
+        , -- Footer
+          Html.node "date-time-picker-footer"
+            [ css
+                [ display block
+                , textAlign center
+                , backgroundColor Colors.gray96
+                , padding2 (px 7) (px 7)
+                , borderTop3 (px 1) solid Colors.gray85
+                , height (px 16)
+                ]
+            ]
+            [ stateValue.date |> Maybe.map DateTimePicker.Formatter.footerFormatter |> Maybe.withDefault "--" |> text ]
+        ]
 
 
 navigation : DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> List (Html msg)
@@ -523,54 +520,51 @@ timePickerDialog ({ fromInput } as config) state currentDate =
                 , downArrowTd []
                 ]
             ]
-
-        html =
-            div [ css [ Styles.timePickerDialog ] ]
-                [ div
-                    [ css
-                        [ padding2 (px 10) (px 7)
-                        , displayFlex
-                        , justifyContent center
-                        , alignItems center
-                        , backgroundColor Colors.gray96
-                        , height (Css.px 37)
-                        ]
-                    ]
-                    [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate
-                        |> Maybe.withDefault "-- : --"
-                        |> text
-                    ]
-                , div
-                    [ css
-                        [ backgroundColor Colors.white
+    in
+    div [ css [ Styles.timePickerDialog ] ]
+        [ div
+            [ css
+                [ padding2 (px 10) (px 7)
+                , displayFlex
+                , justifyContent center
+                , alignItems center
+                , backgroundColor Colors.gray96
+                , height (Css.px 37)
+                ]
+            ]
+            [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate
+                |> Maybe.withDefault "-- : --"
+                |> text
+            ]
+        , div
+            [ css
+                [ backgroundColor Colors.white
+                , descendants
+                    [ Css.Global.table
+                        [ Styles.tableStyle
+                        , width (px 120)
+                        , descendants [ Css.Global.tr [ verticalAlign top ] ]
                         , descendants
-                            [ Css.Global.table
-                                [ Styles.tableStyle
-                                , width (px 120)
-                                , descendants [ Css.Global.tr [ verticalAlign top ] ]
-                                , descendants
-                                    [ Css.Global.tbody
-                                        [ descendants
-                                            [ Css.Global.td
-                                                [ width (pct 33)
-                                                , Styles.cellStyle
-                                                ]
-                                            ]
+                            [ Css.Global.tbody
+                                [ descendants
+                                    [ Css.Global.td
+                                        [ width (pct 33)
+                                        , Styles.cellStyle
                                         ]
                                     ]
                                 ]
                             ]
                         ]
                     ]
-                    [ Html.table []
-                        [ thead [] upArrows
-                        , tbody [] timeSelector
-                        , tfoot [] downArrows
-                        ]
-                    ]
                 ]
-    in
-    html
+            ]
+            [ Html.table []
+                [ thead [] upArrows
+                , tbody [] timeSelector
+                , tfoot [] downArrows
+                ]
+            ]
+        ]
 
 
 calendar : DatePickerConfig msg -> State -> Html msg
@@ -578,167 +572,163 @@ calendar config state =
     let
         stateValue =
             getStateValue state
+    in
+    case stateValue.titleDate of
+        Nothing ->
+            Html.text ""
 
-        html : Html msg
-        html =
-            case stateValue.titleDate of
-                Nothing ->
-                    Html.text ""
+        Just titleDate ->
+            let
+                month =
+                    titleDate.month
 
-                Just titleDate ->
+                year =
+                    titleDate.year
+
+                days =
+                    DateTimePicker.DateUtils.generateCalendar
+                        config.firstDayOfWeek
+                        month
+                        year
+
+                header =
+                    thead []
+                        [ tr
+                            []
+                            (dayNames config)
+                        ]
+
+                matchesDay : Maybe DateTime.DateTime -> DateTimePicker.DateUtils.Day -> Bool
+                matchesDay reference day =
                     let
-                        month =
-                            titleDate.month
+                        date =
+                            DateTimePicker.DateUtils.dayToDateTime year month day
+                    in
+                    reference
+                        |> Maybe.map
+                            (\current ->
+                                (date.day == current.day)
+                                    && (date.month == current.month)
+                                    && (date.year == current.year)
+                            )
+                        |> Maybe.withDefault False
 
-                        year =
-                            titleDate.year
+                isInRange day =
+                    case config.earliestDate of
+                        Nothing ->
+                            True
 
-                        days =
-                            DateTimePicker.DateUtils.generateCalendar
-                                config.firstDayOfWeek
-                                month
-                                year
+                        Just earliestDate ->
+                            DateTime.compareDays
+                                (DateTimePicker.DateUtils.dayToDateTime year month day)
+                                earliestDate
+                                /= LT
 
-                        header =
-                            thead []
-                                [ tr
+                toCell day =
+                    let
+                        selectedDate =
+                            DateTimePicker.DateUtils.dayToDateTime year month day
+
+                        styles =
+                            List.concat
+                                [ case day.monthType of
+                                    DateTimePicker.DateUtils.Previous ->
+                                        [ color Colors.gray75 ]
+
+                                    DateTimePicker.DateUtils.Current ->
+                                        []
+
+                                    DateTimePicker.DateUtils.Next ->
+                                        [ color Colors.gray75 ]
+                                , if isInRange day then
                                     []
-                                    (dayNames config)
+
+                                  else
+                                    [ backgroundColor inherit
+                                    , cursor default
+                                    , color Colors.gray85
+                                    , hover [ backgroundColor inherit ]
+                                    ]
+                                , if matchesDay stateValue.date day then
+                                    [ Styles.highlightStyle
+                                    ]
+
+                                  else if matchesDay stateValue.today day then
+                                    [ boxShadow6 inset zero zero (Css.px 5) zero Colors.azure
+                                    , borderRadius (px 0)
+                                    , hover [ backgroundColor Colors.frost ]
+                                    ]
+
+                                  else
+                                    []
                                 ]
 
-                        matchesDay : Maybe DateTime.DateTime -> DateTimePicker.DateUtils.Day -> Bool
-                        matchesDay reference day =
-                            let
-                                date =
-                                    DateTimePicker.DateUtils.dayToDateTime year month day
-                            in
-                            reference
-                                |> Maybe.map
-                                    (\current ->
-                                        (date.day == current.day)
-                                            && (date.month == current.month)
-                                            && (date.year == current.year)
-                                    )
-                                |> Maybe.withDefault False
+                        handler =
+                            cellClickHandler config
+                                stateValue
+                                (Just { year = year, month = month, day = day })
+                                { hour = Nothing
+                                , minute = Nothing
+                                , amPm = Nothing
+                                }
 
-                        isInRange day =
-                            case config.earliestDate of
-                                Nothing ->
-                                    True
+                        handlers =
+                            if isInRange day then
+                                [ onMouseDownPreventDefault handler
+                                , onTouchStartPreventDefault handler
+                                ]
 
-                                Just earliestDate ->
-                                    DateTime.compareDays
-                                        (DateTimePicker.DateUtils.dayToDateTime year month day)
-                                        earliestDate
-                                        /= LT
-
-                        toCell day =
-                            let
-                                selectedDate =
-                                    DateTimePicker.DateUtils.dayToDateTime year month day
-
-                                styles =
-                                    List.concat
-                                        [ case day.monthType of
-                                            DateTimePicker.DateUtils.Previous ->
-                                                [ color Colors.gray75 ]
-
-                                            DateTimePicker.DateUtils.Current ->
-                                                []
-
-                                            DateTimePicker.DateUtils.Next ->
-                                                [ color Colors.gray75 ]
-                                        , if isInRange day then
-                                            []
-
-                                          else
-                                            [ backgroundColor inherit
-                                            , cursor default
-                                            , color Colors.gray85
-                                            , hover [ backgroundColor inherit ]
-                                            ]
-                                        , if matchesDay stateValue.date day then
-                                            [ Styles.highlightStyle
-                                            ]
-
-                                          else if matchesDay stateValue.today day then
-                                            [ boxShadow6 inset zero zero (Css.px 5) zero Colors.azure
-                                            , borderRadius (px 0)
-                                            , hover [ backgroundColor Colors.frost ]
-                                            ]
-
-                                          else
-                                            []
-                                        ]
-
-                                handler =
-                                    cellClickHandler config
-                                        stateValue
-                                        (Just { year = year, month = month, day = day })
-                                        { hour = Nothing
-                                        , minute = Nothing
-                                        , amPm = Nothing
-                                        }
-
-                                handlers =
+                            else
+                                []
+                    in
+                    td
+                        (List.concat
+                            [ [ css styles
+                              , attribute "role" "button"
+                              , attribute "aria-label" (accessibilityDateFormatter selectedDate)
+                              , attribute "data-in-range" <|
                                     if isInRange day then
-                                        [ onMouseDownPreventDefault handler
-                                        , onTouchStartPreventDefault handler
-                                        ]
+                                        "true"
 
                                     else
-                                        []
-                            in
-                            td
-                                (List.concat
-                                    [ [ css styles
-                                      , attribute "role" "button"
-                                      , attribute "aria-label" (accessibilityDateFormatter selectedDate)
-                                      , attribute "data-in-range" <|
-                                            if isInRange day then
-                                                "true"
+                                        "false"
+                              ]
+                            , handlers
+                            ]
+                        )
+                        [ text <| String.fromInt day.day ]
 
-                                            else
-                                                "false"
-                                      ]
-                                    , handlers
-                                    ]
-                                )
-                                [ text <| String.fromInt day.day ]
+                toWeekRow week =
+                    tr [] (List.map toCell week)
 
-                        toWeekRow week =
-                            tr [] (List.map toCell week)
-
-                        body =
-                            tbody [] (List.map toWeekRow days)
-                    in
-                    Html.table
-                        [ css
-                            [ backgroundColor Colors.white
-                            , Styles.tableStyle
-                            , width auto
-                            , margin (px 0)
-                            , descendants
-                                [ Css.Global.thead
-                                    []
-                                , Css.Global.td
-                                    [ Styles.cellStyle
-                                    , textAlign right
-                                    ]
-                                , Css.Global.th
-                                    [ Styles.dayStyle
-                                    , backgroundColor Colors.gray96
-                                    , fontWeight normal
-                                    , borderBottom3 (px 1) solid Colors.gray85
-                                    ]
-                                ]
+                body =
+                    tbody [] (List.map toWeekRow days)
+            in
+            Html.table
+                [ css
+                    [ backgroundColor Colors.white
+                    , Styles.tableStyle
+                    , width auto
+                    , margin (px 0)
+                    , descendants
+                        [ Css.Global.thead
+                            []
+                        , Css.Global.td
+                            [ Styles.cellStyle
+                            , textAlign right
+                            ]
+                        , Css.Global.th
+                            [ Styles.dayStyle
+                            , backgroundColor Colors.gray96
+                            , fontWeight normal
+                            , borderBottom3 (px 1) solid Colors.gray85
                             ]
                         ]
-                        [ header
-                        , body
-                        ]
-    in
-    html
+                    ]
+                ]
+                [ header
+                , body
+                ]
 
 
 dayNames : DatePickerConfig msg -> List (Html msg)
