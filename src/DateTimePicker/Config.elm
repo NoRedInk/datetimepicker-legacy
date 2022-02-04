@@ -1,5 +1,5 @@
 module DateTimePicker.Config exposing
-    ( Config, DatePickerConfig, NameOfDays, Type(..)
+    ( TimePickerConfig, DatePickerConfig, NameOfDays, Type(..)
     , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
@@ -11,7 +11,7 @@ module DateTimePicker.Config exposing
 
 # Configuration
 
-@docs Config, DatePickerConfig, NameOfDays, Type
+@docs TimePickerConfig, DatePickerConfig, NameOfDays, Type
 
 
 # Default Configuration
@@ -35,24 +35,8 @@ type alias State =
 {-| The type of picker (for Internal Use)
 -}
 type Type msg
-    = DateType (Config DatePickerConfig msg)
-    | TimeType (Config {} msg)
-
-
-{-| Configuration
-
-  - `onChange` is the message for when the selected value and internal `State` in the date picker has changed.
-  - `parseInput` accepts a user string from the input element and attempts to convert it to a DateTime
-
--}
-type alias Config otherConfig msg =
-    { otherConfig
-        | onChange : State -> Maybe DateTime.DateTime -> msg
-        , usePicker : Bool
-        , attributes : List (Html.Attribute msg)
-        , fromInput : String -> Maybe DateTime.DateTime
-        , toInput : DateTime.DateTime -> String
-    }
+    = DateType (DatePickerConfig msg)
+    | TimeType (TimePickerConfig msg)
 
 
 {-| Configuration for the DatePicker
@@ -63,11 +47,16 @@ type alias Config otherConfig msg =
   - `earliestDate` if given, dates before this cannot be selected
 
 -}
-type alias DatePickerConfig =
+type alias DatePickerConfig msg =
     { nameOfDays : NameOfDays
     , firstDayOfWeek : Time.Weekday
     , allowYearNavigation : Bool
     , earliestDate : Maybe DateTime.DateTime
+    , onChange : State -> Maybe DateTime.DateTime -> msg
+    , usePicker : Bool
+    , attributes : List (Html.Attribute msg)
+    , fromInput : String -> Maybe DateTime.DateTime
+    , toInput : DateTime.DateTime -> String
     }
 
 
@@ -80,7 +69,7 @@ type alias DatePickerConfig =
   - `earliestDate` Default : Nothing
 
 -}
-defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
+defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> DatePickerConfig msg
 defaultDatePickerConfig onChange =
     { onChange = onChange
     , nameOfDays = defaultNameOfDays
@@ -94,6 +83,15 @@ defaultDatePickerConfig onChange =
     }
 
 
+type alias TimePickerConfig msg =
+    { onChange : State -> Maybe DateTime.DateTime -> msg
+    , usePicker : Bool
+    , attributes : List (Html.Attribute msg)
+    , fromInput : String -> Maybe DateTime.DateTime
+    , toInput : DateTime.DateTime -> String
+    }
+
+
 {-| Default configuration for TimePicker
 
   - `onChange` No Default
@@ -102,7 +100,7 @@ defaultDatePickerConfig onChange =
   - `timeFormatter` Default: `"%I:%M %p"`
 
 -}
-defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config {} msg
+defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> TimePickerConfig msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , usePicker = True

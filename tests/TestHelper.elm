@@ -4,7 +4,7 @@ module TestHelper exposing (TestResult, clickDate, init, open, render, selection
 -}
 
 import DateTimePicker
-import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig)
+import DateTimePicker.Config exposing (DatePickerConfig, defaultDatePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Html.Attributes
@@ -21,7 +21,7 @@ import Time
 -}
 type TestResult
     = TestResult
-        { config : Config DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
+        { config : DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
         , state : DateTimePicker.State
         , date : Maybe DateTime.DateTime
         }
@@ -46,7 +46,12 @@ init now =
 NOTE: You must not alter the `onChange` field of the config.
 
 -}
-withConfig : (Config DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime ) -> Config DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )) -> TestResult -> TestResult
+withConfig :
+    (DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
+     -> DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
+    )
+    -> TestResult
+    -> TestResult
 withConfig fn (TestResult t) =
     let
         newConfig =

@@ -4,12 +4,11 @@ import Browser
 import Css
 import Css.Media
 import DateTimePicker
-import DateTimePicker.Config exposing (Config, DatePickerConfig, defaultDatePickerConfig, defaultTimePickerConfig)
+import DateTimePicker.Config exposing (DatePickerConfig, defaultDatePickerConfig, defaultTimePickerConfig)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Container.V2 as Container
 import Nri.Ui.Heading.V2 as Heading
-import Nri.Ui.MediaQuery.V1 exposing (mobile)
 import Sort exposing (Sorter)
 import Sort.Dict as Dict exposing (Dict)
 import Time
