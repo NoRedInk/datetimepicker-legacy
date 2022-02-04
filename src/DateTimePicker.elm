@@ -166,8 +166,16 @@ type alias Model = { datePickerState : DateTimePicker.State, value : Maybe DateT
 
 -}
 datePickerWithConfig : String -> DatePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
-datePickerWithConfig label config =
-    view label (DateType config)
+datePickerWithConfig label config attributes ((InternalState stateValue) as state) currentDate =
+    Html.node "date-picker"
+        (css [ position relative ] :: config.attributes)
+        [ viewInput label attributes config stateValue currentDate
+        , if config.usePicker && stateValue.inputFocused then
+            dialog (DateType config) state currentDate
+
+          else
+            Html.text ""
+        ]
 
 
 {-| Time Picker view with custom configuration
@@ -189,33 +197,16 @@ type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateT
 
 -}
 timePickerWithConfig : String -> TimePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
-timePickerWithConfig label config =
-    view label (TimeType config)
+timePickerWithConfig label config attributes ((InternalState stateValue) as state) currentDate =
+    Html.node "time-picker"
+        (css [ position relative ] :: config.attributes)
+        [ viewInput label attributes config stateValue currentDate
+        , if config.usePicker && stateValue.inputFocused then
+            dialog (TimeType config) state currentDate
 
-
-view : String -> Type msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
-view label pickerType attributes state currentDate =
-    let
-        stateValue =
-            getStateValue state
-
-        html config =
-            Html.node "date-time-picker"
-                (css [ position relative ] :: config.attributes)
-                [ viewInput label attributes config stateValue currentDate
-                , if config.usePicker && stateValue.inputFocused then
-                    dialog pickerType state currentDate
-
-                  else
-                    Html.text ""
-                ]
-    in
-    case pickerType of
-        DateType config ->
-            html config
-
-        TimeType config ->
-            html config
+          else
+            Html.text ""
+        ]
 
 
 viewInput :
