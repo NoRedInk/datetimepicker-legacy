@@ -84,7 +84,10 @@ initialStateWithToday today =
 -- ACTIONS
 
 
-gotoNextMonth : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
+gotoNextMonth :
+    { config | onChange : State -> Maybe DateTime.DateTime -> msg }
+    -> State
+    -> (Maybe DateTime.DateTime -> msg)
 gotoNextMonth config state =
     let
         stateValue =
@@ -96,7 +99,10 @@ gotoNextMonth config state =
     config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
-gotoNextYear : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
+gotoNextYear :
+    { config | onChange : State -> Maybe DateTime.DateTime -> msg }
+    -> State
+    -> (Maybe DateTime.DateTime -> msg)
 gotoNextYear config state =
     let
         stateValue =
@@ -108,7 +114,10 @@ gotoNextYear config state =
     config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
-gotoPreviousMonth : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
+gotoPreviousMonth :
+    { config | onChange : State -> Maybe DateTime.DateTime -> msg }
+    -> State
+    -> (Maybe DateTime.DateTime -> msg)
 gotoPreviousMonth config state =
     let
         stateValue =
@@ -120,7 +129,10 @@ gotoPreviousMonth config state =
     config.onChange <| InternalState { stateValue | titleDate = updatedTitleDate }
 
 
-gotoPreviousYear : Config a msg -> State -> (Maybe DateTime.DateTime -> msg)
+gotoPreviousYear :
+    { config | onChange : State -> Maybe DateTime.DateTime -> msg }
+    -> State
+    -> (Maybe DateTime.DateTime -> msg)
 gotoPreviousYear config state =
     let
         stateValue =
@@ -213,7 +225,18 @@ view label pickerType attributes state currentDate =
             html config
 
 
-viewInput : String -> List (TextInput.Attribute String msg) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
+viewInput :
+    String
+    -> List (TextInput.Attribute String msg)
+    ->
+        { config
+            | onChange : State -> Maybe DateTime.DateTime -> msg
+            , fromInput : String -> Maybe DateTime.DateTime
+            , toInput : DateTime.DateTime -> String
+        }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> Html msg
 viewInput label attributes config stateValue currentDate =
     TextInput.view label
         ([ TextInput.onFocus (datePickerFocused config stateValue currentDate)
@@ -820,7 +843,15 @@ rotate n xs =
 -- EVENT HANDLERS
 
 
-blurInputHandler : Config a msg -> StateValue -> Maybe DateTime.DateTime -> msg
+blurInputHandler :
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , fromInput : String -> Maybe DateTime.DateTime
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
 blurInputHandler config stateValue currentDate =
     case config.fromInput stateValue.textInputValue of
         Just date ->
@@ -943,7 +974,14 @@ cellClickHandler pickerType stateValue date timeSelection =
             handler config
 
 
-datePickerFocused : Config a msg -> StateValue -> Maybe DateTime.DateTime -> msg
+datePickerFocused :
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
 datePickerFocused config stateValue currentDate =
     let
         updatedTitleDate =
@@ -965,7 +1003,14 @@ datePickerFocused config stateValue currentDate =
         currentDate
 
 
-hourUpHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
+hourUpHandler :
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
 hourUpHandler config stateValue currentDate =
     let
         updatedState =
@@ -978,7 +1023,14 @@ hourUpHandler config stateValue currentDate =
     config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
-hourDownHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
+hourDownHandler :
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
 hourDownHandler config stateValue currentDate =
     let
         updatedState =
@@ -991,7 +1043,14 @@ hourDownHandler config stateValue currentDate =
     config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
-minuteUpHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
+minuteUpHandler :
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
 minuteUpHandler config stateValue currentDate =
     let
         updatedState =
@@ -1004,7 +1063,14 @@ minuteUpHandler config stateValue currentDate =
     config.onChange (updateTextInputFromDate config updatedState) currentDate
 
 
-minuteDownHandler : Config config msg -> StateValue -> Maybe DateTime.DateTime -> msg
+minuteDownHandler :
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
 minuteDownHandler config stateValue currentDate =
     let
         updatedState =
