@@ -1,24 +1,23 @@
 module TimePicker exposing
-    ( init, Model
+    ( init, Model, Time
     , view
     )
 
 {-|
 
-@docs init, Model
+@docs init, Model, Time
 @docs view
 
 -}
 
 import Css exposing (..)
 import Css.Global exposing (descendants)
-import DateTimePicker exposing (..)
 import DateTimePicker.Config exposing (TimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter
-import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValueWithToday)
+import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, div, tbody, td, text, tfoot, thead, tr)
@@ -36,9 +35,14 @@ type alias Model =
     InternalState
 
 
+{-| -}
+type alias Time =
+    DateTime.DateTime
+
+
 {-| Pass in the current time.
 -}
-init : DateTime.DateTime -> Model
+init : Time -> Model
 init today =
     InternalState (initialStateValueWithToday today)
 
@@ -374,7 +378,7 @@ minuteDownHandler config stateValue currentDate =
 
 cellClickHandler :
     { config
-        | onChange : State -> Maybe DateTime.DateTime -> msg
+        | onChange : Model -> Maybe DateTime.DateTime -> msg
         , toInput : DateTime.DateTime -> String
     }
     -> StateValue
@@ -432,3 +436,96 @@ timeFromTextInputString fromInput textInputValue =
             , minute = Nothing
             , amPm = Nothing
             }
+
+
+
+-- Misc
+
+
+blurInputHandler :
+    { config
+        | onChange : Model -> Maybe DateTime.DateTime -> msg
+        , fromInput : String -> Maybe DateTime.DateTime
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
+blurInputHandler config stateValue currentDate =
+    case config.fromInput stateValue.textInputValue of
+        Just date ->
+            let
+                updatedValue =
+                    { stateValue
+                        | date = Just date
+                        , inputFocused = False
+                    }
+            in
+            config.onChange (updateTextInputFromDate config updatedValue) (Just date)
+
+        Nothing ->
+            let
+                updatedDate =
+                    case currentDate of
+                        Just _ ->
+                            Nothing
+
+                        Nothing ->
+                            stateValue.date
+
+                updatedValue =
+                    { stateValue
+                        | date = updatedDate
+                        , hourPickerStart = initialStateValue.hourPickerStart
+                        , minutePickerStart = initialStateValue.minutePickerStart
+                        , inputFocused = False
+                    }
+            in
+            config.onChange (setTextInput "" updatedValue) Nothing
+
+
+datePickerFocused :
+    { config
+        | onChange : Model -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
+    -> StateValue
+    -> Maybe DateTime.DateTime
+    -> msg
+datePickerFocused config stateValue currentDate =
+    let
+        updatedTitleDate =
+            case currentDate of
+                Nothing ->
+                    stateValue.titleDate
+
+                Just _ ->
+                    currentDate
+    in
+    config.onChange
+        (updateTextInputFromDate config
+            { stateValue
+                | inputFocused = True
+                , titleDate = updatedTitleDate
+                , date = currentDate
+            }
+        )
+        currentDate
+
+
+setTextInput : String -> StateValue -> Model
+setTextInput value state =
+    InternalState { state | textInputValue = value }
+
+
+updateTextInputFromDate :
+    { config | toInput : DateTime.DateTime -> String }
+    -> StateValue
+    -> Model
+updateTextInputFromDate config state =
+    InternalState
+        { state
+            | textInputValue =
+                Maybe.map config.toInput state.date
+                    |> Maybe.withDefault state.textInputValue
+        }

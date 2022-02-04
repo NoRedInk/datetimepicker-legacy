@@ -3,15 +3,14 @@ module Demo exposing (main)
 import Browser
 import Css
 import Css.Media
-import DatePicker
-import DateTimePicker
+import DatePicker exposing (Date)
 import DateTimePicker.Config exposing (DatePickerConfig, defaultDatePickerConfig, defaultTimePickerConfig)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Container.V2 as Container
 import Nri.Ui.Heading.V2 as Heading
 import Time
-import TimePicker
+import TimePicker exposing (Time)
 
 
 main : Program () Model Msg
@@ -25,18 +24,27 @@ main =
 
 
 type alias Model =
-    { date : Maybe DateTimePicker.DateTime
-    , datePickerState : DateTimePicker.State
-    , time : Maybe DateTimePicker.DateTime
-    , timePickerState : DateTimePicker.State
+    { date : Maybe Date
+    , datePickerState : DatePicker.Model
+    , time : Maybe Time
+    , timePickerState : TimePicker.Model
     }
 
 
 init : ( Model, Cmd Msg )
 init =
     let
-        now : DateTimePicker.DateTime
-        now =
+        today : Date
+        today =
+            { year = 2022
+            , month = Time.Feb
+            , day = 7
+            , hour = 4
+            , minute = 49
+            }
+
+        currentTime : Time
+        currentTime =
             { year = 2022
             , month = Time.Feb
             , day = 7
@@ -45,9 +53,9 @@ init =
             }
     in
     ( { date = Nothing
-      , datePickerState = DatePicker.init now
+      , datePickerState = DatePicker.init today
       , time = Nothing
-      , timePickerState = TimePicker.init now
+      , timePickerState = TimePicker.init currentTime
       }
     , Cmd.none
     )
@@ -95,8 +103,8 @@ view model =
 
 
 type Msg
-    = DatePickerChanged DateTimePicker.State (Maybe DateTimePicker.DateTime)
-    | TimePickerChanged DateTimePicker.State (Maybe DateTimePicker.DateTime)
+    = DatePickerChanged DatePicker.Model (Maybe Date)
+    | TimePickerChanged TimePicker.Model (Maybe Time)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
