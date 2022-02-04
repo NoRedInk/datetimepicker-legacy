@@ -12,6 +12,10 @@ tests =
         ([ List.map fromStringTest
             [ ( "01:15 p.m.", { hour = 13, minute = 15 } )
             , ( "1:15 p.m.", { hour = 13, minute = 15 } )
+            , ( "1:15p.m.", { hour = 13, minute = 15 } )
+            , ( "1:15pm", { hour = 13, minute = 15 } )
+            , ( "1:15PM", { hour = 13, minute = 15 } )
+            , ( "1:15 PM", { hour = 13, minute = 15 } )
             , ( "12:00 a.m.", { hour = 0, minute = 0 } )
             ]
          , List.map toStringTest
