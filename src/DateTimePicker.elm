@@ -171,7 +171,11 @@ datePickerWithConfig label config attributes ((InternalState stateValue) as stat
         (css [ position relative ] :: config.attributes)
         [ viewInput label attributes config stateValue currentDate
         , if config.usePicker && stateValue.inputFocused then
-            dialog (DateType config) state currentDate
+            dialogNode
+                [ onMouseDownPreventDefault (config.onChange state currentDate)
+                , css [ Styles.dialog ]
+                ]
+                [ datePickerDialog config state currentDate ]
 
           else
             Html.text ""
@@ -202,7 +206,11 @@ timePickerWithConfig label config attributes ((InternalState stateValue) as stat
         (css [ position relative ] :: config.attributes)
         [ viewInput label attributes config stateValue currentDate
         , if config.usePicker && stateValue.inputFocused then
-            dialog (TimeType config) state currentDate
+            dialogNode
+                [ onMouseDownPreventDefault (config.onChange state currentDate)
+                , css [ Styles.dialog ]
+                ]
+                [ timePickerDialog config state currentDate ]
 
           else
             Html.text ""
@@ -241,35 +249,6 @@ viewInput label attributes config stateValue currentDate =
 -- VIEW HELPERS
 
 
-dialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-dialog pickerType state currentDate =
-    let
-        attributes config =
-            [ onMouseDownPreventDefault <| config.onChange state currentDate
-            , css
-                [ fontFamilies [ "Arial", "Helvetica", "sans-serif" ]
-                , fontSize (px 14)
-                , boxSizing borderBox
-                , position absolute
-                , border3 (px 1) solid Colors.gray85
-                , property "z-index" "1"
-                , displayFlex
-                ]
-            ]
-
-        withTimeAttributes config =
-            attributes config
-    in
-    case pickerType of
-        DateType datePickerConfig ->
-            dialogNode (attributes datePickerConfig)
-                [ datePickerDialog pickerType state currentDate ]
-
-        TimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig)
-                [ timePickerDialog pickerType state currentDate ]
-
-
 dialogNode : List (Html.Attribute msg) -> List (Html msg) -> Html msg
 dialogNode attributes =
     Html.node "date-time-picker-dialog"
@@ -278,13 +257,13 @@ dialogNode attributes =
         )
 
 
-datePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-datePickerDialog pickerType state currentDate =
+datePickerDialog : DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
+datePickerDialog config state currentDate =
     let
         stateValue =
             getStateValue state
 
-        html config =
+        html =
             div
                 [ css [ float left ] ]
                 [ Html.node "date-time-picker-header"
@@ -299,7 +278,7 @@ datePickerDialog pickerType state currentDate =
                         ]
                     ]
                     (navigation config state currentDate)
-                , calendar pickerType state
+                , calendar config state
                 , -- Footer
                   Html.node "date-time-picker-footer"
                     [ css
@@ -314,12 +293,7 @@ datePickerDialog pickerType state currentDate =
                     [ stateValue.date |> Maybe.map DateTimePicker.Formatter.footerFormatter |> Maybe.withDefault "--" |> text ]
                 ]
     in
-    case pickerType of
-        DateType config ->
-            html config
-
-        TimeType _ ->
-            text ""
+    html
 
 
 navigation : DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> List (Html msg)
@@ -396,28 +370,14 @@ nextYearButton config state currentDate =
         Html.text ""
 
 
-timePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> Html msg
-timePickerDialog pickerType state currentDate =
+timePickerDialog : TimePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
+timePickerDialog ({ fromInput } as config) state currentDate =
     let
         stateValue =
             getStateValue state
-    in
-    case pickerType of
-        DateType _ ->
-            text ""
 
-        TimeType { fromInput } ->
-            digitalTimePickerDialog pickerType
-                state
-                currentDate
-                (timeFromTextInputString fromInput stateValue.textInputValue)
-
-
-digitalTimePickerDialog : Type msg -> State -> Maybe DateTime.DateTime -> TimeSelection -> Html msg
-digitalTimePickerDialog pickerType state currentDate time =
-    let
-        stateValue =
-            getStateValue state
+        time =
+            timeFromTextInputString fromInput stateValue.textInputValue
 
         hours =
             List.range stateValue.hourPickerStart (stateValue.hourPickerStart + 6)
@@ -439,7 +399,7 @@ digitalTimePickerDialog pickerType state currentDate time =
                 ]
 
         timeCellClick =
-            cellClickHandler pickerType stateValue Nothing
+            cellClickHandler config stateValue Nothing
 
         hourCell hour =
             let
@@ -525,7 +485,7 @@ digitalTimePickerDialog pickerType state currentDate time =
                 ]
                 []
 
-        upArrows config =
+        upArrows =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ upArrowTd
                     [ ClickableSvg.button "Earlier hours"
@@ -552,7 +512,7 @@ digitalTimePickerDialog pickerType state currentDate time =
                 ]
                 []
 
-        downArrows config =
+        downArrows =
             [ tr [ css [ backgroundColor Colors.gray96 ] ]
                 [ downArrowTd
                     [ ClickableSvg.button "Later hours"
@@ -572,7 +532,7 @@ digitalTimePickerDialog pickerType state currentDate time =
                 ]
             ]
 
-        html config =
+        html =
             div [ css [ Styles.timePickerDialog ] ]
                 [ div
                     [ css
@@ -611,29 +571,24 @@ digitalTimePickerDialog pickerType state currentDate time =
                         ]
                     ]
                     [ Html.table []
-                        [ thead [] (upArrows config)
+                        [ thead [] upArrows
                         , tbody [] timeSelector
-                        , tfoot [] (downArrows config)
+                        , tfoot [] downArrows
                         ]
                     ]
                 ]
     in
-    case pickerType of
-        DateType _ ->
-            text ""
-
-        TimeType config ->
-            html config
+    html
 
 
-calendar : Type msg -> State -> Html msg
-calendar pickerType state =
+calendar : DatePickerConfig msg -> State -> Html msg
+calendar config state =
     let
         stateValue =
             getStateValue state
 
-        html : DatePickerConfig msg -> Html msg
-        html config =
+        html : Html msg
+        html =
             case stateValue.titleDate of
                 Nothing ->
                     Html.text ""
@@ -725,7 +680,7 @@ calendar pickerType state =
                                         ]
 
                                 handler =
-                                    cellClickHandler pickerType
+                                    cellClickHandler config
                                         stateValue
                                         (Just { year = year, month = month, day = day })
                                         { hour = Nothing
@@ -791,12 +746,7 @@ calendar pickerType state =
                         , body
                         ]
     in
-    case pickerType of
-        DateType config ->
-            html config
-
-        TimeType _ ->
-            text ""
+    html
 
 
 dayNames : DatePickerConfig msg -> List (Html msg)
@@ -870,12 +820,15 @@ blurInputHandler config stateValue currentDate =
 
 
 cellClickHandler :
-    Type msg
+    { config
+        | onChange : State -> Maybe DateTime.DateTime -> msg
+        , toInput : DateTime.DateTime -> String
+    }
     -> StateValue
     -> Maybe DateSelection
     -> TimeSelection
     -> msg
-cellClickHandler pickerType stateValue date timeSelection =
+cellClickHandler config stateValue date timeSelection =
     let
         setHour datetime =
             case timeSelection.hour of
@@ -936,7 +889,7 @@ cellClickHandler pickerType stateValue date timeSelection =
                 | date = Just <| adjustedSelectedDate
             }
 
-        handler config =
+        handler =
             case Maybe.map (.day >> .monthType) date of
                 Just DateTimePicker.DateUtils.Previous ->
                     gotoPreviousMonth config (updateTextInputFromDate config updatedStateValue) (Just adjustedSelectedDate)
@@ -950,12 +903,7 @@ cellClickHandler pickerType stateValue date timeSelection =
                 Nothing ->
                     config.onChange (updateTextInputFromDate config updatedStateValue) (Just adjustedSelectedDate)
     in
-    case pickerType of
-        DateType config ->
-            handler config
-
-        TimeType config ->
-            handler config
+    handler
 
 
 datePickerFocused :

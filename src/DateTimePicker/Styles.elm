@@ -9,6 +9,20 @@ module DateTimePicker.Styles exposing (..)
 
 import Css exposing (..)
 import Nri.Ui.Colors.V1 as Colors
+import Nri.Ui.Fonts.V1 as Fonts
+
+
+dialog : Style
+dialog =
+    Css.batch
+        [ Fonts.baseFont
+        , fontSize (px 14)
+        , boxSizing borderBox
+        , position absolute
+        , border3 (px 1) solid Colors.gray85
+        , zIndex (Css.int 1)
+        , displayFlex
+        ]
 
 
 timePickerDialog : Style
