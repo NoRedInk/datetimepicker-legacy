@@ -1,13 +1,13 @@
 module TimePicker exposing
     ( init, Model, Time
-    , view, TimePickerConfig, defaultTimePickerConfig
+    , view
     , fromString, toString
     )
 
 {-|
 
 @docs init, Model, Time
-@docs view, TimePickerConfig, defaultTimePickerConfig
+@docs view
 @docs fromString, toString
 
 -}
@@ -77,27 +77,9 @@ type alias TimeSelection =
 
 
 {-| -}
-type alias TimePickerConfig msg =
-    { onChange : Model -> Maybe Time -> msg
-    }
-
-
-{-| Default configuration for TimePicker
-
-  - `onChange` No Default
-  - `dateFormatter` Default: `"%m/%d/%Y"`
-
--}
-defaultTimePickerConfig : (Model -> Maybe Time -> msg) -> TimePickerConfig msg
-defaultTimePickerConfig onChange =
-    { onChange = onChange
-    }
-
-
-{-| -}
 view :
     String
-    -> TimePickerConfig msg
+    -> { onChange : Model -> Maybe Time -> msg }
     -> List (TextInput.Attribute String msg)
     -> Model
     -> Maybe Time
@@ -130,7 +112,7 @@ view label config attributes ((InternalState stateValue) as state) currentTime =
         ]
 
 
-timePickerDialog : TimePickerConfig msg -> Model -> Maybe Time -> Html msg
+timePickerDialog : { config | onChange : Model -> Maybe Time -> msg } -> Model -> Maybe Time -> Html msg
 timePickerDialog config ((InternalState stateValue) as state) currentTime =
     let
         time =

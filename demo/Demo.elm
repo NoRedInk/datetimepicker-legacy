@@ -9,7 +9,7 @@ import Html.Styled.Attributes exposing (css, type_)
 import Nri.Ui.Container.V2 as Container
 import Nri.Ui.Heading.V2 as Heading
 import Time
-import TimePicker exposing (Time, defaultTimePickerConfig)
+import TimePicker exposing (Time)
 
 
 main : Program () Model Msg
@@ -90,7 +90,7 @@ view model =
         , example "Time picker"
             [ p [] [ text <| Debug.toString model.time ]
             , TimePicker.view "Time picker"
-                (defaultTimePickerConfig TimePickerChanged)
+                { onChange = TimePickerChanged }
                 []
                 model.timePickerState
                 model.time
