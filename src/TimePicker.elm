@@ -79,7 +79,6 @@ type alias TimeSelection =
 {-| -}
 type alias TimePickerConfig msg =
     { onChange : Model -> Maybe Time -> msg
-    , usePicker : Bool
     }
 
 
@@ -92,7 +91,6 @@ type alias TimePickerConfig msg =
 defaultTimePickerConfig : (Model -> Maybe Time -> msg) -> TimePickerConfig msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
-    , usePicker = True
     }
 
 
@@ -120,7 +118,7 @@ view label config attributes ((InternalState stateValue) as state) currentTime =
              ]
                 ++ attributes
             )
-        , if config.usePicker && stateValue.inputFocused then
+        , if stateValue.inputFocused then
             Html.node "time-picker-dialog"
                 [ onMouseDownPreventDefault (config.onChange state currentTime)
                 , css [ display block, Styles.dialog ]
