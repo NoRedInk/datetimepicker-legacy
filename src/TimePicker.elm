@@ -17,7 +17,7 @@ import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter
-import DateTimePicker.Internal exposing (InternalState(..), StateValue, TimeSelection, getStateValue, initialStateValue, initialStateValueWithToday)
+import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue, initialStateValue, initialStateValueWithToday)
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, div, tbody, td, text, tfoot, thead, tr)
@@ -38,6 +38,13 @@ type alias Model =
 {-| -}
 type alias Time =
     DateTime.DateTime
+
+
+type alias TimeSelection =
+    { hour : Maybe Int
+    , minute : Maybe Int
+    , amPm : Maybe String
+    }
 
 
 {-| Pass in the current time.

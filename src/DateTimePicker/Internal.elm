@@ -1,8 +1,6 @@
 module DateTimePicker.Internal exposing
-    ( DateSelection
-    , InternalState(..)
+    ( InternalState(..)
     , StateValue
-    , TimeSelection
     , getStateValue
     , initialStateValue
     , initialStateValueWithToday
@@ -32,20 +30,6 @@ type alias StateValue =
     , hourPickerStart : Int
     , minutePickerStart : Int
     , textInputValue : String
-    }
-
-
-type alias DateSelection =
-    { year : Int
-    , month : Time.Month
-    , day : DateTimePicker.DateUtils.Day
-    }
-
-
-type alias TimeSelection =
-    { hour : Maybe Int
-    , minute : Maybe Int
-    , amPm : Maybe String
     }
 
 
