@@ -5,7 +5,7 @@ import Css
 import Css.Media
 import DatePicker exposing (Date, DatePickerConfig, defaultDatePickerConfig)
 import Html.Styled as Html exposing (..)
-import Html.Styled.Attributes exposing (css)
+import Html.Styled.Attributes exposing (css, type_)
 import Nri.Ui.Container.V2 as Container
 import Nri.Ui.Heading.V2 as Heading
 import Time
@@ -67,28 +67,44 @@ view model =
             , Css.maxWidth (Css.px 1000)
             ]
         ]
-        [ Container.view
-            [ Container.html
-                [ Heading.h1 [ Heading.style Heading.Subhead ] [ text "Date picker" ]
-                , p [] [ text <| Debug.toString model.date ]
-                , DatePicker.view "Date picker"
-                    (defaultDatePickerConfig DatePickerChanged)
-                    []
-                    model.datePickerState
-                    model.date
+        [ example "Native date picker"
+            [ label []
+                [ text "Native date picker"
+                , input [ type_ "date" ] []
                 ]
             ]
-        , Container.view
-            [ Container.html
-                [ Heading.h1 [ Heading.style Heading.Subhead ] [ text "Time picker" ]
-                , p [] [ text <| Debug.toString model.time ]
-                , TimePicker.view "Time picker"
-                    (defaultTimePickerConfig TimePickerChanged)
-                    []
-                    model.timePickerState
-                    model.time
+        , example "Date picker"
+            [ p [] [ text <| Debug.toString model.date ]
+            , DatePicker.view "Date picker"
+                (defaultDatePickerConfig DatePickerChanged)
+                []
+                model.datePickerState
+                model.date
+            ]
+        , example "Native time picker"
+            [ label []
+                [ text "Native time picker"
+                , input [ type_ "time" ] []
                 ]
             ]
+        , example "Time picker"
+            [ p [] [ text <| Debug.toString model.time ]
+            , TimePicker.view "Time picker"
+                (defaultTimePickerConfig TimePickerChanged)
+                []
+                model.timePickerState
+                model.time
+            ]
+        ]
+
+
+example : String -> List (Html msg) -> Html msg
+example title content =
+    Container.view
+        [ Container.html
+            (Heading.h1 [ Heading.style Heading.Subhead ] [ text title ]
+                :: content
+            )
         ]
 
 
