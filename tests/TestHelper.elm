@@ -3,7 +3,7 @@ module TestHelper exposing (TestResult, clickDate, init, open, render, selection
 {-| This module provides functions that allow high-level test interactions with datetimepickers
 -}
 
-import DateTimePicker
+import DatePicker
 import DateTimePicker.Config exposing (DatePickerConfig, defaultDatePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
@@ -21,8 +21,8 @@ import Time
 -}
 type TestResult
     = TestResult
-        { config : DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
-        , state : DateTimePicker.State
+        { config : DatePickerConfig ( DatePicker.Model, Maybe DateTime.DateTime )
+        , state : DatePicker.Model
         , date : Maybe DateTime.DateTime
         }
 
@@ -36,7 +36,7 @@ init : DateTime.DateTime -> TestResult
 init now =
     TestResult
         { config = defaultDatePickerConfig Tuple.pair
-        , state = DateTimePicker.initialStateWithToday now
+        , state = DatePicker.init now
         , date = Nothing
         }
 
@@ -47,8 +47,8 @@ NOTE: You must not alter the `onChange` field of the config.
 
 -}
 withConfig :
-    (DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
-     -> DatePickerConfig ( DateTimePicker.State, Maybe DateTime.DateTime )
+    (DatePickerConfig ( DatePicker.Model, Maybe DateTime.DateTime )
+     -> DatePickerConfig ( DatePicker.Model, Maybe DateTime.DateTime )
     )
     -> TestResult
     -> TestResult
@@ -105,7 +105,7 @@ render (TestResult t) =
             , onChange = makeResult
             }
     in
-    DateTimePicker.datePickerWithConfig "Label"
+    DatePicker.view "Label"
         config
         []
         t.state
