@@ -1,23 +1,23 @@
 module DatePicker exposing
     ( init, Model, Date
-    , view
+    , view, DatePickerConfig, defaultDatePickerConfig
     )
 
 {-|
 
 @docs init, Model, Date
-@docs view
+@docs view, DatePickerConfig, defaultDatePickerConfig
 
 -}
 
 import Css exposing (..)
 import Css.Global exposing (descendants)
-import DateTimePicker.Config exposing (DatePickerConfig)
+import DateTimePicker.Config exposing (NameOfDays, defaultNameOfDays)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
-import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
-import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue, initialStateValue, initialStateValueWithToday)
+import DateTimePicker.Formatter as Formatter exposing (accessibilityDateFormatter)
+import DateTimePicker.Parser as Parser
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, div, span, tbody, td, text, th, thead, tr)
@@ -32,8 +32,44 @@ import Time
 
 {-| The state of the date picker.
 -}
-type alias Model =
-    InternalState
+type Model
+    = InternalState StateValue
+
+
+{-| Pass in the current date.
+-}
+init : Date -> Model
+init today =
+    InternalState (initialStateValueWithToday today)
+
+
+type alias StateValue =
+    { inputFocused : Bool
+    , today : Maybe DateTime.DateTime
+    , titleDate : Maybe DateTime.DateTime
+    , date : Maybe DateTime.DateTime
+    , textInputValue : String
+    }
+
+
+initialStateValue : StateValue
+initialStateValue =
+    { inputFocused = False
+    , today = Nothing
+    , titleDate = Nothing
+    , date = Nothing
+    , textInputValue = ""
+    }
+
+
+initialStateValueWithToday : DateTime.DateTime -> StateValue
+initialStateValueWithToday today =
+    { inputFocused = False
+    , today = Just today
+    , titleDate = Just <| DateTime.toFirstOfMonth today
+    , date = Nothing
+    , textInputValue = ""
+    }
 
 
 {-| -}
@@ -48,11 +84,48 @@ type alias DateSelection =
     }
 
 
-{-| Pass in the current date.
+{-| Configuration for the DatePicker
+
+  - `nameOfDays` is the configuration for name of days in a week.
+  - `firstDayOfWeek` is the first day of the week.
+  - `allowYearNavigation` show/hide year navigation button.
+  - `earliestDate` if given, dates before this cannot be selected
+
 -}
-init : Date -> Model
-init today =
-    InternalState (initialStateValueWithToday today)
+type alias DatePickerConfig msg =
+    { nameOfDays : NameOfDays
+    , firstDayOfWeek : Time.Weekday
+    , allowYearNavigation : Bool
+    , earliestDate : Maybe DateTime.DateTime
+    , onChange : Model -> Maybe DateTime.DateTime -> msg
+    , usePicker : Bool
+    , attributes : List (Html.Attribute msg)
+    , fromInput : String -> Maybe DateTime.DateTime
+    , toInput : DateTime.DateTime -> String
+    }
+
+
+{-| Default configuration for DatePicker
+
+  - `onChange` No Default
+  - `nameOfDays` see `NameOfDays` for the default values.
+  - `firstDayOfWeek` Default: Sunday.
+  - `allowYearNavigation` Default : True
+  - `earliestDate` Default : Nothing
+
+-}
+defaultDatePickerConfig : (Model -> Maybe DateTime.DateTime -> msg) -> DatePickerConfig msg
+defaultDatePickerConfig onChange =
+    { onChange = onChange
+    , nameOfDays = defaultNameOfDays
+    , firstDayOfWeek = Time.Sun
+    , allowYearNavigation = True
+    , usePicker = True
+    , attributes = []
+    , earliestDate = Nothing
+    , fromInput = Parser.parseDate
+    , toInput = Formatter.dateFormatter
+    }
 
 
 {-| -}
@@ -86,11 +159,7 @@ view label config attributes ((InternalState stateValue) as state) currentDate =
 
 
 datePickerDialog : DatePickerConfig msg -> Model -> Maybe DateTime.DateTime -> Html msg
-datePickerDialog config state currentDate =
-    let
-        stateValue =
-            getStateValue state
-    in
+datePickerDialog config ((InternalState stateValue) as state) currentDate =
     div
         [ css [ float left ] ]
         [ Html.node "date-time-picker-header"
@@ -117,7 +186,7 @@ datePickerDialog config state currentDate =
                 , height (px 16)
                 ]
             ]
-            [ stateValue.date |> Maybe.map DateTimePicker.Formatter.footerFormatter |> Maybe.withDefault "--" |> text ]
+            [ stateValue.date |> Maybe.map Formatter.footerFormatter |> Maybe.withDefault "--" |> text ]
         ]
 
 
@@ -132,11 +201,8 @@ navigation config state currentDate =
 
 
 title : Model -> Html msg
-title state =
+title ((InternalState stateValue) as state) =
     let
-        stateValue =
-            getStateValue state
-
         date =
             stateValue.titleDate
     in
@@ -149,7 +215,7 @@ title state =
             ]
         ]
         [ date
-            |> Maybe.map DateTimePicker.Formatter.titleFormatter
+            |> Maybe.map Formatter.titleFormatter
             |> Maybe.withDefault "N/A"
             |> text
         ]
@@ -196,11 +262,7 @@ nextYearButton config state currentDate =
 
 
 calendar : DatePickerConfig msg -> Model -> Html msg
-calendar config state =
-    let
-        stateValue =
-            getStateValue state
-    in
+calendar config ((InternalState stateValue) as state) =
     case stateValue.titleDate of
         Nothing ->
             Html.text ""
@@ -387,11 +449,8 @@ gotoNextMonth :
     { config | onChange : Model -> Maybe DateTime.DateTime -> msg }
     -> Model
     -> (Maybe DateTime.DateTime -> msg)
-gotoNextMonth config state =
+gotoNextMonth config (InternalState stateValue) =
     let
-        stateValue =
-            getStateValue state
-
         updatedTitleDate =
             Maybe.map (DateTime.addMonths 1) stateValue.titleDate
     in
@@ -402,11 +461,8 @@ gotoNextYear :
     { config | onChange : Model -> Maybe DateTime.DateTime -> msg }
     -> Model
     -> (Maybe DateTime.DateTime -> msg)
-gotoNextYear config state =
+gotoNextYear config (InternalState stateValue) =
     let
-        stateValue =
-            getStateValue state
-
         updatedTitleDate =
             Maybe.map (DateTime.addMonths 12) stateValue.titleDate
     in
@@ -417,11 +473,8 @@ gotoPreviousMonth :
     { config | onChange : Model -> Maybe DateTime.DateTime -> msg }
     -> Model
     -> (Maybe DateTime.DateTime -> msg)
-gotoPreviousMonth config state =
+gotoPreviousMonth config (InternalState stateValue) =
     let
-        stateValue =
-            getStateValue state
-
         updatedTitleDate =
             Maybe.map (DateTime.addMonths -1) stateValue.titleDate
     in
@@ -432,11 +485,8 @@ gotoPreviousYear :
     { config | onChange : Model -> Maybe DateTime.DateTime -> msg }
     -> Model
     -> (Maybe DateTime.DateTime -> msg)
-gotoPreviousYear config state =
+gotoPreviousYear config (InternalState stateValue) =
     let
-        stateValue =
-            getStateValue state
-
         updatedTitleDate =
             Maybe.map (DateTime.addMonths -12) stateValue.titleDate
     in
@@ -532,8 +582,6 @@ blurInputHandler config stateValue currentDate =
                 updatedValue =
                     { stateValue
                         | date = updatedDate
-                        , hourPickerStart = initialStateValue.hourPickerStart
-                        , minutePickerStart = initialStateValue.minutePickerStart
                         , inputFocused = False
                     }
             in

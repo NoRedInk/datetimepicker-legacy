@@ -3,8 +3,7 @@ module TestHelper exposing (TestResult, clickDate, init, open, render, selection
 {-| This module provides functions that allow high-level test interactions with datetimepickers
 -}
 
-import DatePicker
-import DateTimePicker.Config exposing (DatePickerConfig, defaultDatePickerConfig)
+import DatePicker exposing (DatePickerConfig, defaultDatePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter exposing (accessibilityDateFormatter)
 import Html.Attributes

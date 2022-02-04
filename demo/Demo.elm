@@ -3,8 +3,8 @@ module Demo exposing (main)
 import Browser
 import Css
 import Css.Media
-import DatePicker exposing (Date)
-import DateTimePicker.Config exposing (DatePickerConfig, defaultDatePickerConfig, defaultTimePickerConfig)
+import DatePicker exposing (Date, DatePickerConfig, defaultDatePickerConfig)
+import DateTimePicker.Config exposing (defaultTimePickerConfig)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Container.V2 as Container

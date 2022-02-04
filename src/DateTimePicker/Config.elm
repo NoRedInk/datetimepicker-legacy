@@ -1,6 +1,7 @@
 module DateTimePicker.Config exposing
-    ( TimePickerConfig, DatePickerConfig, NameOfDays
-    , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+    ( TimePickerConfig, NameOfDays
+    , defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+    , defaultNameOfDays
     )
 
 {-|
@@ -11,12 +12,12 @@ module DateTimePicker.Config exposing
 
 # Configuration
 
-@docs TimePickerConfig, DatePickerConfig, NameOfDays
+@docs TimePickerConfig, NameOfDays
 
 
 # Default Configuration
 
-@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+@docs defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
 
 -}
 
@@ -30,50 +31,6 @@ import Time
 
 type alias State =
     InternalState
-
-
-{-| Configuration for the DatePicker
-
-  - `nameOfDays` is the configuration for name of days in a week.
-  - `firstDayOfWeek` is the first day of the week.
-  - `allowYearNavigation` show/hide year navigation button.
-  - `earliestDate` if given, dates before this cannot be selected
-
--}
-type alias DatePickerConfig msg =
-    { nameOfDays : NameOfDays
-    , firstDayOfWeek : Time.Weekday
-    , allowYearNavigation : Bool
-    , earliestDate : Maybe DateTime.DateTime
-    , onChange : State -> Maybe DateTime.DateTime -> msg
-    , usePicker : Bool
-    , attributes : List (Html.Attribute msg)
-    , fromInput : String -> Maybe DateTime.DateTime
-    , toInput : DateTime.DateTime -> String
-    }
-
-
-{-| Default configuration for DatePicker
-
-  - `onChange` No Default
-  - `nameOfDays` see `NameOfDays` for the default values.
-  - `firstDayOfWeek` Default: Sunday.
-  - `allowYearNavigation` Default : True
-  - `earliestDate` Default : Nothing
-
--}
-defaultDatePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> DatePickerConfig msg
-defaultDatePickerConfig onChange =
-    { onChange = onChange
-    , nameOfDays = defaultNameOfDays
-    , firstDayOfWeek = Time.Sun
-    , allowYearNavigation = True
-    , usePicker = True
-    , attributes = []
-    , earliestDate = Nothing
-    , fromInput = Parser.parseDate
-    , toInput = Formatter.dateFormatter
-    }
 
 
 type alias TimePickerConfig msg =
