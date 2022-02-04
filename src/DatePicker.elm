@@ -52,16 +52,6 @@ type alias StateValue =
     }
 
 
-initialStateValue : StateValue
-initialStateValue =
-    { inputFocused = False
-    , today = Nothing
-    , titleDate = Nothing
-    , date = Nothing
-    , textInputValue = ""
-    }
-
-
 initialStateValueWithToday : DateTime.DateTime -> StateValue
 initialStateValueWithToday today =
     { inputFocused = False

@@ -1,6 +1,6 @@
 module DateTimePicker.Config exposing
-    ( TimePickerConfig, NameOfDays
-    , defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+    ( NameOfDays
+    , defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     , defaultNameOfDays
     )
 
@@ -23,41 +23,7 @@ module DateTimePicker.Config exposing
 
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Formatter as Formatter
-import DateTimePicker.Internal exposing (InternalState)
 import DateTimePicker.Parser as Parser
-import Html.Styled as Html
-import Time
-
-
-type alias State =
-    InternalState
-
-
-type alias TimePickerConfig msg =
-    { onChange : State -> Maybe DateTime.DateTime -> msg
-    , usePicker : Bool
-    , attributes : List (Html.Attribute msg)
-    , fromInput : String -> Maybe DateTime.DateTime
-    , toInput : DateTime.DateTime -> String
-    }
-
-
-{-| Default configuration for TimePicker
-
-  - `onChange` No Default
-  - `dateFormatter` Default: `"%m/%d/%Y"`
-  - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
-  - `timeFormatter` Default: `"%I:%M %p"`
-
--}
-defaultTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> TimePickerConfig msg
-defaultTimePickerConfig onChange =
-    { onChange = onChange
-    , usePicker = True
-    , attributes = []
-    , fromInput = Parser.parseTime
-    , toInput = Formatter.timeFormatter
-    }
 
 
 {-| Default date parser

@@ -1,23 +1,22 @@
 module TimePicker exposing
     ( init, Model, Time
-    , view
+    , view, TimePickerConfig, defaultTimePickerConfig
     )
 
 {-|
 
 @docs init, Model, Time
-@docs view
+@docs view, TimePickerConfig, defaultTimePickerConfig
 
 -}
 
 import Css exposing (..)
 import Css.Global exposing (descendants)
-import DateTimePicker.Config exposing (TimePickerConfig)
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
-import DateTimePicker.Formatter
-import DateTimePicker.Internal exposing (InternalState(..), StateValue, getStateValue, initialStateValue, initialStateValueWithToday)
+import DateTimePicker.Formatter as Formatter
+import DateTimePicker.Parser as Parser
 import DateTimePicker.Styles as Styles
 import DateTimePicker.Svg
 import Html.Styled as Html exposing (Html, div, tbody, td, text, tfoot, thead, tr)
@@ -31,8 +30,50 @@ import Time
 
 {-| The state of the time picker.
 -}
-type alias Model =
-    InternalState
+type Model
+    = InternalState StateValue
+
+
+{-| Pass in the current time.
+-}
+init : Time -> Model
+init today =
+    InternalState (initialStateValueWithToday today)
+
+
+type alias StateValue =
+    { inputFocused : Bool
+    , today : Maybe DateTime.DateTime
+    , titleDate : Maybe DateTime.DateTime
+    , date : Maybe DateTime.DateTime
+    , hourPickerStart : Int
+    , minutePickerStart : Int
+    , textInputValue : String
+    }
+
+
+initialStateValue : StateValue
+initialStateValue =
+    { inputFocused = False
+    , today = Nothing
+    , titleDate = Nothing
+    , date = Nothing
+    , hourPickerStart = 1
+    , minutePickerStart = 0
+    , textInputValue = ""
+    }
+
+
+initialStateValueWithToday : DateTime.DateTime -> StateValue
+initialStateValueWithToday today =
+    { inputFocused = False
+    , today = Just today
+    , titleDate = Just <| DateTime.toFirstOfMonth today
+    , date = Nothing
+    , hourPickerStart = 1
+    , minutePickerStart = 0
+    , textInputValue = ""
+    }
 
 
 {-| -}
@@ -47,11 +88,32 @@ type alias TimeSelection =
     }
 
 
-{-| Pass in the current time.
+{-| -}
+type alias TimePickerConfig msg =
+    { onChange : Model -> Maybe DateTime.DateTime -> msg
+    , usePicker : Bool
+    , attributes : List (Html.Attribute msg)
+    , fromInput : String -> Maybe DateTime.DateTime
+    , toInput : DateTime.DateTime -> String
+    }
+
+
+{-| Default configuration for TimePicker
+
+  - `onChange` No Default
+  - `dateFormatter` Default: `"%m/%d/%Y"`
+  - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
+  - `timeFormatter` Default: `"%I:%M %p"`
+
 -}
-init : Time -> Model
-init today =
-    InternalState (initialStateValueWithToday today)
+defaultTimePickerConfig : (Model -> Maybe DateTime.DateTime -> msg) -> TimePickerConfig msg
+defaultTimePickerConfig onChange =
+    { onChange = onChange
+    , usePicker = True
+    , attributes = []
+    , fromInput = Parser.parseTime
+    , toInput = Formatter.timeFormatter
+    }
 
 
 {-| -}
@@ -85,11 +147,8 @@ view label config attributes ((InternalState stateValue) as state) currentDate =
 
 
 timePickerDialog : TimePickerConfig msg -> Model -> Maybe DateTime.DateTime -> Html msg
-timePickerDialog ({ fromInput } as config) state currentDate =
+timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state) currentDate =
     let
-        stateValue =
-            getStateValue state
-
         time =
             timeFromTextInputString fromInput stateValue.textInputValue
 
@@ -260,7 +319,7 @@ timePickerDialog ({ fromInput } as config) state currentDate =
                 , height (Css.px 37)
                 ]
             ]
-            [ Maybe.map DateTimePicker.Formatter.timeFormatter currentDate
+            [ Maybe.map Formatter.timeFormatter currentDate
                 |> Maybe.withDefault "-- : --"
                 |> text
             ]

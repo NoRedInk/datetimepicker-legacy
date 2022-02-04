@@ -4,13 +4,12 @@ import Browser
 import Css
 import Css.Media
 import DatePicker exposing (Date, DatePickerConfig, defaultDatePickerConfig)
-import DateTimePicker.Config exposing (defaultTimePickerConfig)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Nri.Ui.Container.V2 as Container
 import Nri.Ui.Heading.V2 as Heading
 import Time
-import TimePicker exposing (Time)
+import TimePicker exposing (Time, defaultTimePickerConfig)
 
 
 main : Program () Model Msg
