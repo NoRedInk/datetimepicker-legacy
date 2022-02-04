@@ -597,7 +597,7 @@ fromString input =
     Parser.runWithSurroundingSpaceAndValidation timeParser validater input
 
 
-{-| Parse the exact format "%I:%M %p"
+{-| Parse the format "%I:%M %p" and "%I:%M%p"
 -}
 timeParser : Parser Time
 timeParser =
@@ -613,7 +613,7 @@ timeParser =
         |. Parser.symbol ":"
         |. Parser.skipOptionalSpaces
         |= Parser.clamped 0 59 Parser.looseInt
-        |. Parser.skipAtLeastOneSpace
+        |. Parser.skipOptionalSpaces
         |= amPm
 
 

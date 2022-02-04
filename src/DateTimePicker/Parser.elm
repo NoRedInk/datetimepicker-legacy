@@ -33,15 +33,6 @@ skipOptionalSpaces =
         |> Parser.map (\_ -> ())
 
 
-skipAtLeastOneSpace : Parser ()
-skipAtLeastOneSpace =
-    Parser.succeed ()
-        |. Parser.chompIf (\c -> c == ' ')
-        |. Parser.chompWhile (\c -> c == ' ')
-        |> Parser.getChompedString
-        |> Parser.map (\_ -> ())
-
-
 runWithSurroundingSpaceAndValidation : Parser a -> (a -> Parser b) -> String -> Maybe b
 runWithSurroundingSpaceAndValidation innerParser validate input =
     let
