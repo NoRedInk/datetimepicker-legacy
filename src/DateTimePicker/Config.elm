@@ -1,6 +1,6 @@
 module DateTimePicker.Config exposing
     ( Config, DatePickerConfig, NameOfDays, Type(..)
-    , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+    , defaultDatePickerConfig, defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
     )
 
 {-|
@@ -16,7 +16,7 @@ module DateTimePicker.Config exposing
 
 # Default Configuration
 
-@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+@docs defaultDatePickerConfig, defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
 
 -}
 
@@ -36,7 +36,6 @@ type alias State =
 -}
 type Type msg
     = DateType (Config DatePickerConfig msg)
-    | DateTimeType (Config DatePickerConfig msg)
     | TimeType (Config {} msg)
 
 
@@ -110,34 +109,6 @@ defaultTimePickerConfig onChange =
     , attributes = []
     , fromInput = Parser.parseTime
     , toInput = Formatter.timeFormatter
-    }
-
-
-{-| Default configuration for DateTimePicker
-
-  - `onChange` No Default
-  - `dateFormatter` Default: `"%m/%d/%Y"`
-  - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
-  - `nameOfDays` see `NameOfDays` for the default values.
-  - `firstDayOfWeek` Default: Sunday.
-  - `titleFormatter` Default: `"%B %Y"`
-  - `fullDateFormatter` Default: `"%A, %B %d, %Y"`
-  - `timeFormatter` Default: `"%I:%M %p"`
-  - `allowYearNavigation` Default : True
-  - `earliestDate` Default : Nothing
-
--}
-defaultDateTimePickerConfig : (State -> Maybe DateTime.DateTime -> msg) -> Config DatePickerConfig msg
-defaultDateTimePickerConfig onChange =
-    { onChange = onChange
-    , nameOfDays = defaultNameOfDays
-    , firstDayOfWeek = Time.Sun
-    , allowYearNavigation = True
-    , usePicker = True
-    , attributes = []
-    , earliestDate = Nothing
-    , fromInput = Parser.parseDateTime
-    , toInput = Formatter.dateTimeFormatter
     }
 
 

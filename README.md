@@ -72,12 +72,8 @@ The picker requires the initial value of the date (usually today) to set the ini
 
 ### Views
 The date time picker package provides multiple view functions, depending on how you want to use the picker.
-- `datePicker` is a simple date picker view, with no time picker, and comes with all default configuration.
-- `timePicker` is a simple time picker view, with no date picker, and comes with all default configuration.
-- `dateTimePicker` is a simple date and time picker view, comes with all default configuration.
 - `datePickerWithConfig` is a configurable date picker view.
 - `timePickerWithConfig` is a configurable time picker view.
-- `dateTimePickerWithConfig` is a configurable date and time picker view.
 
 ### Config
 You customize the date picker configuration by passing a `DateTimePicker.Config.Config` value to the picker's view function.
@@ -109,7 +105,7 @@ init =
     )
 
 view model =
-    DateTimePicker.dateTimePickerWithConfig
+    DateTimePicker.datePickerWithConfig
         DateChange
         [ class "my-datetimepicker" ]
         model.datePickerState

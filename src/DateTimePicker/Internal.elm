@@ -2,7 +2,6 @@ module DateTimePicker.Internal exposing
     ( DateSelection
     , InternalState(..)
     , StateValue
-    , TimeIndicator(..)
     , TimeSelection
     , getStateValue
     , initialStateValue
@@ -34,12 +33,6 @@ type alias StateValue =
     , minutePickerStart : Int
     , textInputValue : String
     }
-
-
-type TimeIndicator
-    = HourIndicator
-    | MinuteIndicator
-    | AMPMIndicator
 
 
 type alias DateSelection =

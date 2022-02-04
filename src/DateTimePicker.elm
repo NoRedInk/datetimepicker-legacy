@@ -1,6 +1,6 @@
 module DateTimePicker exposing
     ( DateTime, dateTime
-    , datePickerWithConfig, dateTimePickerWithConfig, timePickerWithConfig
+    , datePickerWithConfig, timePickerWithConfig
     , initialStateWithToday
     , State
     )
@@ -15,7 +15,7 @@ module DateTimePicker exposing
 
 # View
 
-@docs datePickerWithConfig, dateTimePickerWithConfig, timePickerWithConfig
+@docs datePickerWithConfig, timePickerWithConfig
 
 
 # Initial
@@ -165,33 +165,6 @@ datePickerWithConfig label config =
     view label (DateType config)
 
 
-{-| Date and Time Picker view with custom configuration
-Example:
-type alias Model = { dateTimePickerState : DateTimePicker.State, value : Maybe DateTime.DateTime }
-
-    type Msg
-        = DatePickerChanged DateTimePicker.State (Maybe DateTime.DateTime)
-
-    customConfig =
-        let
-            default =
-                DateTimePicker.defaultDateTimePickerConfig DatePickerChanged
-        in
-        { default | firstDayOfWeek = Date.Mon }
-
-    view =
-        DateTimePicker.dateTimePickerWithConfig "Date and Time Picker"
-            customConfig
-            [ class "my-datetimepicker" ]
-            model.dateTimePickerState
-            model.value
-
--}
-dateTimePickerWithConfig : String -> Config DatePickerConfig msg -> List (TextInput.Attribute String msg) -> State -> Maybe DateTime.DateTime -> Html msg
-dateTimePickerWithConfig label config =
-    view label (DateTimeType config)
-
-
 {-| Time Picker view with custom configuration
 Example:
 type alias Model = { timePickerState : DateTimePicker.State, value : Maybe DateTime.DateTime }
@@ -224,7 +197,7 @@ view label pickerType attributes state currentDate =
         html config =
             Html.node "date-time-picker"
                 (css [ position relative ] :: config.attributes)
-                [ viewInput label pickerType attributes config stateValue currentDate
+                [ viewInput label attributes config stateValue currentDate
                 , if config.usePicker && stateValue.inputFocused then
                     dialog pickerType state currentDate
 
@@ -236,17 +209,14 @@ view label pickerType attributes state currentDate =
         DateType config ->
             html config
 
-        DateTimeType config ->
-            html config
-
         TimeType config ->
             html config
 
 
-viewInput : String -> Type msg -> List (TextInput.Attribute String msg) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
-viewInput label pickerType attributes config stateValue currentDate =
+viewInput : String -> List (TextInput.Attribute String msg) -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> Html msg
+viewInput label attributes config stateValue currentDate =
     TextInput.view label
-        ([ TextInput.onFocus (datePickerFocused pickerType config stateValue currentDate)
+        ([ TextInput.onFocus (datePickerFocused config stateValue currentDate)
          , TextInput.onBlur (blurInputHandler config stateValue currentDate)
          , TextInput.onEnter (blurInputHandler config stateValue currentDate)
          , TextInput.text
@@ -291,12 +261,6 @@ dialog pickerType state currentDate =
         TimeType timePickerConfig ->
             dialogNode (withTimeAttributes timePickerConfig)
                 [ timePickerDialog pickerType state currentDate ]
-
-        DateTimeType timePickerConfig ->
-            dialogNode (withTimeAttributes timePickerConfig)
-                [ datePickerDialog pickerType state currentDate
-                , timePickerDialog pickerType state currentDate
-                ]
 
 
 dialogNode : List (Html.Attribute msg) -> List (Html msg) -> Html msg
@@ -345,9 +309,6 @@ datePickerDialog pickerType state currentDate =
     in
     case pickerType of
         DateType config ->
-            html config
-
-        DateTimeType config ->
             html config
 
         TimeType _ ->
@@ -437,12 +398,6 @@ timePickerDialog pickerType state currentDate =
     case pickerType of
         DateType _ ->
             text ""
-
-        DateTimeType { fromInput } ->
-            digitalTimePickerDialog pickerType
-                state
-                currentDate
-                (timeFromTextInputString fromInput stateValue.textInputValue)
 
         TimeType { fromInput } ->
             digitalTimePickerDialog pickerType
@@ -660,9 +615,6 @@ digitalTimePickerDialog pickerType state currentDate time =
         DateType _ ->
             text ""
 
-        DateTimeType config ->
-            html config
-
         TimeType config ->
             html config
 
@@ -836,9 +788,6 @@ calendar pickerType state =
         DateType config ->
             html config
 
-        DateTimeType config ->
-            html config
-
         TimeType _ ->
             text ""
 
@@ -990,15 +939,12 @@ cellClickHandler pickerType stateValue date timeSelection =
         DateType config ->
             handler config
 
-        DateTimeType config ->
-            handler config
-
         TimeType config ->
             handler config
 
 
-datePickerFocused : Type msg -> Config a msg -> StateValue -> Maybe DateTime.DateTime -> msg
-datePickerFocused pickerType config stateValue currentDate =
+datePickerFocused : Config a msg -> StateValue -> Maybe DateTime.DateTime -> msg
+datePickerFocused config stateValue currentDate =
     let
         updatedTitleDate =
             case currentDate of
