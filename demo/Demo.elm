@@ -41,20 +41,11 @@ init =
             , hour = 4
             , minute = 49
             }
-
-        currentTime : Time
-        currentTime =
-            { year = 2022
-            , month = Time.Feb
-            , day = 7
-            , hour = 4
-            , minute = 49
-            }
     in
     ( { date = Nothing
       , datePickerState = DatePicker.init today
       , time = Nothing
-      , timePickerState = TimePicker.init currentTime
+      , timePickerState = TimePicker.init
       }
     , Cmd.none
     )

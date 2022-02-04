@@ -1,9 +1,8 @@
 module DateTimePicker.Formatter exposing
     ( accessibilityDateFormatter
     , dateFormatter
-    , dateTimeFormatter
     , footerFormatter
-    , timeFormatter
+    , padWithZero
     , titleFormatter
     )
 
@@ -50,30 +49,6 @@ footerFormatter dateTime =
         ++ String.fromInt dateTime.day
         ++ ", "
         ++ String.fromInt dateTime.year
-
-
-dateTimeFormatter : DateTime.DateTime -> String
-dateTimeFormatter dateTime =
-    dateFormatter dateTime ++ " " ++ timeFormatter dateTime
-
-
-timeFormatter : DateTime.DateTime -> String
-timeFormatter dateTime =
-    let
-        ( hourString, amPm ) =
-            if dateTime.hour == 12 then
-                ( "12", "p.m." )
-
-            else if dateTime.hour == 0 then
-                ( "12", "a.m." )
-
-            else if dateTime.hour > 12 then
-                ( padWithZero (modBy 12 dateTime.hour), "p.m." )
-
-            else
-                ( padWithZero dateTime.hour, "a.m." )
-    in
-    hourString ++ ":" ++ padWithZero dateTime.minute ++ " " ++ amPm
 
 
 fullDayOfWeek : DateTime.DateTime -> String

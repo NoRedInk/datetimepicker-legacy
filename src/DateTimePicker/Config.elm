@@ -1,7 +1,7 @@
 module DateTimePicker.Config exposing
     ( NameOfDays
-    , defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
-    , defaultNameOfDays
+    , defaultDateToInput
+    , defaultDateFromInput, defaultNameOfDays
     )
 
 {-|
@@ -17,7 +17,7 @@ module DateTimePicker.Config exposing
 
 # Default Configuration
 
-@docs defaultTimePickerConfig, defaultDateFromInput, defaultTimeFromInput, defaultDateTimeFromInput, defaultDateTimeToInput, defaultDateToInput, defaultTimeToInput
+@docs defaultTimePickerConfig, defaultDateTimeToInput, defaultDateToInput
 
 -}
 
@@ -38,34 +38,6 @@ defaultDateFromInput =
 defaultDateToInput : DateTime.DateTime -> String
 defaultDateToInput =
     Formatter.dateFormatter
-
-
-{-| Default time parser
--}
-defaultTimeFromInput : String -> Maybe DateTime.DateTime
-defaultTimeFromInput =
-    Parser.parseTime
-
-
-{-| Default time printer
--}
-defaultTimeToInput : DateTime.DateTime -> String
-defaultTimeToInput =
-    Formatter.timeFormatter
-
-
-{-| Default date and time parser
--}
-defaultDateTimeFromInput : String -> Maybe DateTime.DateTime
-defaultDateTimeFromInput =
-    Parser.parseDateTime
-
-
-{-| Default date and time printer
--}
-defaultDateTimeToInput : DateTime.DateTime -> String
-defaultDateTimeToInput =
-    Formatter.dateTimeFormatter
 
 
 {-| Configuration for name of days in a week.

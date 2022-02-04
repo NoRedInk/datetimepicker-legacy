@@ -13,6 +13,7 @@ module DateTimePicker.DateTime exposing
     , setHour
     , setMinute
     , toFirstOfMonth
+    , toMilitary
     , validate
     )
 
@@ -27,7 +28,12 @@ import Time
 
 
 type alias DateTime =
-    { year : Int, month : Time.Month, day : Int, hour : Int, minute : Int }
+    { year : Int
+    , month : Time.Month
+    , day : Int
+    , hour : Int
+    , minute : Int
+    }
 
 
 compareDays : DateTime -> DateTime -> Order
@@ -420,12 +426,12 @@ toFirstOfMonth { month, year, hour, minute } =
     { month = month, year = year, day = 1, hour = hour, minute = minute }
 
 
-setHour : Int -> Maybe String -> DateTime -> DateTime
+setHour : Int -> Maybe String -> { time | hour : Int } -> { time | hour : Int }
 setHour hour amPm dateTime =
     { dateTime | hour = toMilitary hour (Maybe.withDefault "" amPm) }
 
 
-setMinute : Int -> DateTime -> DateTime
+setMinute : Int -> { time | minute : Int } -> { time | minute : Int }
 setMinute minute dateTime =
     { dateTime | minute = minute }
 

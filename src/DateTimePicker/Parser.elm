@@ -1,8 +1,4 @@
-module DateTimePicker.Parser exposing
-    ( parseDate
-    , parseDateTime
-    , parseTime
-    )
+module DateTimePicker.Parser exposing (..)
 
 {-|
 
@@ -18,17 +14,16 @@ import Parser exposing ((|.), (|=), Parser)
 
 parseDate : String -> Maybe DateTime.DateTime
 parseDate input =
-    runWithSurroundingSpaceAndValidation dateParser input
+    let
+        validater datetime =
+            case DateTime.validate datetime of
+                Just validatedDateTime ->
+                    Parser.succeed validatedDateTime
 
-
-parseTime : String -> Maybe DateTime.DateTime
-parseTime input =
-    runWithSurroundingSpaceAndValidation timeParser input
-
-
-parseDateTime : String -> Maybe DateTime.DateTime
-parseDateTime input =
-    runWithSurroundingSpaceAndValidation dateTimeParser input
+                Nothing ->
+                    Parser.problem "Invalid date"
+    in
+    runWithSurroundingSpaceAndValidation dateParser validater input
 
 
 skipOptionalSpaces : Parser ()
@@ -47,32 +42,8 @@ skipAtLeastOneSpace =
         |> Parser.map (\_ -> ())
 
 
-amPm : Parser String
-amPm =
-    Parser.oneOf
-        [ Parser.map (\_ -> "AM") <|
-            Parser.oneOf
-                [ Parser.symbol "AM"
-                , Parser.symbol "am"
-                , Parser.symbol "aM"
-                , Parser.symbol "Am"
-                , Parser.symbol "a.m."
-                , Parser.symbol "A.M."
-                ]
-        , Parser.map (\_ -> "PM") <|
-            Parser.oneOf
-                [ Parser.symbol "PM"
-                , Parser.symbol "pm"
-                , Parser.symbol "pM"
-                , Parser.symbol "Pm"
-                , Parser.symbol "p.m."
-                , Parser.symbol "P.M."
-                ]
-        ]
-
-
-runWithSurroundingSpaceAndValidation : Parser DateTime.DateTime -> String -> Maybe DateTime.DateTime
-runWithSurroundingSpaceAndValidation innerParser input =
+runWithSurroundingSpaceAndValidation : Parser a -> (a -> Parser b) -> String -> Maybe b
+runWithSurroundingSpaceAndValidation innerParser validate input =
     let
         finalParser =
             Parser.succeed identity
@@ -80,15 +51,7 @@ runWithSurroundingSpaceAndValidation innerParser input =
                 |= innerParser
                 |. skipOptionalSpaces
                 |. Parser.end
-                |> Parser.andThen
-                    (\datetime ->
-                        case DateTime.validate datetime of
-                            Just validatedDateTime ->
-                                Parser.succeed validatedDateTime
-
-                            Nothing ->
-                                Parser.problem "Invalid date"
-                    )
+                |> Parser.andThen validate
     in
     Parser.run finalParser input
         |> Result.toMaybe
@@ -140,33 +103,3 @@ dateParser =
         |. Parser.symbol "/"
         |. skipOptionalSpaces
         |= Parser.int
-
-
-{-| Parse the exact format "%I:%M %p"
--}
-timeParser : Parser DateTime.DateTime
-timeParser =
-    Parser.succeed DateTime.fromTime
-        |= clamped 1 12 looseInt
-        |. skipOptionalSpaces
-        |. Parser.symbol ":"
-        |. skipOptionalSpaces
-        |= clamped 0 59 looseInt
-        |. skipAtLeastOneSpace
-        |= amPm
-
-
-dateTimeParser : Parser DateTime.DateTime
-dateTimeParser =
-    Parser.succeed
-        (\dateComponent timeComponent ->
-            DateTime.fromParts
-                dateComponent.year
-                dateComponent.month
-                dateComponent.day
-                timeComponent.hour
-                timeComponent.minute
-        )
-        |= dateParser
-        |. skipAtLeastOneSpace
-        |= timeParser

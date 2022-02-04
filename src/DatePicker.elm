@@ -64,7 +64,12 @@ initialStateValueWithToday today =
 
 {-| -}
 type alias Date =
-    DateTime.DateTime
+    { year : Int
+    , month : Time.Month
+    , day : Int
+    , hour : Int
+    , minute : Int
+    }
 
 
 type alias DateSelection =

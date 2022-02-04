@@ -1,8 +1,8 @@
 module FormatterAndParserTests exposing (..)
 
 import DateTimePicker.DateTime as DateTime
-import DateTimePicker.Formatter as Formatter exposing (dateFormatter, dateTimeFormatter, timeFormatter)
-import DateTimePicker.Parser as Parser exposing (parseDate, parseDateTime, parseTime)
+import DateTimePicker.Formatter as Formatter exposing (dateFormatter)
+import DateTimePicker.Parser as Parser exposing (parseDate)
 import Expect
 import Test exposing (..)
 import Time
@@ -46,26 +46,6 @@ tests =
           , DateTime.fromParts 2018 Time.Sep 10 0 0
           )
         ]
-    , formatParsesTo "timeFormatter" timeFormatter parseTime <|
-        [ ( "01:15 p.m."
-          , DateTime.fromParts 2018 Time.Sep 10 13 15
-          , DateTime.fromParts 0 Time.Jan 1 13 15
-          )
-        , ( "12:00 a.m."
-          , DateTime.fromParts 2018 Time.Sep 10 0 0
-          , DateTime.fromParts 0 Time.Jan 1 0 0
-          )
-        ]
-    , formatParsesTo "dateTimeFormatter" dateTimeFormatter parseDateTime <|
-        [ ( "09/10/2018 01:15 p.m."
-          , DateTime.fromParts 2018 Time.Sep 10 13 15
-          , DateTime.fromParts 2018 Time.Sep 10 13 15
-          )
-        , ( "01/10/2018 12:00 a.m."
-          , DateTime.fromParts 2018 Time.Jan 10 0 0
-          , DateTime.fromParts 2018 Time.Jan 10 0 0
-          )
-        ]
     ]
         |> List.concat
         |> describe "Formatters and Parsers work"
@@ -94,25 +74,9 @@ parseDateTest =
         ]
 
 
-parseTimeTest : Test
-parseTimeTest =
-    test "it parses a time correctly" <|
-        \() ->
-            Parser.parseTime "1:15 PM"
-                |> Expect.equal (Just (DateTime.fromParts 0 Time.Jan 1 13 15))
-
-
-parseDateTimeTest : Test
-parseDateTimeTest =
-    test "it parses a date and time correctly" <|
-        \() ->
-            Parser.parseDateTime "9/7/2018 1:15 PM"
-                |> Expect.equal (Just (DateTime.fromParts 2018 Time.Sep 7 13 15))
-
-
 invalidDateTest : Test
 invalidDateTest =
     test "it fails if a date is out of range" <|
         \() ->
-            Parser.parseDateTime "2/30/2018 1:15 PM"
+            Parser.parseDate "2/30/2018"
                 |> Expect.equal Nothing

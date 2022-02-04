@@ -1,18 +1,20 @@
 module TimePicker exposing
     ( init, Model, Time
     , view, TimePickerConfig, defaultTimePickerConfig
+    , fromString, toString
     )
 
 {-|
 
 @docs init, Model, Time
 @docs view, TimePickerConfig, defaultTimePickerConfig
+@docs fromString, toString
 
 -}
 
 import Css exposing (..)
 import Css.Global exposing (descendants)
-import DateTimePicker.DateTime as DateTime
+import DateTimePicker.DateTime as DateTime exposing (toMilitary)
 import DateTimePicker.DateUtils
 import DateTimePicker.Events exposing (onMouseDownPreventDefault, onTouchStartPreventDefault)
 import DateTimePicker.Formatter as Formatter
@@ -24,6 +26,7 @@ import Html.Styled.Attributes exposing (css)
 import Nri.Ui.ClickableSvg.V2 as ClickableSvg
 import Nri.Ui.Colors.V1 as Colors
 import Nri.Ui.TextInput.V7 as TextInput
+import Parser exposing ((|.), (|=), Parser)
 import String
 import Time
 
@@ -34,18 +37,15 @@ type Model
     = InternalState StateValue
 
 
-{-| Pass in the current time.
--}
-init : Time -> Model
-init today =
-    InternalState (initialStateValueWithToday today)
+{-| -}
+init : Model
+init =
+    InternalState initialStateValue
 
 
 type alias StateValue =
     { inputFocused : Bool
-    , today : Maybe DateTime.DateTime
-    , titleDate : Maybe DateTime.DateTime
-    , date : Maybe DateTime.DateTime
+    , selectedTime : Maybe Time
     , hourPickerStart : Int
     , minutePickerStart : Int
     , textInputValue : String
@@ -55,21 +55,7 @@ type alias StateValue =
 initialStateValue : StateValue
 initialStateValue =
     { inputFocused = False
-    , today = Nothing
-    , titleDate = Nothing
-    , date = Nothing
-    , hourPickerStart = 1
-    , minutePickerStart = 0
-    , textInputValue = ""
-    }
-
-
-initialStateValueWithToday : DateTime.DateTime -> StateValue
-initialStateValueWithToday today =
-    { inputFocused = False
-    , today = Just today
-    , titleDate = Just <| DateTime.toFirstOfMonth today
-    , date = Nothing
+    , selectedTime = Nothing
     , hourPickerStart = 1
     , minutePickerStart = 0
     , textInputValue = ""
@@ -78,7 +64,9 @@ initialStateValueWithToday today =
 
 {-| -}
 type alias Time =
-    DateTime.DateTime
+    { hour : Int
+    , minute : Int
+    }
 
 
 type alias TimeSelection =
@@ -90,11 +78,11 @@ type alias TimeSelection =
 
 {-| -}
 type alias TimePickerConfig msg =
-    { onChange : Model -> Maybe DateTime.DateTime -> msg
+    { onChange : Model -> Maybe Time -> msg
     , usePicker : Bool
     , attributes : List (Html.Attribute msg)
-    , fromInput : String -> Maybe DateTime.DateTime
-    , toInput : DateTime.DateTime -> String
+    , fromInput : String -> Maybe Time
+    , toInput : Time -> String
     }
 
 
@@ -102,33 +90,39 @@ type alias TimePickerConfig msg =
 
   - `onChange` No Default
   - `dateFormatter` Default: `"%m/%d/%Y"`
-  - `dateTimeFormatter` Default: `"%m/%d/%Y %I:%M %p"`
-  - `timeFormatter` Default: `"%I:%M %p"`
+  - `fromString` Default: `"%m/%d/%Y %I:%M %p"`
+  - `toString` Default: `"%I:%M %p"`
 
 -}
-defaultTimePickerConfig : (Model -> Maybe DateTime.DateTime -> msg) -> TimePickerConfig msg
+defaultTimePickerConfig : (Model -> Maybe Time -> msg) -> TimePickerConfig msg
 defaultTimePickerConfig onChange =
     { onChange = onChange
     , usePicker = True
     , attributes = []
-    , fromInput = Parser.parseTime
-    , toInput = Formatter.timeFormatter
+    , fromInput = fromString
+    , toInput = toString
     }
 
 
 {-| -}
-view : String -> TimePickerConfig msg -> List (TextInput.Attribute String msg) -> Model -> Maybe DateTime.DateTime -> Html msg
-view label config attributes ((InternalState stateValue) as state) currentDate =
+view :
+    String
+    -> TimePickerConfig msg
+    -> List (TextInput.Attribute String msg)
+    -> Model
+    -> Maybe Time
+    -> Html msg
+view label config attributes ((InternalState stateValue) as state) currentTime =
     Html.node "time-picker"
         (css [ position relative ] :: config.attributes)
         [ TextInput.view label
-            ([ TextInput.onFocus (datePickerFocused config stateValue currentDate)
-             , TextInput.onBlur (blurInputHandler config stateValue currentDate)
-             , TextInput.onEnter (blurInputHandler config stateValue currentDate)
+            ([ TextInput.onFocus (timePickerFocused config stateValue currentTime)
+             , TextInput.onBlur (blurInputHandler config stateValue currentTime)
+             , TextInput.onEnter (blurInputHandler config stateValue currentTime)
              , TextInput.text
                 (\newValue ->
                     config.onChange (setTextInput newValue stateValue)
-                        currentDate
+                        currentTime
                 )
              , TextInput.value stateValue.textInputValue
              ]
@@ -136,18 +130,18 @@ view label config attributes ((InternalState stateValue) as state) currentDate =
             )
         , if config.usePicker && stateValue.inputFocused then
             Html.node "time-picker-dialog"
-                [ onMouseDownPreventDefault (config.onChange state currentDate)
+                [ onMouseDownPreventDefault (config.onChange state currentTime)
                 , css [ display block, Styles.dialog ]
                 ]
-                [ timePickerDialog config state currentDate ]
+                [ timePickerDialog config state currentTime ]
 
           else
             Html.text ""
         ]
 
 
-timePickerDialog : TimePickerConfig msg -> Model -> Maybe DateTime.DateTime -> Html msg
-timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state) currentDate =
+timePickerDialog : TimePickerConfig msg -> Model -> Maybe Time -> Html msg
+timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state) currentTime =
     let
         time =
             timeFromTextInputString fromInput stateValue.textInputValue
@@ -266,14 +260,14 @@ timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state)
                 [ upArrowTd
                     [ ClickableSvg.button "Earlier hours"
                         DateTimePicker.Svg.upArrow
-                        [ ClickableSvg.onClick (hourUpHandler config stateValue currentDate)
+                        [ ClickableSvg.onClick (hourUpHandler config stateValue currentTime)
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , upArrowTd
                     [ ClickableSvg.button "Earlier minutes"
                         DateTimePicker.Svg.upArrow
-                        [ ClickableSvg.onClick (minuteUpHandler config stateValue currentDate)
+                        [ ClickableSvg.onClick (minuteUpHandler config stateValue currentTime)
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
@@ -293,14 +287,14 @@ timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state)
                 [ downArrowTd
                     [ ClickableSvg.button "Later hours"
                         DateTimePicker.Svg.downArrow
-                        [ ClickableSvg.onClick (hourDownHandler config stateValue currentDate)
+                        [ ClickableSvg.onClick (hourDownHandler config stateValue currentTime)
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , downArrowTd
                     [ ClickableSvg.button "Later minutes"
                         DateTimePicker.Svg.downArrow
-                        [ ClickableSvg.onClick (minuteDownHandler config stateValue currentDate)
+                        [ ClickableSvg.onClick (minuteDownHandler config stateValue currentTime)
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
@@ -319,7 +313,7 @@ timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state)
                 , height (Css.px 37)
                 ]
             ]
-            [ Maybe.map Formatter.timeFormatter currentDate
+            [ Maybe.map toString currentTime
                 |> Maybe.withDefault "-- : --"
                 |> text
             ]
@@ -360,13 +354,13 @@ timePickerDialog ({ fromInput } as config) ((InternalState stateValue) as state)
 
 hourUpHandler :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , toInput : Time -> String
     }
     -> StateValue
-    -> Maybe DateTime.DateTime
+    -> Maybe Time
     -> msg
-hourUpHandler config stateValue currentDate =
+hourUpHandler config stateValue currentTime =
     let
         updatedState =
             if stateValue.hourPickerStart - 6 >= 1 then
@@ -375,18 +369,18 @@ hourUpHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate config updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentTime
 
 
 hourDownHandler :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , toInput : Time -> String
     }
     -> StateValue
-    -> Maybe DateTime.DateTime
+    -> Maybe Time
     -> msg
-hourDownHandler config stateValue currentDate =
+hourDownHandler config stateValue currentTime =
     let
         updatedState =
             if stateValue.hourPickerStart + 6 <= 12 then
@@ -395,18 +389,18 @@ hourDownHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate config updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentTime
 
 
 minuteUpHandler :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , toInput : Time -> String
     }
     -> StateValue
-    -> Maybe DateTime.DateTime
+    -> Maybe Time
     -> msg
-minuteUpHandler config stateValue currentDate =
+minuteUpHandler config stateValue currentTime =
     let
         updatedState =
             if stateValue.minutePickerStart - 6 >= 0 then
@@ -415,18 +409,18 @@ minuteUpHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate config updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentTime
 
 
 minuteDownHandler :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , toInput : Time -> String
     }
     -> StateValue
-    -> Maybe DateTime.DateTime
+    -> Maybe Time
     -> msg
-minuteDownHandler config stateValue currentDate =
+minuteDownHandler config stateValue currentTime =
     let
         updatedState =
             if stateValue.minutePickerStart + 6 <= 59 then
@@ -435,7 +429,7 @@ minuteDownHandler config stateValue currentDate =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate config updatedState) currentDate
+    config.onChange (updateTextInputFromDate config updatedState) currentTime
 
 
 
@@ -444,8 +438,8 @@ minuteDownHandler config stateValue currentDate =
 
 cellClickHandler :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , toInput : Time -> String
     }
     -> StateValue
     -> TimeSelection
@@ -469,18 +463,15 @@ cellClickHandler config stateValue timeSelection =
                     datetime
 
         adjustedSelectedDate =
-            case stateValue.date of
-                Just currentDate ->
-                    currentDate
-                        |> setHour
-                        |> setMinute
-
-                Nothing ->
-                    DateTime.fromDate 0 Time.Jan 1
-                        |> setHour
-                        |> setMinute
+            stateValue.selectedTime
+                |> Maybe.withDefault { hour = 0, minute = 0 }
+                |> setHour
+                |> setMinute
     in
-    config.onChange (updateTextInputFromDate config { stateValue | date = Just adjustedSelectedDate })
+    config.onChange
+        (updateTextInputFromDate config
+            { stateValue | selectedTime = Just adjustedSelectedDate }
+        )
         (Just adjustedSelectedDate)
 
 
@@ -488,13 +479,13 @@ cellClickHandler config stateValue timeSelection =
 -- Text parsing of time
 
 
-timeFromTextInputString : (String -> Maybe DateTime.DateTime) -> String -> TimeSelection
+timeFromTextInputString : (String -> Maybe Time) -> String -> TimeSelection
 timeFromTextInputString fromInput textInputValue =
     case fromInput textInputValue of
-        Just date ->
-            { hour = date.hour |> DateTimePicker.DateUtils.fromMilitaryHour |> Just
-            , minute = Just date.minute
-            , amPm = date.hour |> DateTimePicker.DateUtils.fromMilitaryAmPm |> Just
+        Just time ->
+            { hour = time.hour |> DateTimePicker.DateUtils.fromMilitaryHour |> Just
+            , minute = Just time.minute
+            , amPm = time.hour |> DateTimePicker.DateUtils.fromMilitaryAmPm |> Just
             }
 
         Nothing ->
@@ -510,38 +501,38 @@ timeFromTextInputString fromInput textInputValue =
 
 blurInputHandler :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , fromInput : String -> Maybe DateTime.DateTime
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , fromInput : String -> Maybe Time
+        , toInput : Time -> String
     }
     -> StateValue
-    -> Maybe DateTime.DateTime
+    -> Maybe Time
     -> msg
-blurInputHandler config stateValue currentDate =
+blurInputHandler config stateValue currentTime =
     case config.fromInput stateValue.textInputValue of
-        Just date ->
+        Just selectedTime ->
             let
                 updatedValue =
                     { stateValue
-                        | date = Just date
+                        | selectedTime = Just selectedTime
                         , inputFocused = False
                     }
             in
-            config.onChange (updateTextInputFromDate config updatedValue) (Just date)
+            config.onChange (updateTextInputFromDate config updatedValue) (Just selectedTime)
 
         Nothing ->
             let
                 updatedDate =
-                    case currentDate of
+                    case currentTime of
                         Just _ ->
                             Nothing
 
                         Nothing ->
-                            stateValue.date
+                            stateValue.selectedTime
 
                 updatedValue =
                     { stateValue
-                        | date = updatedDate
+                        | selectedTime = updatedDate
                         , hourPickerStart = initialStateValue.hourPickerStart
                         , minutePickerStart = initialStateValue.minutePickerStart
                         , inputFocused = False
@@ -550,33 +541,23 @@ blurInputHandler config stateValue currentDate =
             config.onChange (setTextInput "" updatedValue) Nothing
 
 
-datePickerFocused :
+timePickerFocused :
     { config
-        | onChange : Model -> Maybe DateTime.DateTime -> msg
-        , toInput : DateTime.DateTime -> String
+        | onChange : Model -> Maybe Time -> msg
+        , toInput : Time -> String
     }
     -> StateValue
-    -> Maybe DateTime.DateTime
+    -> Maybe Time
     -> msg
-datePickerFocused config stateValue currentDate =
-    let
-        updatedTitleDate =
-            case currentDate of
-                Nothing ->
-                    stateValue.titleDate
-
-                Just _ ->
-                    currentDate
-    in
+timePickerFocused config stateValue currentTime =
     config.onChange
         (updateTextInputFromDate config
             { stateValue
                 | inputFocused = True
-                , titleDate = updatedTitleDate
-                , date = currentDate
+                , selectedTime = currentTime
             }
         )
-        currentDate
+        currentTime
 
 
 setTextInput : String -> StateValue -> Model
@@ -585,13 +566,100 @@ setTextInput value state =
 
 
 updateTextInputFromDate :
-    { config | toInput : DateTime.DateTime -> String }
+    { config | toInput : Time -> String }
     -> StateValue
     -> Model
 updateTextInputFromDate config state =
     InternalState
         { state
             | textInputValue =
-                Maybe.map config.toInput state.date
+                Maybe.map config.toInput state.selectedTime
                     |> Maybe.withDefault state.textInputValue
         }
+
+
+
+-- PARSER
+
+
+fromString : String -> Maybe Time
+fromString input =
+    let
+        validater time =
+            -- TODO add back in validation
+            --case DateTime.validate datetime of
+            --    Just validatedDateTime ->
+            Parser.succeed time
+
+        --Nothing ->
+        --    Parser.problem "Invalid date"
+    in
+    Parser.runWithSurroundingSpaceAndValidation timeParser validater input
+
+
+{-| Parse the exact format "%I:%M %p"
+-}
+timeParser : Parser Time
+timeParser =
+    let
+        time_ hour_ minute_ amPm_ =
+            { hour = toMilitary hour_ amPm_
+            , minute = minute_
+            }
+    in
+    Parser.succeed time_
+        |= Parser.clamped 1 12 Parser.looseInt
+        |. Parser.skipOptionalSpaces
+        |. Parser.symbol ":"
+        |. Parser.skipOptionalSpaces
+        |= Parser.clamped 0 59 Parser.looseInt
+        |. Parser.skipAtLeastOneSpace
+        |= amPm
+
+
+amPm : Parser String
+amPm =
+    Parser.oneOf
+        [ Parser.map (\_ -> "AM") <|
+            Parser.oneOf
+                [ Parser.symbol "AM"
+                , Parser.symbol "am"
+                , Parser.symbol "aM"
+                , Parser.symbol "Am"
+                , Parser.symbol "a.m."
+                , Parser.symbol "A.M."
+                ]
+        , Parser.map (\_ -> "PM") <|
+            Parser.oneOf
+                [ Parser.symbol "PM"
+                , Parser.symbol "pm"
+                , Parser.symbol "pM"
+                , Parser.symbol "Pm"
+                , Parser.symbol "p.m."
+                , Parser.symbol "P.M."
+                ]
+        ]
+
+
+
+-- FORMATTER
+
+
+{-| -}
+toString : Time -> String
+toString time =
+    let
+        ( hourString, amPmString ) =
+            if time.hour == 12 then
+                ( "12", "p.m." )
+
+            else if time.hour == 0 then
+                ( "12", "a.m." )
+
+            else if time.hour > 12 then
+                ( Formatter.padWithZero (modBy 12 time.hour), "p.m." )
+
+            else
+                ( Formatter.padWithZero time.hour, "a.m." )
+    in
+    hourString ++ ":" ++ Formatter.padWithZero time.minute ++ " " ++ amPmString
