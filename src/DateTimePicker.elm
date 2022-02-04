@@ -171,9 +171,9 @@ datePickerWithConfig label config attributes ((InternalState stateValue) as stat
         (css [ position relative ] :: config.attributes)
         [ viewInput label attributes config stateValue currentDate
         , if config.usePicker && stateValue.inputFocused then
-            dialogNode
+            Html.node "date-picker-dialog"
                 [ onMouseDownPreventDefault (config.onChange state currentDate)
-                , css [ Styles.dialog ]
+                , css [ display block, Styles.dialog ]
                 ]
                 [ datePickerDialog config state currentDate ]
 
@@ -206,9 +206,9 @@ timePickerWithConfig label config attributes ((InternalState stateValue) as stat
         (css [ position relative ] :: config.attributes)
         [ viewInput label attributes config stateValue currentDate
         , if config.usePicker && stateValue.inputFocused then
-            dialogNode
+            Html.node "time-picker-dialog"
                 [ onMouseDownPreventDefault (config.onChange state currentDate)
-                , css [ Styles.dialog ]
+                , css [ display block, Styles.dialog ]
                 ]
                 [ timePickerDialog config state currentDate ]
 
@@ -247,14 +247,6 @@ viewInput label attributes config stateValue currentDate =
 
 
 -- VIEW HELPERS
-
-
-dialogNode : List (Html.Attribute msg) -> List (Html msg) -> Html msg
-dialogNode attributes =
-    Html.node "date-time-picker-dialog"
-        ([ css [ display block ] ]
-            ++ attributes
-        )
 
 
 datePickerDialog : DatePickerConfig msg -> State -> Maybe DateTime.DateTime -> Html msg
