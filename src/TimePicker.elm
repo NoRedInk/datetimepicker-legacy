@@ -103,9 +103,7 @@ view config =
                     config.onChange (setTextInput newValue stateValue)
                         config.value
                 )
-             , Maybe.map toString config.value
-                |> Maybe.withDefault ""
-                |> TextInput.value
+             , TextInput.value stateValue.textInputValue
              ]
                 ++ config.inputAttributes
             )
