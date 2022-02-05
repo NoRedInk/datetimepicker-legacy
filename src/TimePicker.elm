@@ -91,13 +91,20 @@ view config =
             case config.state of
                 InternalState s ->
                     s
+
+        onChange ( a, b ) =
+            config.onChange a b
     in
     Html.node "time-picker"
         [ css [ position relative ] ]
         [ TextInput.view config.label
             ([ TextInput.onFocus (timePickerFocused config stateValue config.value)
-             , TextInput.onBlur (blurInputHandler config stateValue config.value)
-             , TextInput.onEnter (blurInputHandler config stateValue config.value)
+             , TextInput.onBlur
+                (confirmInputValue config.state config.value
+                    |> Tuple.mapFirst closePopup
+                    |> onChange
+                )
+             , TextInput.onEnter (onChange (confirmInputValue config.state config.value))
              , TextInput.text
                 (\newValue ->
                     config.onChange (setTextInput newValue stateValue)
@@ -443,38 +450,31 @@ cellClickHandler config stateValue timeSelection =
 -- Misc
 
 
-blurInputHandler : { config | onChange : Model -> Maybe Time -> msg } -> StateValue -> Maybe Time -> msg
-blurInputHandler config stateValue currentTime =
+closePopup : Model -> Model
+closePopup (InternalState stateValue) =
+    InternalState
+        { stateValue
+            | hourPickerStart = initialStateValue.hourPickerStart
+            , minutePickerStart = initialStateValue.minutePickerStart
+            , popupOpen = False
+        }
+
+
+confirmInputValue : Model -> Maybe Time -> ( Model, Maybe Time )
+confirmInputValue (InternalState stateValue) currentTime =
     case fromString stateValue.textInputValue of
         Just selectedTime ->
-            let
-                updatedValue =
-                    { stateValue
-                        | selectedTime = Just selectedTime
-                        , popupOpen = False
-                    }
-            in
-            config.onChange (updateTextInputFromDate updatedValue) (Just selectedTime)
+            ( -- Format the input value the standard way
+              updateTextInputFromDate { stateValue | selectedTime = Just selectedTime }
+            , Just selectedTime
+            )
 
         Nothing ->
-            let
-                updatedDate =
-                    case currentTime of
-                        Just _ ->
-                            Nothing
-
-                        Nothing ->
-                            stateValue.selectedTime
-
-                updatedValue =
-                    { stateValue
-                        | selectedTime = updatedDate
-                        , hourPickerStart = initialStateValue.hourPickerStart
-                        , minutePickerStart = initialStateValue.minutePickerStart
-                        , popupOpen = False
-                    }
-            in
-            config.onChange (setTextInput "" updatedValue) Nothing
+            ( -- Clear the input value
+              -- TODO: this is weird! have error states instead.
+              setTextInput "" { stateValue | selectedTime = Nothing }
+            , Nothing
+            )
 
 
 timePickerFocused :
