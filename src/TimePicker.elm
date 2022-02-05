@@ -40,7 +40,14 @@ type Model
 {-| -}
 init : Model
 init =
-    InternalState initialStateValue
+    InternalState
+        { popupOpen = False
+        , selectedTime = Nothing
+        , hourPickerStart = 1
+        , minutePickerStart = 0
+        , textInputValue = ""
+        , errorMessage = Nothing
+        }
 
 
 type alias StateValue =
@@ -50,17 +57,6 @@ type alias StateValue =
     , minutePickerStart : Int
     , textInputValue : String
     , errorMessage : Maybe String
-    }
-
-
-initialStateValue : StateValue
-initialStateValue =
-    { popupOpen = False
-    , selectedTime = Nothing
-    , hourPickerStart = 1
-    , minutePickerStart = 0
-    , textInputValue = ""
-    , errorMessage = Nothing
     }
 
 
@@ -100,7 +96,7 @@ view config =
     Html.node "time-picker"
         [ css [ position relative ] ]
         [ TextInput.view config.label
-            ([ TextInput.onFocus (timePickerFocused config stateValue config.value)
+            ([ TextInput.onFocus (onChange ( openPopup config.state config.value, config.value ))
              , TextInput.onBlur
                 (confirmInputValue config.state config.value
                     |> Tuple.mapFirst closePopup
@@ -449,14 +445,19 @@ cellClickHandler config stateValue timeSelection =
 -- Misc
 
 
-closePopup : Model -> Model
-closePopup (InternalState stateValue) =
+openPopup : Model -> Maybe Time -> Model
+openPopup (InternalState stateValue) time =
     InternalState
         { stateValue
-            | hourPickerStart = initialStateValue.hourPickerStart
-            , minutePickerStart = initialStateValue.minutePickerStart
-            , popupOpen = False
+            | hourPickerStart = Maybe.withDefault 1 (Maybe.map .hour time)
+            , minutePickerStart = Maybe.withDefault 0 (Maybe.map .minute time)
+            , popupOpen = True
         }
+
+
+closePopup : Model -> Model
+closePopup (InternalState stateValue) =
+    InternalState { stateValue | popupOpen = False }
 
 
 confirmInputValue : Model -> Maybe Time -> ( Model, Maybe Time )
@@ -472,22 +473,6 @@ confirmInputValue (InternalState stateValue) currentTime =
             ( InternalState { stateValue | errorMessage = Just message }
             , Nothing
             )
-
-
-timePickerFocused :
-    { config | onChange : Model -> Maybe Time -> msg }
-    -> StateValue
-    -> Maybe Time
-    -> msg
-timePickerFocused config stateValue currentTime =
-    config.onChange
-        (updateTextInputFromDate
-            { stateValue
-                | popupOpen = True
-                , selectedTime = currentTime
-            }
-        )
-        currentTime
 
 
 setTextInput : String -> StateValue -> Model
