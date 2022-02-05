@@ -49,6 +49,7 @@ type alias StateValue =
     , hourPickerStart : Int
     , minutePickerStart : Int
     , textInputValue : String
+    , errorMessage : Maybe String
     }
 
 
@@ -59,6 +60,7 @@ initialStateValue =
     , hourPickerStart = 1
     , minutePickerStart = 0
     , textInputValue = ""
+    , errorMessage = Nothing
     }
 
 
@@ -105,12 +107,9 @@ view config =
                     |> onChange
                 )
              , TextInput.onEnter (onChange (confirmInputValue config.state config.value))
-             , TextInput.text
-                (\newValue ->
-                    config.onChange (setTextInput newValue stateValue)
-                        config.value
-                )
+             , TextInput.text (\newValue -> onChange ( setTextInput newValue stateValue, config.value ))
              , TextInput.value stateValue.textInputValue
+             , TextInput.errorMessage stateValue.errorMessage
              ]
                 ++ config.inputAttributes
             )
@@ -463,16 +462,14 @@ closePopup (InternalState stateValue) =
 confirmInputValue : Model -> Maybe Time -> ( Model, Maybe Time )
 confirmInputValue (InternalState stateValue) currentTime =
     case fromString stateValue.textInputValue of
-        Just selectedTime ->
+        Ok selectedTime ->
             ( -- Format the input value the standard way
               updateTextInputFromDate { stateValue | selectedTime = Just selectedTime }
             , Just selectedTime
             )
 
-        Nothing ->
-            ( -- Clear the input value
-              -- TODO: this is weird! have error states instead.
-              setTextInput "" { stateValue | selectedTime = Nothing }
+        Err message ->
+            ( InternalState { stateValue | errorMessage = Just message }
             , Nothing
             )
 
@@ -495,7 +492,11 @@ timePickerFocused config stateValue currentTime =
 
 setTextInput : String -> StateValue -> Model
 setTextInput value state =
-    InternalState { state | textInputValue = value }
+    InternalState
+        { state
+            | textInputValue = value
+            , errorMessage = Nothing
+        }
 
 
 updateTextInputFromDate : StateValue -> Model
@@ -517,20 +518,20 @@ updateTextInputFromDate state =
 timeFromTextInputString : String -> TimeSelection
 timeFromTextInputString textInputValue =
     case fromString textInputValue of
-        Just time ->
+        Ok time ->
             { hour = time.hour |> DateTimePicker.DateUtils.fromMilitaryHour |> Just
             , minute = Just time.minute
             , amPm = time.hour |> DateTimePicker.DateUtils.fromMilitaryAmPm |> Just
             }
 
-        Nothing ->
+        Err _ ->
             { hour = Nothing
             , minute = Nothing
             , amPm = Nothing
             }
 
 
-fromString : String -> Maybe Time
+fromString : String -> Result String Time
 fromString input =
     let
         validater time =
@@ -544,6 +545,12 @@ fromString input =
                 Parser.succeed time
     in
     Parser.runWithSurroundingSpaceAndValidation timeParser validater input
+        |> Result.mapError (toUserFacingErrorMessage input)
+
+
+toUserFacingErrorMessage : String -> List Parser.DeadEnd -> String
+toUserFacingErrorMessage input _ =
+    "Failed to parse " ++ input ++ " as a time. Expecting a time in the format hh:mm a.m."
 
 
 {-| Parse the format "%I:%M %p" and "%I:%M%p"

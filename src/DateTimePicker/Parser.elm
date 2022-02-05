@@ -24,6 +24,7 @@ parseDate input =
                     Parser.problem "Invalid date"
     in
     runWithSurroundingSpaceAndValidation dateParser validater input
+        |> Result.toMaybe
 
 
 skipOptionalSpaces : Parser ()
@@ -33,7 +34,7 @@ skipOptionalSpaces =
         |> Parser.map (\_ -> ())
 
 
-runWithSurroundingSpaceAndValidation : Parser a -> (a -> Parser b) -> String -> Maybe b
+runWithSurroundingSpaceAndValidation : Parser a -> (a -> Parser b) -> String -> Result (List Parser.DeadEnd) b
 runWithSurroundingSpaceAndValidation innerParser validate input =
     let
         finalParser =
@@ -45,7 +46,6 @@ runWithSurroundingSpaceAndValidation innerParser validate input =
                 |> Parser.andThen validate
     in
     Parser.run finalParser input
-        |> Result.toMaybe
 
 
 {-| A fixed-length integer padded with zeroes.
