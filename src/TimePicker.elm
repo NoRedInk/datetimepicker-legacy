@@ -536,13 +536,14 @@ fromString : String -> Maybe Time
 fromString input =
     let
         validater time =
-            -- TODO add back in validation
-            --case DateTime.validate datetime of
-            --    Just validatedDateTime ->
-            Parser.succeed time
+            if time.hour > 23 || time.hour < 0 then
+                Parser.problem "Invalid hour"
 
-        --Nothing ->
-        --    Parser.problem "Invalid date"
+            else if time.minute > 59 || time.minute < 0 then
+                Parser.problem "Invalid minute"
+
+            else
+                Parser.succeed time
     in
     Parser.runWithSurroundingSpaceAndValidation timeParser validater input
 
