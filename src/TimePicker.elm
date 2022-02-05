@@ -91,18 +91,18 @@ view config =
                     s
 
         onChange ( a, b ) =
-            config.onChange a b
+            config.onChange (InternalState a) b
     in
     Html.node "time-picker"
         [ css [ position relative ] ]
         [ TextInput.view config.label
-            ([ TextInput.onFocus (onChange ( openPopup config.state config.value, config.value ))
+            ([ TextInput.onFocus (onChange ( openPopup stateValue config.value, config.value ))
              , TextInput.onBlur
-                (confirmInputValue config.state config.value
+                (confirmInputValue stateValue config.value
                     |> Tuple.mapFirst closePopup
                     |> onChange
                 )
-             , TextInput.onEnter (onChange (confirmInputValue config.state config.value))
+             , TextInput.onEnter (onChange (confirmInputValue stateValue config.value))
              , TextInput.text (\newValue -> onChange ( setTextInput newValue stateValue, config.value ))
              , TextInput.value stateValue.textInputValue
              , TextInput.errorMessage stateValue.errorMessage
@@ -111,18 +111,18 @@ view config =
             )
         , if stateValue.popupOpen then
             Html.node "time-picker-dialog"
-                [ onMouseDownPreventDefault (config.onChange config.state config.value)
+                [ onMouseDownPreventDefault (onChange ( stateValue, config.value ))
                 , css [ display block, Styles.dialog ]
                 ]
-                [ timePickerDialog config config.state config.value ]
+                [ timePickerDialog onChange stateValue config.value ]
 
           else
             Html.text ""
         ]
 
 
-timePickerDialog : { config | onChange : Model -> Maybe Time -> msg } -> Model -> Maybe Time -> Html msg
-timePickerDialog config ((InternalState stateValue) as state) currentTime =
+timePickerDialog : (( StateValue, Maybe Time ) -> msg) -> StateValue -> Maybe Time -> Html msg
+timePickerDialog onChange stateValue currentTime =
     let
         time =
             timeFromTextInputString stateValue.textInputValue
@@ -149,9 +149,9 @@ timePickerDialog config ((InternalState stateValue) as state) currentTime =
         hourCell hour =
             let
                 hourClickHandler =
-                    cellClickHandler config
-                        stateValue
-                        { time | hour = Just hour }
+                    { time | hour = Just hour }
+                        |> cellClickHandler stateValue
+                        |> onChange
             in
             td
                 [ onMouseDownPreventDefault hourClickHandler
@@ -172,9 +172,9 @@ timePickerDialog config ((InternalState stateValue) as state) currentTime =
         minuteCell minute =
             let
                 minuteClickHandler =
-                    cellClickHandler config
-                        stateValue
-                        { time | minute = Just minute }
+                    { time | minute = Just minute }
+                        |> cellClickHandler stateValue
+                        |> onChange
             in
             td
                 [ onMouseDownPreventDefault minuteClickHandler
@@ -214,9 +214,9 @@ timePickerDialog config ((InternalState stateValue) as state) currentTime =
                             defaultStyles
 
                 amPmClickHandler =
-                    cellClickHandler config
-                        stateValue
-                        { time | amPm = Just ampm }
+                    { time | amPm = Just ampm }
+                        |> cellClickHandler stateValue
+                        |> onChange
 
                 handlers =
                     if String.isEmpty ampm then
@@ -241,14 +241,14 @@ timePickerDialog config ((InternalState stateValue) as state) currentTime =
                 [ upArrowTd
                     [ ClickableSvg.button "Earlier hours"
                         DateTimePicker.Svg.upArrow
-                        [ ClickableSvg.onClick (hourUpHandler config stateValue currentTime)
+                        [ ClickableSvg.onClick (onChange ( hourUpHandler stateValue, currentTime ))
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , upArrowTd
                     [ ClickableSvg.button "Earlier minutes"
                         DateTimePicker.Svg.upArrow
-                        [ ClickableSvg.onClick (minuteUpHandler config stateValue currentTime)
+                        [ ClickableSvg.onClick (onChange ( minuteUpHandler stateValue, currentTime ))
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
@@ -268,14 +268,14 @@ timePickerDialog config ((InternalState stateValue) as state) currentTime =
                 [ downArrowTd
                     [ ClickableSvg.button "Later hours"
                         DateTimePicker.Svg.downArrow
-                        [ ClickableSvg.onClick (hourDownHandler config stateValue currentTime)
+                        [ ClickableSvg.onClick (onChange ( hourDownHandler stateValue, currentTime ))
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
                 , downArrowTd
                     [ ClickableSvg.button "Later minutes"
                         DateTimePicker.Svg.downArrow
-                        [ ClickableSvg.onClick (minuteDownHandler config stateValue currentTime)
+                        [ ClickableSvg.onClick (onChange ( minuteDownHandler stateValue, currentTime ))
                         , ClickableSvg.exactHeight 24
                         ]
                     ]
@@ -333,12 +333,8 @@ timePickerDialog config ((InternalState stateValue) as state) currentTime =
 -- ACTIONS
 
 
-hourUpHandler :
-    { config | onChange : Model -> Maybe Time -> msg }
-    -> StateValue
-    -> Maybe Time
-    -> msg
-hourUpHandler config stateValue currentTime =
+hourUpHandler : StateValue -> StateValue
+hourUpHandler stateValue =
     let
         updatedState =
             if stateValue.hourPickerStart - 6 >= 1 then
@@ -347,15 +343,11 @@ hourUpHandler config stateValue currentTime =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate updatedState) currentTime
+    updateTextInputFromDate updatedState
 
 
-hourDownHandler :
-    { config | onChange : Model -> Maybe Time -> msg }
-    -> StateValue
-    -> Maybe Time
-    -> msg
-hourDownHandler config stateValue currentTime =
+hourDownHandler : StateValue -> StateValue
+hourDownHandler stateValue =
     let
         updatedState =
             if stateValue.hourPickerStart + 6 <= 12 then
@@ -364,15 +356,11 @@ hourDownHandler config stateValue currentTime =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate updatedState) currentTime
+    updateTextInputFromDate updatedState
 
 
-minuteUpHandler :
-    { config | onChange : Model -> Maybe Time -> msg }
-    -> StateValue
-    -> Maybe Time
-    -> msg
-minuteUpHandler config stateValue currentTime =
+minuteUpHandler : StateValue -> StateValue
+minuteUpHandler stateValue =
     let
         updatedState =
             if stateValue.minutePickerStart - 6 >= 0 then
@@ -381,15 +369,11 @@ minuteUpHandler config stateValue currentTime =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate updatedState) currentTime
+    updateTextInputFromDate updatedState
 
 
-minuteDownHandler :
-    { config | onChange : Model -> Maybe Time -> msg }
-    -> StateValue
-    -> Maybe Time
-    -> msg
-minuteDownHandler config stateValue currentTime =
+minuteDownHandler : StateValue -> StateValue
+minuteDownHandler stateValue =
     let
         updatedState =
             if stateValue.minutePickerStart + 6 <= 59 then
@@ -398,19 +382,15 @@ minuteDownHandler config stateValue currentTime =
             else
                 stateValue
     in
-    config.onChange (updateTextInputFromDate updatedState) currentTime
+    updateTextInputFromDate updatedState
 
 
 
 -- Cell click handling
 
 
-cellClickHandler :
-    { config | onChange : Model -> Maybe Time -> msg }
-    -> StateValue
-    -> TimeSelection
-    -> msg
-cellClickHandler config stateValue timeSelection =
+cellClickHandler : StateValue -> TimeSelection -> ( StateValue, Maybe Time )
+cellClickHandler stateValue timeSelection =
     let
         setHour datetime =
             case timeSelection.hour of
@@ -434,34 +414,32 @@ cellClickHandler config stateValue timeSelection =
                 |> setHour
                 |> setMinute
     in
-    config.onChange
-        (updateTextInputFromDate
-            { stateValue | selectedTime = Just adjustedSelectedDate }
-        )
-        (Just adjustedSelectedDate)
+    ( updateTextInputFromDate
+        { stateValue | selectedTime = Just adjustedSelectedDate }
+    , Just adjustedSelectedDate
+    )
 
 
 
 -- Misc
 
 
-openPopup : Model -> Maybe Time -> Model
-openPopup (InternalState stateValue) time =
-    InternalState
-        { stateValue
-            | hourPickerStart = Maybe.withDefault 1 (Maybe.map .hour time)
-            , minutePickerStart = Maybe.withDefault 0 (Maybe.map .minute time)
-            , popupOpen = True
-        }
+openPopup : StateValue -> Maybe Time -> StateValue
+openPopup stateValue time =
+    { stateValue
+        | hourPickerStart = Maybe.withDefault 1 (Maybe.map .hour time)
+        , minutePickerStart = Maybe.withDefault 0 (Maybe.map .minute time)
+        , popupOpen = True
+    }
 
 
-closePopup : Model -> Model
-closePopup (InternalState stateValue) =
-    InternalState { stateValue | popupOpen = False }
+closePopup : StateValue -> StateValue
+closePopup stateValue =
+    { stateValue | popupOpen = False }
 
 
-confirmInputValue : Model -> Maybe Time -> ( Model, Maybe Time )
-confirmInputValue (InternalState stateValue) currentTime =
+confirmInputValue : StateValue -> Maybe Time -> ( StateValue, Maybe Time )
+confirmInputValue stateValue currentTime =
     case fromString stateValue.textInputValue of
         Ok selectedTime ->
             ( -- Format the input value the standard way
@@ -470,28 +448,26 @@ confirmInputValue (InternalState stateValue) currentTime =
             )
 
         Err message ->
-            ( InternalState { stateValue | errorMessage = Just message }
+            ( { stateValue | errorMessage = Just message }
             , Nothing
             )
 
 
-setTextInput : String -> StateValue -> Model
+setTextInput : String -> StateValue -> StateValue
 setTextInput value state =
-    InternalState
-        { state
-            | textInputValue = value
-            , errorMessage = Nothing
-        }
+    { state
+        | textInputValue = value
+        , errorMessage = Nothing
+    }
 
 
-updateTextInputFromDate : StateValue -> Model
+updateTextInputFromDate : StateValue -> StateValue
 updateTextInputFromDate state =
-    InternalState
-        { state
-            | textInputValue =
-                Maybe.map toString state.selectedTime
-                    |> Maybe.withDefault state.textInputValue
-        }
+    { state
+        | textInputValue =
+            Maybe.map toString state.selectedTime
+                |> Maybe.withDefault state.textInputValue
+    }
 
 
 
