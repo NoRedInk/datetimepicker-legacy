@@ -8,14 +8,28 @@ module DateTimePicker.Internal exposing
     , initialStateValueWithToday
     )
 
+{-|
+
+@docs InternalState
+@docs StateValue
+@docs TimeIndicator
+@docs TimeSelection
+@docs getStateValue
+@docs initialStateValue
+@docs initialStateValueWithToday
+
+-}
+
 import DateTimePicker.DateTime as DateTime
 import DateTimePicker.Geometry exposing (Point)
 
 
+{-| -}
 type InternalState
     = InternalState StateValue
 
 
+{-| -}
 type alias StateValue =
     { inputFocused : Bool
     , forceClose : Bool
@@ -31,16 +45,19 @@ type alias StateValue =
     }
 
 
+{-| -}
 type TimeIndicator
     = HourIndicator
     | MinuteIndicator
     | AMPMIndicator
 
 
+{-| -}
 type alias TimeSelection =
     { hour : Maybe Int, minute : Maybe Int, amPm : Maybe String }
 
 
+{-| -}
 initialStateValue : StateValue
 initialStateValue =
     { inputFocused = False
@@ -57,6 +74,7 @@ initialStateValue =
     }
 
 
+{-| -}
 initialStateValueWithToday : DateTime.DateTime -> StateValue
 initialStateValueWithToday today =
     { inputFocused = False

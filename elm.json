@@ -6,7 +6,8 @@
     "version": "1.0.5",
     "exposed-modules": [
         "DateTimePicker",
-        "DateTimePicker.Config"
+        "DateTimePicker.Config",
+        "DateTimePicker.Internal"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
