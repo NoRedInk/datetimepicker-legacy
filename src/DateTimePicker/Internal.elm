@@ -11,6 +11,15 @@ module DateTimePicker.Internal exposing
 
 {-|
 
+@docs DateSelection
+@docs InternalState
+@docs StateValue
+@docs TimeIndicator
+@docs TimeSelection
+@docs getStateValue
+@docs initialStateValue
+@docs initialStateValueWithToday
+
 
 # THIS IS A HEAVILY MODIFIED FORK OF <https://github.com/abadi199/datetimepicker>
 
@@ -21,10 +30,12 @@ import DateTimePicker.DateUtils
 import Time
 
 
+{-| -}
 type InternalState
     = InternalState StateValue
 
 
+{-| -}
 type alias StateValue =
     { inputFocused : Bool
     , today : Maybe DateTime.DateTime
@@ -36,12 +47,14 @@ type alias StateValue =
     }
 
 
+{-| -}
 type TimeIndicator
     = HourIndicator
     | MinuteIndicator
     | AMPMIndicator
 
 
+{-| -}
 type alias DateSelection =
     { year : Int
     , month : Time.Month
@@ -49,6 +62,7 @@ type alias DateSelection =
     }
 
 
+{-| -}
 type alias TimeSelection =
     { hour : Maybe Int
     , minute : Maybe Int
@@ -56,6 +70,7 @@ type alias TimeSelection =
     }
 
 
+{-| -}
 initialStateValue : StateValue
 initialStateValue =
     { inputFocused = False
@@ -68,6 +83,7 @@ initialStateValue =
     }
 
 
+{-| -}
 initialStateValueWithToday : DateTime.DateTime -> StateValue
 initialStateValueWithToday today =
     { inputFocused = False
